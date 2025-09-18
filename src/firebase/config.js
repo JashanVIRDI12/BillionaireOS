@@ -3,13 +3,13 @@ import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 import { getFirestore } from 'firebase/firestore';
 
 const firebaseConfig = {
-  apiKey: process.env.REACT_APP_FIREBASE_API_KEY || "AIzaSyBP1XNjMj84q63pbcqw5Wk0nzM6TVB8mMQ",
-  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN || "billionaire-os-ef98e.firebaseapp.com",
-  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID || "billionaire-os-ef98e",
-  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET || "billionaire-os-ef98e.firebasestorage.app",
-  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID || "852411621941",
-  appId: process.env.REACT_APP_FIREBASE_APP_ID || "1:852411621941:web:1cdb0baa1abd1a942e877c",
-  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID || "G-9R8G49R4YX"
+  apiKey: process.env.REACT_APP_FIREBASE_API_KEY,
+  authDomain: process.env.REACT_APP_FIREBASE_AUTH_DOMAIN,
+  projectId: process.env.REACT_APP_FIREBASE_PROJECT_ID,
+  storageBucket: process.env.REACT_APP_FIREBASE_STORAGE_BUCKET,
+  messagingSenderId: process.env.REACT_APP_FIREBASE_MESSAGING_SENDER_ID,
+  appId: process.env.REACT_APP_FIREBASE_APP_ID,
+  measurementId: process.env.REACT_APP_FIREBASE_MEASUREMENT_ID
 };
 
 
