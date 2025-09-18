@@ -14,6 +14,7 @@ import {
 } from '../firebase/ultraSimple';
 import AnimatedCounter from './AnimatedCounter';
 import ConfirmModal from './ConfirmModal';
+import SoothingLoader, { SkeletonLoader, CardSkeleton } from './SoothingLoader';
 
 
 const NetWorthPage = () => {
@@ -43,6 +44,7 @@ const NetWorthPage = () => {
   const [assets, setAssets] = useState([]);
   const [liabilities, setLiabilities] = useState([]);
   const [loading, setLoading] = useState(false);
+  const [initialLoading, setInitialLoading] = useState(true);
 
   const [newAsset, setNewAsset] = useState({
     amount: '',
@@ -66,9 +68,13 @@ const NetWorthPage = () => {
 
   // Load data from Firebase on component mount (only once)
   useEffect(() => {
-    if (!user) return;
+    if (!user) {
+      setInitialLoading(false);
+      return;
+    }
 
     const loadData = async () => {
+      setInitialLoading(true);
       try {
         const [assetsResult, liabilitiesResult] = await Promise.all([
           getUltraSimpleAssets(user.uid),
@@ -84,6 +90,11 @@ const NetWorthPage = () => {
         }
       } catch (error) {
         console.error('Error loading data:', error);
+      } finally {
+        // Add a minimum loading time for smooth experience
+        setTimeout(() => {
+          setInitialLoading(false);
+        }, 800);
       }
     };
 
@@ -376,6 +387,25 @@ const NetWorthPage = () => {
 
   const yearsToReachDream = calculateYearsToReachDream();
   const monthlyGrowth = calculateMonthlyGrowthRate();
+
+  // Show loading state
+  if (initialLoading) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+      >
+        <SoothingLoader 
+          message="Loading your financial data..." 
+          icon={DollarSign}
+        />
+        <CardSkeleton count={4} />
+        <SkeletonLoader count={3} />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div

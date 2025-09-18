@@ -12,6 +12,7 @@ import {
   getNorthStarGoal
 } from '../firebase/ultraSimple';
 import ConfirmModal from './ConfirmModal';
+import SoothingLoader, { CardSkeleton } from './SoothingLoader';
 
 const VisionPage = () => {
   const { user } = useAuth();
@@ -268,6 +269,24 @@ const VisionPage = () => {
 
 
   const stats = getJournalStats();
+
+  // Show loading state
+  if (loading && journalEntries.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+      >
+        <SoothingLoader 
+          message="Loading your journal..." 
+          icon={Star}
+        />
+        <CardSkeleton count={4} />
+      </motion.div>
+    );
+  }
 
   return (
     <div className="space-y-8">

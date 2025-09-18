@@ -8,6 +8,7 @@ import {
   deleteHabit as deleteHabitFromDb,
   toggleHabitCompletion
 } from '../firebase/ultraSimple';
+import SoothingLoader, { SkeletonLoader } from './SoothingLoader';
 
 const HabitsPage = () => {
   const { user } = useAuth();
@@ -204,6 +205,23 @@ const HabitsPage = () => {
     newWeek.setDate(currentWeek.getDate() + (direction * 7));
     setCurrentWeek(newWeek);
   };
+
+  // Show loading state
+  if (loading && habits.length === 0) {
+    return (
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5 }}
+        className="space-y-8"
+      >
+        <SoothingLoader 
+          message="Loading your habits..." 
+          icon={Target}
+        />
+      </motion.div>
+    );
+  }
 
   return (
     <motion.div
