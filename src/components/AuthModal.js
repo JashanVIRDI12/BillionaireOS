@@ -47,11 +47,11 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
             animate={{ scale: 1, opacity: 1 }}
             exit={{ scale: 0.9, opacity: 0 }}
             transition={{ duration: 0.2 }}
-            className="bg-white rounded-lg p-6 w-full max-w-md"
+            className="bg-white rounded-lg p-4 sm:p-6 w-full max-w-md mx-4"
             onClick={(e) => e.stopPropagation()}
           >
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-semibold text-gray-900">Sign In</h2>
+            <div className="flex items-center justify-between mb-4 sm:mb-6">
+              <h2 className="text-lg sm:text-xl font-semibold text-gray-900">Sign In</h2>
               <button
                 onClick={handleClose}
                 className="p-1 text-gray-400 hover:text-gray-600"
@@ -79,7 +79,7 @@ const AuthModal = ({ isOpen, onClose, onAuthSuccess }) => {
                 <button
                   onClick={handleGoogleSignIn}
                   disabled={loading}
-                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-black text-white border-2 border-black hover:bg-white hover:text-black disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium"
+                  className="w-full flex items-center justify-center space-x-2 px-4 py-3 bg-black text-white border-2 border-black hover:bg-white hover:text-black disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium text-sm sm:text-base"
                 >
                   {loading ? (
                     <div className="w-5 h-5 border-2 border-current border-t-transparent rounded-full animate-spin" />

@@ -8,7 +8,7 @@ import {
   deleteHabit as deleteHabitFromDb,
   toggleHabitCompletion
 } from '../firebase/ultraSimple';
-import SoothingLoader, { SkeletonLoader } from './SoothingLoader';
+import SoothingLoader from './SoothingLoader';
 
 const HabitsPage = () => {
   const { user } = useAuth();
@@ -228,16 +228,16 @@ const HabitsPage = () => {
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
-      className="space-y-8"
+      className="space-y-4 sm:space-y-6 lg:space-y-8"
     >
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="flex items-center space-x-4">
-          <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
-            <Target className="w-6 h-6 text-white" />
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between space-y-3 sm:space-y-0">
+        <div className="flex items-center space-x-3 sm:space-x-4">
+          <div className="w-10 sm:w-12 h-10 sm:h-12 bg-black rounded-xl flex items-center justify-center">
+            <Target className="w-5 sm:w-6 h-5 sm:h-6 text-white" />
           </div>
           <div>
-            <h1 className="text-3xl font-bold text-gray-900">Weekly Habits</h1>
+            <h1 className="text-2xl sm:text-3xl font-bold text-gray-900">Weekly Habits</h1>
             <p className="text-gray-600">
               {habits.length > 0 && `${habits.filter(h => h.completedDays[todayDate]).length}/${habits.length} completed today`}
             </p>
@@ -248,7 +248,7 @@ const HabitsPage = () => {
           whileHover={{ scale: 1.05 }}
           whileTap={{ scale: 0.95 }}
           onClick={() => setShowStats(true)}
-          className="flex items-center space-x-2 px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors"
+          className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm sm:text-base"
         >
           <BarChart3 className="w-4 h-4" />
           <span className="font-medium">Stats</span>
@@ -256,7 +256,7 @@ const HabitsPage = () => {
       </div>
 
       {/* Week Navigation */}
-      <div className="flex items-center justify-center space-x-6 bg-white border-2 border-gray-200 rounded-xl p-4">
+      <div className="flex items-center justify-center space-x-4 sm:space-x-6 bg-white border-2 border-gray-200 rounded-xl p-3 sm:p-4">
         <motion.button
           whileHover={{ scale: 1.1 }}
           whileTap={{ scale: 0.9 }}
@@ -267,8 +267,8 @@ const HabitsPage = () => {
         </motion.button>
         
         <div className="text-center">
-          <div className="text-sm text-gray-600">Week of</div>
-          <div className="font-semibold text-gray-900">
+          <div className="text-xs sm:text-sm text-gray-600">Week of</div>
+          <div className="font-semibold text-gray-900 text-sm sm:text-base">
             {currentWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {
               new Date(currentWeek.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })
             }
@@ -287,10 +287,10 @@ const HabitsPage = () => {
 
       {/* Today's Progress */}
       {habits.length > 0 && (
-        <div className="bg-gradient-to-br from-gray-900 to-black text-white rounded-xl p-6">
+        <div className="bg-gradient-to-br from-gray-900 to-black text-white rounded-xl p-4 sm:p-6">
           <div className="text-center mb-4">
-            <div className="text-4xl font-bold mb-2">{getTodayProgress()}%</div>
-            <p className="text-gray-300">Today's Progress</p>
+            <div className="text-3xl sm:text-4xl font-bold mb-2">{getTodayProgress()}%</div>
+            <p className="text-gray-300 text-sm sm:text-base">Today's Progress</p>
           </div>
           <div className="w-full bg-white bg-opacity-20 rounded-full h-3">
             <motion.div
@@ -306,7 +306,7 @@ const HabitsPage = () => {
       {/* Weekly Habits Grid */}
       <div className="bg-white border-2 border-gray-200 rounded-xl overflow-hidden">
         {/* Header */}
-        <div className="grid bg-gray-50" style={{ gridTemplateColumns: '2fr repeat(7, 1fr)' }}>
+        <div className="hidden sm:grid bg-gray-50" style={{ gridTemplateColumns: '2fr repeat(7, 1fr)' }}>
           <div className="p-4 font-semibold text-gray-900 border-r border-gray-200">
             Habit
           </div>
@@ -327,6 +327,29 @@ const HabitsPage = () => {
           ))}
         </div>
 
+        {/* Mobile Header */}
+        <div className="sm:hidden bg-gray-50 p-4 border-b border-gray-200">
+          <h3 className="font-semibold text-gray-900 text-center">Weekly Habits</h3>
+          <div className="flex justify-center items-center space-x-2 mt-2">
+            <button
+              onClick={() => setCurrentWeek(new Date(currentWeek.getTime() - 7 * 24 * 60 * 60 * 1000))}
+              className="p-1 hover:bg-gray-200 rounded"
+            >
+              <ChevronLeft className="w-4 h-4" />
+            </button>
+            <span className="text-sm text-gray-600 font-medium">
+              {currentWeek.toLocaleDateString('en-US', { month: 'short', day: 'numeric' })} - {' '}
+              {new Date(currentWeek.getTime() + 6 * 24 * 60 * 60 * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric' })}
+            </span>
+            <button
+              onClick={() => setCurrentWeek(new Date(currentWeek.getTime() + 7 * 24 * 60 * 60 * 1000))}
+              className="p-1 hover:bg-gray-200 rounded"
+            >
+              <ChevronRight className="w-4 h-4" />
+            </button>
+          </div>
+        </div>
+
         {/* Habits */}
         <AnimatePresence>
           {habits.map((habit, index) => (
@@ -336,58 +359,118 @@ const HabitsPage = () => {
               animate={{ opacity: 1, y: 0 }}
               exit={{ opacity: 0, y: -20 }}
               transition={{ delay: index * 0.1 }}
-              className="grid border-b border-gray-200 hover:bg-gray-50 transition-colors"
-              style={{ gridTemplateColumns: '2fr repeat(7, 1fr)' }}
             >
-              <div className="p-4 border-r border-gray-200 flex items-center justify-between min-w-0">
-                <div className="flex items-center space-x-3 min-w-0 flex-1">
-                  <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
-                  <span className="font-medium text-gray-900 truncate" title={habit.name}>
-                    {habit.name}
-                  </span>
-                </div>
-                <motion.button
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.9 }}
-                  onClick={() => deleteHabit(habit.id)}
-                  className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all duration-200 flex-shrink-0"
-                >
-                  <Trash2 className="w-3 h-3" />
-                </motion.button>
-              </div>
-              {weekDates.map((date) => (
-                <div
-                  key={date}
-                  className={`p-4 border-r border-gray-200 flex items-center justify-center ${
-                    date === todayDate ? 'bg-gray-50' : ''
-                  }`}
-                >
+              {/* Desktop Grid Layout */}
+              <div className="hidden sm:grid border-b border-gray-200 hover:bg-gray-50 transition-colors" style={{ gridTemplateColumns: '2fr repeat(7, 1fr)' }}>
+                <div className="p-4 border-r border-gray-200 flex items-center justify-between min-w-0">
+                  <div className="flex items-center space-x-3 min-w-0 flex-1">
+                    <div className="w-2 h-2 bg-black rounded-full flex-shrink-0"></div>
+                    <span className="font-medium text-gray-900 truncate" title={habit.name}>
+                      {habit.name}
+                    </span>
+                  </div>
                   <motion.button
                     whileHover={{ scale: 1.1 }}
                     whileTap={{ scale: 0.9 }}
-                    onClick={() => toggleHabit(habit.id, date)}
-                    className={`
-                      w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200
-                      ${habit.completedDays[date]
-                        ? 'bg-black border-black text-white shadow-md'
-                        : 'border-gray-300 hover:border-black hover:bg-gray-50'
-                      }
-                    `}
+                    onClick={() => deleteHabit(habit.id)}
+                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all duration-200 flex-shrink-0"
                   >
-                    <AnimatePresence>
-                      {habit.completedDays[date] && (
-                        <motion.div
-                          initial={{ scale: 0 }}
-                          animate={{ scale: 1 }}
-                          exit={{ scale: 0 }}
-                        >
-                          <Check className="w-4 h-4" />
-                        </motion.div>
-                      )}
-                    </AnimatePresence>
+                    <Trash2 className="w-3 h-3" />
                   </motion.button>
                 </div>
-              ))}
+                {weekDates.map((date) => (
+                  <div
+                    key={date}
+                    className={`p-4 border-r border-gray-200 flex items-center justify-center ${
+                      date === todayDate ? 'bg-gray-50' : ''
+                    }`}
+                  >
+                    <motion.button
+                      whileHover={{ scale: 1.1 }}
+                      whileTap={{ scale: 0.9 }}
+                      onClick={() => toggleHabit(habit.id, date)}
+                      className={`
+                        w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200
+                        ${habit.completedDays[date]
+                          ? 'bg-black border-black text-white shadow-md'
+                          : 'border-gray-300 hover:border-black hover:bg-gray-50'
+                        }
+                      `}
+                    >
+                      <AnimatePresence>
+                        {habit.completedDays[date] && (
+                          <motion.div
+                            initial={{ scale: 0 }}
+                            animate={{ scale: 1 }}
+                            exit={{ scale: 0 }}
+                          >
+                            <Check className="w-4 h-4" />
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </motion.button>
+                  </div>
+                ))}
+              </div>
+
+              {/* Mobile Card Layout */}
+              <div className="sm:hidden border-b border-gray-200 p-4">
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className="w-2 h-2 bg-black rounded-full"></div>
+                    <span className="font-medium text-gray-900">{habit.name}</span>
+                  </div>
+                  <motion.button
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.9 }}
+                    onClick={() => deleteHabit(habit.id)}
+                    className="p-1 text-gray-400 hover:text-red-600 hover:bg-red-50 rounded transition-all duration-200"
+                  >
+                    <Trash2 className="w-4 h-4" />
+                  </motion.button>
+                </div>
+                
+                <div className="grid grid-cols-7 gap-2">
+                  {weekDates.map((date, dayIndex) => (
+                    <div key={date} className="text-center">
+                      <div className={`text-xs font-medium mb-2 ${
+                        date === todayDate ? 'text-black' : 'text-gray-500'
+                      }`}>
+                        {dayNames[dayIndex]}
+                      </div>
+                      <div className={`text-xs mb-2 ${
+                        date === todayDate ? 'text-black font-medium' : 'text-gray-400'
+                      }`}>
+                        {new Date(date).getDate()}
+                      </div>
+                      <motion.button
+                        whileHover={{ scale: 1.1 }}
+                        whileTap={{ scale: 0.9 }}
+                        onClick={() => toggleHabit(habit.id, date)}
+                        className={`
+                          w-8 h-8 rounded-lg border-2 flex items-center justify-center transition-all duration-200 mx-auto
+                          ${habit.completedDays[date]
+                            ? 'bg-black border-black text-white shadow-md'
+                            : 'border-gray-300 hover:border-black hover:bg-gray-50'
+                          }
+                        `}
+                      >
+                        <AnimatePresence>
+                          {habit.completedDays[date] && (
+                            <motion.div
+                              initial={{ scale: 0 }}
+                              animate={{ scale: 1 }}
+                              exit={{ scale: 0 }}
+                            >
+                              <Check className="w-4 h-4" />
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+                      </motion.button>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </motion.div>
           ))}
         </AnimatePresence>
@@ -506,7 +589,7 @@ const HabitsPage = () => {
                 </motion.button>
               </div>
               
-              <div className="space-y-4">
+              <div className="space-y-4 sm:space-y-6">
                 {/* Today's Progress */}
                 <div className="bg-gradient-to-r from-blue-50 to-blue-100 rounded-lg p-4 border-l-4 border-blue-500">
                   <div className="flex items-center space-x-3">

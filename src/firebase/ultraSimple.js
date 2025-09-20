@@ -404,3 +404,85 @@ export const toggleHabitCompletion = async (habitId, date, isCompleted) => {
     return { success: false, error: error.message };
   }
 };
+
+// Goals functions
+export const addGoal = async (userId, goalData) => {
+  try {
+    console.log('Adding goal:', { userId, goalData });
+    
+    const docRef = await addDoc(collection(db, 'goals'), {
+      ...goalData,
+      userId: userId,
+      created: new Date().toISOString()
+    });
+    
+    console.log('Goal added with ID:', docRef.id);
+    return { success: true, id: docRef.id };
+  } catch (error) {
+    console.error('Add goal error:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const getGoals = async (userId) => {
+  try {
+    console.log('Getting goals for user:', userId);
+    
+    const q = query(
+      collection(db, 'goals'), 
+      where('userId', '==', userId)
+    );
+    const querySnapshot = await getDocs(q);
+    
+    const goals = [];
+    querySnapshot.forEach((doc) => {
+      const data = doc.data();
+      goals.push({ 
+        id: doc.id, 
+        ...data
+      });
+    });
+    
+    // Sort by creation date
+    goals.sort((a, b) => new Date(a.created) - new Date(b.created));
+    
+    console.log('Goals retrieved:', goals);
+    return { success: true, goals };
+  } catch (error) {
+    console.error('Get goals error:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const updateGoal = async (goalId, updates) => {
+  try {
+    console.log('Updating goal:', { goalId, updates });
+    
+    const goalRef = doc(db, 'goals', goalId);
+    await updateDoc(goalRef, {
+      ...updates,
+      updated: new Date().toISOString()
+    });
+    
+    console.log('Goal updated:', goalId);
+    return { success: true };
+  } catch (error) {
+    console.error('Update goal error:', error);
+    return { success: false, error: error.message };
+  }
+};
+
+export const deleteGoal = async (goalId) => {
+  try {
+    console.log('Deleting goal:', goalId);
+    
+    const goalRef = doc(db, 'goals', goalId);
+    await deleteDoc(goalRef);
+    
+    console.log('Goal deleted:', goalId);
+    return { success: true };
+  } catch (error) {
+    console.error('Delete goal error:', error);
+    return { success: false, error: error.message };
+  }
+};

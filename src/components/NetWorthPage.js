@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, Target, Plus, Minus, Edit3, Save, HelpCircle, Trash2, Check, X } from 'lucide-react';
+import { DollarSign, Plus, Edit3, Trash2, Eye, EyeOff, BookOpen, Bot, Handshake, Scissors, Briefcase, ChefHat, TrendingUp, Trophy, Lightbulb, Minus, Target, HelpCircle, Save, Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -22,6 +22,7 @@ const NetWorthPage = () => {
   const [currentNetWorth, setCurrentNetWorth] = useState(0);
   const [dreamNetWorth, setDreamNetWorth] = useState(0);
   const [isEditingDream, setIsEditingDream] = useState(false);
+  const [isUpdatingDream, setIsUpdatingDream] = useState(false);
   
   // Separate input state for dream net worth editing
   const [dreamNetWorthInput, setDreamNetWorthInput] = useState('');
@@ -45,6 +46,7 @@ const NetWorthPage = () => {
   const [liabilities, setLiabilities] = useState([]);
   const [loading, setLoading] = useState(false);
   const [initialLoading, setInitialLoading] = useState(true);
+  const [showDailyTip, setShowDailyTip] = useState(false);
 
   const [newAsset, setNewAsset] = useState({
     amount: '',
@@ -103,15 +105,22 @@ const NetWorthPage = () => {
 
   // Save dream net worth to Firebase (only when not editing and values actually change)
   useEffect(() => {
-    if (user && userSettings && !isEditingDream) {
+    if (user && userSettings && !isEditingDream && dreamNetWorth !== 0) {
       const timeoutId = setTimeout(() => {
         // Only update if dream net worth is different from what's in userSettings
         if (userSettings.dreamNetWorth !== dreamNetWorth) {
+          console.log('Saving dream net worth:', dreamNetWorth);
           updateUserSettings({
             dreamNetWorth
+          }).then(result => {
+            if (result.success) {
+              console.log('Dream net worth saved successfully');
+            } else {
+              console.error('Failed to save dream net worth:', result.error);
+            }
           });
         }
-      }, 1000); // Debounce saves
+      }, 500); // Reduced debounce time for faster saves
 
       return () => clearTimeout(timeoutId);
     }
@@ -135,6 +144,61 @@ const NetWorthPage = () => {
       maximumFractionDigits: 0,
     }).format(amount);
   };
+
+  // Daily tips for income enhancement and saving
+  const dailyTips = [
+    {
+      type: "income",
+      title: "Skill Development Monday",
+      content: "Invest 30 minutes today learning a high-demand skill. Consider data analysis, digital marketing, or coding - skills that can increase your earning potential by 20-50%.",
+      icon: <BookOpen className="w-4 h-4" />
+    },
+    {
+      type: "saving",
+      title: "Automation Tuesday",
+      content: "Set up automatic transfers to savings. Even $25/week ($1,300/year) can compound significantly. Automate to remove the temptation to spend.",
+      icon: <Bot className="w-4 h-4" />
+    },
+    {
+      type: "income",
+      title: "Network Wednesday",
+      content: "Reach out to one professional contact today. 85% of jobs are filled through networking. A simple 'checking in' message could lead to new opportunities.",
+      icon: <Handshake className="w-4 h-4" />
+    },
+    {
+      type: "saving",
+      title: "Subscription Thursday",
+      content: "Review and cancel one unused subscription. The average person pays $273/month for subscriptions they don't fully use. That's $3,276/year saved!",
+      icon: <Scissors className="w-4 h-4" />
+    },
+    {
+      type: "income",
+      title: "Side Hustle Friday",
+      content: "Explore freelancing in your expertise area. Platforms like Upwork or Fiverr can generate $500-2000/month extra. Start with just 5 hours/week.",
+      icon: <Briefcase className="w-4 h-4" />
+    },
+    {
+      type: "saving",
+      title: "Meal Prep Saturday",
+      content: "Plan and prep meals for the week. Eating out costs $12-15/meal vs $3-5 homemade. Save $200-400/month while eating healthier.",
+      icon: <ChefHat className="w-4 h-4" />
+    },
+    {
+      type: "income",
+      title: "Investment Sunday",
+      content: "Research dividend-paying stocks or index funds. Even $100/month invested at 7% annual return becomes $87,000 in 20 years through compound growth.",
+      icon: <TrendingUp className="w-4 h-4" />
+    }
+  ];
+
+  // Get daily tip based on current date
+  const getDailyTip = () => {
+    const today = new Date();
+    const dayOfYear = Math.floor((today - new Date(today.getFullYear(), 0, 0)) / (1000 * 60 * 60 * 24));
+    return dailyTips[dayOfYear % dailyTips.length];
+  };
+
+  const currentTip = getDailyTip();
 
   // Helper functions for confirmation
   const showConfirmModal = (title, message, onConfirm) => {
@@ -414,23 +478,90 @@ const NetWorthPage = () => {
       transition={{ duration: 0.5 }}
       className="space-y-8"
     >
+      {/* Header */}
+      <div className="border-b border-gray-100 pb-6 mb-8">
+        <div className="flex items-center space-x-3 mb-2">
+          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+            <DollarSign className="w-4 h-4 text-white" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-light text-black">Net Worth</h1>
+        </div>
+        <p className="text-gray-400 text-sm sm:text-base font-light ml-11">Track your financial progress</p>
+      </div>
 
+      {/* Daily Wealth Tip */}
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.1 }}
+        className="bg-white border border-gray-200 rounded-lg"
+      >
+        <div className="p-4">
+          <div className="flex items-center justify-between">
+            <div className="flex items-center space-x-3">
+              <div className="w-6 h-6 bg-black rounded flex items-center justify-center">
+                <Lightbulb className="w-3 h-3 text-white" />
+              </div>
+              <div>
+                <h3 className="text-sm font-medium text-black">Daily Tip</h3>
+                <p className="text-xs text-gray-500">
+                  {currentTip.type === 'income' ? 'Income' : 'Saving'} • Changes Daily
+                </p>
+              </div>
+            </div>
+            <motion.button
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+              onClick={() => setShowDailyTip(!showDailyTip)}
+              className="p-2 hover:bg-gray-50 rounded transition-colors"
+            >
+              {showDailyTip ? <EyeOff className="w-4 h-4 text-gray-600" /> : <Eye className="w-4 h-4 text-gray-600" />}
+            </motion.button>
+          </div>
+          
+          <motion.div
+            initial={false}
+            animate={{ 
+              height: showDailyTip ? 'auto' : 0,
+              opacity: showDailyTip ? 1 : 0
+            }}
+            transition={{ duration: 0.3, ease: "easeInOut" }}
+            className="overflow-hidden"
+          >
+            <div className="border-t border-gray-100 pt-3 mt-3">
+              <div className="flex items-start space-x-3">
+                <div className="text-lg flex-shrink-0">
+                  {currentTip.icon}
+                </div>
+                <div className="flex-1 min-w-0">
+                  <h4 className="font-medium text-black text-sm mb-1">
+                    {currentTip.title}
+                  </h4>
+                  <p className="text-xs text-gray-600 leading-relaxed">
+                    {currentTip.content}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        </div>
+      </motion.div>
 
       {/* Current Net Worth Section */}
-      <div className="bg-gradient-to-br from-gray-900 to-black text-white rounded-xl p-8 shadow-xl">
-        <div className="flex items-center space-x-4 mb-6">
+      <div className="bg-gradient-to-br from-gray-900 to-black text-white rounded-xl p-4 sm:p-6 lg:p-8 shadow-xl">
+        <div className="flex items-center space-x-3 sm:space-x-4 mb-4 sm:mb-6">
           <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
             <DollarSign className="w-6 h-6 text-white" />
           </div>
           <div>
-            <h2 className="text-2xl font-bold text-white">Net Worth</h2>
-            <p className="text-gray-300 text-sm">Calculated from your assets and liabilities</p>
+            <h2 className="text-xl sm:text-2xl font-bold text-white">Net Worth</h2>
+            <p className="text-gray-300 text-xs sm:text-sm">Calculated from your assets and liabilities</p>
           </div>
         </div>
         
         <div className="space-y-6">
           <div className="text-center">
-            <p className="text-5xl font-bold text-white mb-2">
+            <p className="text-3xl sm:text-4xl lg:text-5xl font-bold text-white mb-2">
               <AnimatedCounter 
                 value={currentNetWorth} 
                 formatFunction={formatCurrency}
@@ -447,13 +578,13 @@ const NetWorthPage = () => {
             </div>
           </div>
           
-          <div className="grid grid-cols-2 gap-4">
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
+            <div className="bg-white bg-opacity-10 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
               <div className="flex items-center space-x-2 mb-2">
                 <Plus className="w-4 h-4 text-green-300" />
                 <span className="text-sm font-medium text-gray-300">Total Assets</span>
               </div>
-              <p className="text-xl font-bold text-white">
+              <p className="text-lg sm:text-xl font-bold text-white">
                 <AnimatedCounter 
                   value={assets.reduce((sum, asset) => sum + asset.amount, 0)} 
                   formatFunction={formatCurrency}
@@ -463,12 +594,12 @@ const NetWorthPage = () => {
               <p className="text-xs text-gray-400">{assets.length} items</p>
             </div>
             
-            <div className="bg-white bg-opacity-10 rounded-lg p-4 backdrop-blur-sm">
+            <div className="bg-white bg-opacity-10 rounded-lg p-3 sm:p-4 backdrop-blur-sm">
               <div className="flex items-center space-x-2 mb-2">
                 <Minus className="w-4 h-4 text-red-300" />
                 <span className="text-sm font-medium text-gray-300">Total Liabilities</span>
               </div>
-              <p className="text-xl font-bold text-white">
+              <p className="text-lg sm:text-xl font-bold text-white">
                 <AnimatedCounter 
                   value={liabilities.reduce((sum, liability) => sum + liability.amount, 0)} 
                   formatFunction={formatCurrency}
@@ -482,13 +613,13 @@ const NetWorthPage = () => {
       </div>
 
       {/* Dream Net Worth Section */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <div className="flex items-center justify-between mb-6">
+      <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
           <div className="flex items-center space-x-3">
             <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
               <Target className="w-4 h-4 text-white" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Dream Net Worth</h2>
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Dream Net Worth</h2>
             <div className="relative">
               <button
                 onClick={() => setShowNetWorthInfo(!showNetWorthInfo)}
@@ -498,7 +629,7 @@ const NetWorthPage = () => {
               </button>
               
               {showNetWorthInfo && (
-                <div className="absolute top-8 left-0 w-64 p-3 bg-white rounded border shadow-lg z-50">
+                <div className="absolute top-8 left-0 sm:right-0 sm:left-auto w-64 p-3 bg-white rounded border shadow-lg z-50">
                   <p className="text-sm text-gray-700">
                     Set your ultimate financial goal. We'll calculate how long it will take based on your current growth rate.
                   </p>
@@ -517,16 +648,36 @@ const NetWorthPage = () => {
               // Prevent the button click from causing input blur
               e.preventDefault();
             }}
-            onClick={() => {
+            onClick={async () => {
               if (isEditingDream) {
-                setDreamNetWorth(parseFloat(dreamNetWorthInput) || 0);
+                const newValue = parseFloat(dreamNetWorthInput) || 0;
+                setIsUpdatingDream(true);
                 setIsEditingDream(false);
+                
+                // Show loading for 1 second, then update
+                setTimeout(() => {
+                  setDreamNetWorth(newValue);
+                  setIsUpdatingDream(false);
+                }, 1000);
+                
+                // Save to Firebase in background
+                if (user && newValue !== (userSettings?.dreamNetWorth || 0)) {
+                  console.log('Saving dream net worth:', newValue);
+                  const result = await updateUserSettings({
+                    dreamNetWorth: newValue
+                  });
+                  if (result.success) {
+                    console.log('Dream net worth saved');
+                  } else {
+                    console.error('Failed to save dream net worth:', result.error);
+                  }
+                }
               } else {
                 setDreamNetWorthInput(dreamNetWorth.toString());
                 setIsEditingDream(true);
               }
             }}
-            className="flex items-center space-x-2 px-4 py-2 text-sm text-black border-2 border-gray-300 hover:border-black hover:bg-black hover:text-white transition-all duration-200 font-medium uppercase tracking-wide"
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 text-xs sm:text-sm text-black border-2 border-gray-300 hover:border-black hover:bg-black hover:text-white transition-all duration-200 font-medium uppercase tracking-wide"
           >
             {isEditingDream ? <Save className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
             <span>{isEditingDream ? 'Save' : 'Edit'}</span>
@@ -538,50 +689,104 @@ const NetWorthPage = () => {
             type="number"
             value={dreamNetWorthInput}
             onChange={(e) => setDreamNetWorthInput(e.target.value)}
-            onKeyDown={(e) => {
+            onKeyDown={async (e) => {
               if (e.key === 'Enter') {
-                setDreamNetWorth(parseFloat(dreamNetWorthInput) || 0);
+                const newValue = parseFloat(dreamNetWorthInput) || 0;
+                setIsUpdatingDream(true);
                 setIsEditingDream(false);
+                
+                // Show loading for 1 second, then update
+                setTimeout(() => {
+                  setDreamNetWorth(newValue);
+                  setIsUpdatingDream(false);
+                }, 1000);
+                
+                // Save to Firebase in background
+                if (user && newValue !== (userSettings?.dreamNetWorth || 0)) {
+                  console.log('Saving dream net worth on Enter:', newValue);
+                  const result = await updateUserSettings({
+                    dreamNetWorth: newValue
+                  });
+                  if (result.success) {
+                    console.log('Dream net worth saved on Enter');
+                  } else {
+                    console.error('Failed to save dream net worth on Enter:', result.error);
+                  }
+                }
               }
             }}
-            onBlur={() => {
-              setDreamNetWorth(parseFloat(dreamNetWorthInput) || 0);
+            onBlur={async () => {
+              const newValue = parseFloat(dreamNetWorthInput) || 0;
+              setIsUpdatingDream(true);
               setIsEditingDream(false);
+              
+              // Show loading for 1 second, then update
+              setTimeout(() => {
+                setDreamNetWorth(newValue);
+                setIsUpdatingDream(false);
+              }, 1000);
+              
+              // Save to Firebase in background
+              if (user && newValue !== (userSettings?.dreamNetWorth || 0)) {
+                console.log('Saving dream net worth on blur:', newValue);
+                const result = await updateUserSettings({
+                  dreamNetWorth: newValue
+                });
+                if (result.success) {
+                  console.log('Dream net worth saved on blur');
+                } else {
+                  console.error('Failed to save dream net worth on blur:', result.error);
+                }
+              }
             }}
             placeholder="Enter your dream net worth..."
-            className="w-full p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors text-2xl font-bold"
+            className="w-full p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors text-xl sm:text-2xl font-bold"
             autoFocus
           />
         ) : (
           <div className="p-4 bg-gray-50 rounded border">
-            <p className="text-3xl font-bold text-gray-900">
-              <AnimatedCounter 
-                value={dreamNetWorth} 
-                formatFunction={formatCurrency}
-                duration={800}
-              />
-            </p>
+            {isUpdatingDream ? (
+              <div className="flex items-center justify-center h-12">
+                <motion.div
+                  animate={{ rotate: 360 }}
+                  transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+                  className="w-6 h-6 border-2 border-gray-400 border-t-black rounded-full"
+                />
+              </div>
+            ) : (
+              <motion.p 
+                key={dreamNetWorth}
+                initial={{ opacity: 0, scale: 0.8 }}
+                animate={{ opacity: 1, scale: 1 }}
+                exit={{ opacity: 0, scale: 0.8 }}
+                transition={{ duration: 0.3, ease: "easeOut" }}
+                className="text-2xl sm:text-3xl font-bold text-gray-900"
+              >
+                {formatCurrency(dreamNetWorth)}
+              </motion.p>
+            )}
           </div>
         )}
       </div>
 
       {/* Progress & Projection Section */}
       {dreamNetWorth > 0 && (
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
           <div className="flex items-center space-x-3 mb-6">
             <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
               <Target className="w-4 h-4 text-white" />
             </div>
-            <h2 className="text-lg font-semibold text-gray-900">Progress & Projection</h2>
+            <h2 className="text-base sm:text-lg font-semibold text-gray-900">Progress & Projection</h2>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
             {/* Progress Bar */}
             <div className="space-y-4">
               <div>
                 <div className="flex justify-between items-center mb-3">
-                  <span className="text-sm font-medium text-gray-700">Progress to Dream Net Worth</span>
-                  <span className="text-lg font-bold text-gray-900">
+                  <span className="mr-2">{currentTip.icon}</span>
+                  <span className="text-xs sm:text-sm font-medium text-gray-700">Progress to Dream Net Worth</span>
+                  <span className="text-base sm:text-lg font-bold text-gray-900">
                     {Math.min(100, Math.round((currentNetWorth / dreamNetWorth) * 100))}%
                   </span>
                 </div>
@@ -626,7 +831,7 @@ const NetWorthPage = () => {
               {yearsToReachDream !== null && yearsToReachDream > 0 ? (
                 <div className="p-4 bg-gray-50 rounded border-l-4 border-black">
                   <h4 className="font-medium text-gray-900 mb-2">Time to Reach Dream</h4>
-                  <p className="text-2xl font-bold text-gray-900">
+                  <p className="text-xl sm:text-2xl font-bold text-gray-900">
                     {yearsToReachDream < 1 
                       ? `${Math.round(yearsToReachDream * 12)} months`
                       : `${yearsToReachDream.toFixed(1)} years`
@@ -638,7 +843,7 @@ const NetWorthPage = () => {
                 </div>
               ) : yearsToReachDream === 0 ? (
                 <div className="p-4 bg-gray-50 rounded border-l-4 border-black">
-                  <h4 className="font-medium text-gray-900 mb-2">🎉 Dream Achieved!</h4>
+                  <h4 className="font-medium text-gray-900 mb-2 flex items-center gap-2"><Trophy className="w-4 h-4 text-yellow-500" /> Dream Achieved!</h4>
                   <p className="text-sm text-gray-600">
                     You've already reached your dream net worth!
                   </p>
@@ -657,16 +862,16 @@ const NetWorthPage = () => {
       )}
 
       {/* Assets & Liabilities Management */}
-      <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+      <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6">
         {/* Assets Section */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
                 <Plus className="w-4 h-4 text-white" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900">Assets</h2>
-              <span className="text-sm text-gray-500">(<AnimatedCounter 
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Assets</h2>
+              <span className="text-xs sm:text-sm text-gray-500">(<AnimatedCounter 
                 value={assets.reduce((sum, asset) => sum + asset.amount, 0)} 
                 formatFunction={formatCurrency}
                 duration={500}
@@ -689,7 +894,7 @@ const NetWorthPage = () => {
                 <HelpCircle className="w-4 h-4" />
               </button>
               {showAssetInfo && (
-                <div className="absolute top-8 right-0 w-64 p-3 bg-white rounded border shadow-lg z-50">
+                <div className="absolute top-8 right-0 w-56 sm:w-64 p-3 bg-white rounded border shadow-lg z-50">
                   <p className="text-sm font-medium text-gray-900 mb-2">Common Assets:</p>
                   <div className="text-xs text-gray-600 space-y-1">
                     <p>• Cash & Savings</p>
@@ -711,25 +916,25 @@ const NetWorthPage = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <input
               type="number"
               value={newAsset.amount}
               onChange={(e) => setNewAsset({...newAsset, amount: e.target.value})}
-              className="w-full p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors"
+              className="w-full p-2 sm:p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors text-sm sm:text-base"
               placeholder="Enter amount..."
             />
             <input
               type="text"
               value={newAsset.note}
               onChange={(e) => setNewAsset({...newAsset, note: e.target.value})}
-              className="w-full p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors"
+              className="w-full p-2 sm:p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors text-sm sm:text-base"
               placeholder="Description (e.g., House, Savings)"
             />
             <button
               onClick={handleAddAsset}
               disabled={loading || !newAsset.amount || isNaN(parseFloat(newAsset.amount)) || parseFloat(newAsset.amount) <= 0}
-              className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-black text-white border-2 border-black hover:bg-white hover:text-black disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium uppercase tracking-wide"
+              className="w-full flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-black text-white border-2 border-black hover:bg-white hover:text-black disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium uppercase tracking-wide text-sm sm:text-base"
             >
               {loading ? (
                 <motion.div
@@ -829,14 +1034,14 @@ const NetWorthPage = () => {
         </div>
 
         {/* Liabilities Section */}
-        <div className="bg-white border border-gray-200 rounded-lg p-6">
-          <div className="flex items-center justify-between mb-6">
-            <div className="flex items-center space-x-3">
+        <div className="bg-white border border-gray-200 rounded-lg p-4 sm:p-6">
+          <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between mb-4 sm:mb-6 space-y-3 sm:space-y-0">
+            <div className="flex items-center space-x-2 sm:space-x-3">
               <div className="w-8 h-8 bg-gray-800 rounded-lg flex items-center justify-center">
                 <Minus className="w-4 h-4 text-white" />
               </div>
-              <h2 className="text-lg font-semibold text-gray-900">Liabilities</h2>
-              <span className="text-sm text-gray-500">(<AnimatedCounter 
+              <h2 className="text-base sm:text-lg font-semibold text-gray-900">Liabilities</h2>
+              <span className="text-xs sm:text-sm text-gray-500">(<AnimatedCounter 
                 value={liabilities.reduce((sum, liability) => sum + liability.amount, 0)} 
                 formatFunction={formatCurrency}
                 duration={500}
@@ -859,7 +1064,7 @@ const NetWorthPage = () => {
                 <HelpCircle className="w-4 h-4" />
               </button>
               {showLiabilityInfo && (
-                <div className="absolute top-8 right-0 w-64 p-3 bg-white rounded border shadow-lg z-50">
+                <div className="absolute top-8 right-0 w-56 sm:w-64 p-3 bg-white rounded border shadow-lg z-50">
                   <p className="text-sm font-medium text-gray-900 mb-2">Common Liabilities:</p>
                   <div className="text-xs text-gray-600 space-y-1">
                     <p>• Mortgage/Home Loan</p>
@@ -881,25 +1086,25 @@ const NetWorthPage = () => {
             </div>
           </div>
 
-          <div className="space-y-4">
+          <div className="space-y-3 sm:space-y-4">
             <input
               type="number"
               value={newLiability.amount}
               onChange={(e) => setNewLiability({...newLiability, amount: e.target.value})}
-              className="w-full p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors"
+              className="w-full p-2 sm:p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors text-sm sm:text-base"
               placeholder="Enter amount..."
             />
             <input
               type="text"
               value={newLiability.note}
               onChange={(e) => setNewLiability({...newLiability, note: e.target.value})}
-              className="w-full p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors"
+              className="w-full p-2 sm:p-3 border-2 border-gray-300 focus:border-black outline-none transition-colors text-sm sm:text-base"
               placeholder="Description (e.g., Mortgage, Credit Card)"
             />
             <button
               onClick={handleAddLiability}
               disabled={loading || !newLiability.amount || isNaN(parseFloat(newLiability.amount)) || parseFloat(newLiability.amount) <= 0}
-              className="w-full flex items-center justify-center space-x-2 px-6 py-3 bg-gray-800 text-white border-2 border-gray-800 hover:bg-white hover:text-gray-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium uppercase tracking-wide"
+              className="w-full flex items-center justify-center space-x-2 px-4 sm:px-6 py-2 sm:py-3 bg-gray-800 text-white border-2 border-gray-800 hover:bg-white hover:text-gray-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed transition-all duration-200 font-medium uppercase tracking-wide text-sm sm:text-base"
             >
               {loading ? (
                 <motion.div
@@ -999,54 +1204,44 @@ const NetWorthPage = () => {
         </div>
       </div>
 
-      {/* Net Worth History */}
-      <div className="bg-white border border-gray-200 rounded-lg p-6">
-        <div className="flex items-center space-x-3 mb-6">
-          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-            <TrendingUp className="w-4 h-4 text-white" />
-          </div>
-          <h2 className="text-lg font-semibold text-gray-900">Net Worth History</h2>
+      {/* Summary Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4 sm:gap-6">
+        <div className="p-4 bg-gray-50 rounded border-l-4 border-black">
+          <h4 className="font-medium text-gray-900 mb-2">Total Assets</h4>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">
+            <AnimatedCounter 
+              value={assets.reduce((sum, asset) => sum + asset.amount, 0)} 
+              formatFunction={formatCurrency}
+              duration={700}
+            />
+          </p>
+          <p className="text-sm text-gray-600">{assets.length} items</p>
         </div>
-
-        {/* Net Worth Summary */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-          <div className="p-4 bg-gray-50 rounded border-l-4 border-black">
-            <h4 className="font-medium text-gray-900 mb-2">Total Assets</h4>
-            <p className="text-2xl font-bold text-gray-900">
-              <AnimatedCounter 
-                value={assets.reduce((sum, asset) => sum + asset.amount, 0)} 
-                formatFunction={formatCurrency}
-                duration={700}
-              />
-            </p>
-            <p className="text-sm text-gray-600">{assets.length} items</p>
-          </div>
-          
-          <div className="p-4 bg-gray-50 rounded border-l-4 border-gray-800">
-            <h4 className="font-medium text-gray-900 mb-2">Total Liabilities</h4>
-            <p className="text-2xl font-bold text-gray-900">
-              <AnimatedCounter 
-                value={liabilities.reduce((sum, liability) => sum + liability.amount, 0)} 
-                formatFunction={formatCurrency}
-                duration={700}
-              />
-            </p>
-            <p className="text-sm text-gray-600">{liabilities.length} items</p>
-          </div>
-          
-          <div className="p-4 bg-gray-50 rounded border-l-4 border-gray-600">
-            <h4 className="font-medium text-gray-900 mb-2">Net Worth</h4>
-            <p className="text-2xl font-bold text-gray-900">
-              <AnimatedCounter 
-                value={currentNetWorth} 
-                formatFunction={formatCurrency}
-                duration={800}
-              />
-            </p>
-            <p className="text-sm text-gray-600">
-              {currentNetWorth >= 0 ? 'Positive' : 'Negative'} net worth
-            </p>
-          </div>
+        
+        <div className="p-4 bg-gray-50 rounded border-l-4 border-gray-800">
+          <h4 className="font-medium text-gray-900 mb-2">Total Liabilities</h4>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">
+            <AnimatedCounter 
+              value={liabilities.reduce((sum, liability) => sum + liability.amount, 0)} 
+              formatFunction={formatCurrency}
+              duration={700}
+            />
+          </p>
+          <p className="text-sm text-gray-600">{liabilities.length} items</p>
+        </div>
+        
+        <div className="p-4 bg-gray-50 rounded border-l-4 border-gray-600">
+          <h4 className="font-medium text-gray-900 mb-2">Net Worth</h4>
+          <p className="text-xl sm:text-2xl font-bold text-gray-900">
+            <AnimatedCounter 
+              value={currentNetWorth} 
+              formatFunction={formatCurrency}
+              duration={800}
+            />
+          </p>
+          <p className="text-sm text-gray-600">
+            {currentNetWorth >= 0 ? 'Positive' : 'Negative'} net worth
+          </p>
         </div>
       </div>
 

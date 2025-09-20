@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Plus, Edit3, Star, Save, HelpCircle, Trash2, Sparkles, TrendingUp, Target, Zap, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Calendar, Plus, Target, Trash2, Frown, Meh, Smile, SmilePlus, Star, Battery, BatteryLow, Zap, Flame, TrendingUp, Sparkles, ChevronLeft, ChevronRight, X } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 
@@ -7,9 +7,7 @@ import { useAuth } from '../contexts/AuthContext';
 import {
   addJournalEntry,
   getJournalEntries,
-  deleteJournalEntry,
-  saveNorthStarGoal,
-  getNorthStarGoal
+  deleteJournalEntry
 } from '../firebase/ultraSimple';
 import ConfirmModal from './ConfirmModal';
 import SoothingLoader, { CardSkeleton } from './SoothingLoader';
@@ -26,9 +24,6 @@ const VisionPage = () => {
     return `${year}-${month}-${day}`;
   };
 
-  const [northStar, setNorthStar] = useState('');
-  const [isEditingGoal, setIsEditingGoal] = useState(false);
-  const [showNorthStarInfo, setShowNorthStarInfo] = useState(false);
   const [journalEntries, setJournalEntries] = useState([]);
   const [loading, setLoading] = useState(false);
   const [currentEntry, setCurrentEntry] = useState({
@@ -49,29 +44,20 @@ const VisionPage = () => {
   });
 
   // Interactive states
-  const [showStats, setShowStats] = useState(false);
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [showEntryModal, setShowEntryModal] = useState(false);
 
   const saveButtonRef = useRef(null);
 
-  // Load data from Firebase on component mount
+  // Load journal entries from Firebase on component mount
   useEffect(() => {
     if (!user) return;
 
     const loadData = async () => {
       setLoading(true);
       try {
-        const [goalResult, entriesResult] = await Promise.all([
-          getNorthStarGoal(user.uid),
-          getJournalEntries(user.uid)
-        ]);
-
-        if (goalResult.success) {
-          setNorthStar(goalResult.goal);
-        }
-
+        const entriesResult = await getJournalEntries(user.uid);
         if (entriesResult.success) {
           setJournalEntries(entriesResult.entries);
         }
@@ -85,23 +71,6 @@ const VisionPage = () => {
     loadData();
   }, [user]);
 
-  const handleSaveGoal = React.useCallback(async () => {
-    if (!user || !northStar.trim()) return;
-    
-    setLoading(true);
-    const result = await saveNorthStarGoal(user.uid, northStar);
-    
-    if (result.success) {
-      setIsEditingGoal(false);
-    } else {
-      console.error('Failed to save goal:', result.error);
-    }
-    setLoading(false);
-  }, [user, northStar]);
-
-  const handleNorthStarChange = React.useCallback((e) => {
-    setNorthStar(e.target.value);
-  }, []);
 
   // Helper functions
   const showConfirmModal = (title, message, onConfirm) => {
@@ -116,7 +85,6 @@ const VisionPage = () => {
   const hideConfirmModal = () => {
     setConfirmModal(prev => ({ ...prev, isOpen: false }));
   };
-
 
   const handleAddJournalEntry = async () => {
     if (!user || !currentEntry.whatDidIDo.trim()) return;
@@ -166,10 +134,6 @@ const VisionPage = () => {
       }
     );
   };
-
-
-
-
 
   // Calculate stats
   const getJournalStats = () => {
@@ -240,8 +204,6 @@ const VisionPage = () => {
            date.getFullYear() === today.getFullYear();
   };
 
-
-
   const handleDateClick = (date) => {
     const entry = getEntryForDate(date);
     if (entry) {
@@ -250,23 +212,21 @@ const VisionPage = () => {
     }
   };
 
-  const getMoodEmoji = (rating) => {
-    if (rating <= 2) return '😢';
-    if (rating <= 4) return '😐';
-    if (rating <= 6) return '🙂';
-    if (rating <= 8) return '😊';
-    return '🤩';
+  const getMoodIcon = (rating) => {
+    if (rating <= 2) return <Frown className="w-4 h-4 text-red-500" />;
+    if (rating <= 4) return <Meh className="w-4 h-4 text-yellow-500" />;
+    if (rating <= 6) return <Smile className="w-4 h-4 text-green-500" />;
+    if (rating <= 8) return <SmilePlus className="w-4 h-4 text-green-600" />;
+    return <Star className="w-4 h-4 text-yellow-400" />;
   };
 
-  const getEnergyEmoji = (rating) => {
-    if (rating <= 2) return '🪫';
-    if (rating <= 4) return '🔋';
-    if (rating <= 6) return '⚡';
-    if (rating <= 8) return '🔥';
-    return '⚡⚡';
+  const getEnergyIcon = (rating) => {
+    if (rating <= 2) return <BatteryLow className="w-4 h-4 text-red-500" />;
+    if (rating <= 4) return <Battery className="w-4 h-4 text-yellow-500" />;
+    if (rating <= 6) return <Zap className="w-4 h-4 text-blue-500" />;
+    if (rating <= 8) return <Flame className="w-4 h-4 text-orange-500" />;
+    return <div className="flex gap-1"><Zap className="w-3 h-3 text-blue-500" /><Zap className="w-3 h-3 text-blue-500" /></div>;
   };
-
-
 
   const stats = getJournalStats();
 
@@ -281,7 +241,7 @@ const VisionPage = () => {
       >
         <SoothingLoader 
           message="Loading your journal..." 
-          icon={Star}
+          icon={Target}
         />
         <CardSkeleton count={4} />
       </motion.div>
@@ -289,160 +249,79 @@ const VisionPage = () => {
   }
 
   return (
-    <div className="space-y-8">
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+      className="min-h-screen bg-white"
+    >
+      {/* Header */}
+      <div className="border-b border-gray-100 pb-6 mb-8">
+        <div className="flex items-center space-x-3 mb-2">
+          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+            <Target className="w-4 h-4 text-white" />
+          </div>
+          <h1 className="text-2xl sm:text-3xl font-light text-black">Journal</h1>
+        </div>
+        <p className="text-gray-400 text-sm sm:text-base font-light ml-11">Reflect on your daily progress</p>
+      </div>
+
       {/* Stats Overview */}
       {stats && (
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 md:grid-cols-4 gap-4"
+          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
         >
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-4 text-center">
+          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-3 sm:p-4 text-center">
             <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-2">
               <Calendar className="w-4 h-4 text-white" />
             </div>
-            <p className="text-2xl font-bold text-blue-900">{stats.totalEntries}</p>
+            <p className="text-xl sm:text-2xl font-bold text-blue-900">{stats.totalEntries}</p>
             <p className="text-xs text-blue-700">Total Entries</p>
           </div>
           
-          <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-4 text-center">
+          <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-3 sm:p-4 text-center">
             <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-2">
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <p className="text-2xl font-bold text-green-900">{stats.streak}</p>
+            <p className="text-xl sm:text-2xl font-bold text-green-900">{stats.streak}</p>
             <p className="text-xs text-green-700">Day Streak</p>
           </div>
           
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-xl p-4 text-center">
+          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-xl p-3 sm:p-4 text-center">
             <div className="w-8 h-8 bg-yellow-600 rounded-lg flex items-center justify-center mx-auto mb-2">
               <Sparkles className="w-4 h-4 text-white" />
             </div>
-            <p className="text-2xl font-bold text-yellow-900">{stats.avgMood}</p>
+            <p className="text-xl sm:text-2xl font-bold text-yellow-900">{stats.avgMood}</p>
             <p className="text-xs text-yellow-700">Avg Mood</p>
           </div>
           
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-4 text-center">
+          <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-3 sm:p-4 text-center">
             <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-2">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <p className="text-2xl font-bold text-purple-900">{stats.avgEnergy}</p>
+            <p className="text-xl sm:text-2xl font-bold text-purple-900">{stats.avgEnergy}</p>
             <p className="text-xs text-purple-700">Avg Energy</p>
           </div>
         </motion.div>
       )}
 
-      {/* North Star Goal Section */}
+      {/* Journal Section */}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="bg-gradient-to-br from-gray-900 to-black text-white rounded-xl p-8 shadow-xl"
+        className="space-y-8 mt-8"
       >
-        <div className="flex items-center justify-between mb-6">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-white bg-opacity-20 rounded-xl flex items-center justify-center backdrop-blur-sm">
-              <Star className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-white">North Star Goal</h2>
-              <p className="text-gray-300 text-sm">Your ultimate vision that guides everything</p>
-            </div>
-            <div className="relative">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => setShowNorthStarInfo(!showNorthStarInfo)}
-                className="p-2 text-gray-300 hover:text-white transition-colors"
-              >
-                <HelpCircle className="w-4 h-4" />
-              </motion.button>
-              
-              <AnimatePresence>
-                {showNorthStarInfo && (
-                  <motion.div
-                    initial={{ opacity: 0, scale: 0.9 }}
-                    animate={{ opacity: 1, scale: 1 }}
-                    exit={{ opacity: 0, scale: 0.9 }}
-                    className="absolute top-10 left-0 w-64 p-4 bg-white rounded-lg border shadow-xl z-50"
-                  >
-                    <p className="text-sm text-gray-700 mb-3">
-                      Your ultimate long-term vision (5-10+ years) that guides all your decisions and goals.
-                    </p>
-                    <button
-                      onClick={() => setShowNorthStarInfo(false)}
-                      className="text-xs text-black hover:underline font-medium"
-                    >
-                      Got it!
-                    </button>
-                  </motion.div>
-                )}
-              </AnimatePresence>
-            </div>
+        <div className="flex items-center space-x-4 mb-8">
+          <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
+            <Calendar className="w-6 h-6 text-white" />
           </div>
-          <motion.button
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
-            onClick={isEditingGoal ? handleSaveGoal : () => setIsEditingGoal(true)}
-            disabled={loading}
-            className="flex items-center space-x-2 px-6 py-3 bg-white text-black rounded-lg hover:bg-gray-100 disabled:opacity-50 transition-all duration-200 font-medium"
-          >
-            {isEditingGoal ? <Save className="w-4 h-4" /> : <Edit3 className="w-4 h-4" />}
-            <span>{isEditingGoal ? 'Save' : 'Edit'}</span>
-          </motion.button>
-        </div>
-        
-        {isEditingGoal ? (
-          <motion.input
-            initial={{ scale: 0.95 }}
-            animate={{ scale: 1 }}
-            type="text"
-            value={northStar}
-            onChange={handleNorthStarChange}
-            onKeyDown={(e) => e.key === 'Enter' && handleSaveGoal()}
-            placeholder="Define your ultimate goal... (e.g., Build a $10M business, Impact 1M lives)"
-            className="w-full p-4 bg-white bg-opacity-20 backdrop-blur-sm border-2 border-white border-opacity-30 focus:border-white focus:border-opacity-60 outline-none transition-all text-white placeholder-gray-300 rounded-lg text-lg"
-            autoFocus
-          />
-        ) : (
-          <motion.div
-            whileHover={{ scale: 1.02 }}
-            className="p-6 bg-white bg-opacity-10 rounded-lg backdrop-blur-sm border border-white border-opacity-20"
-          >
-            <p className="text-white text-lg leading-relaxed">
-              {northStar || "✨ Click edit to define your North Star Goal"}
-            </p>
-          </motion.div>
-        )}
-      </motion.div>
-
-
-      {/* Daily Journal Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="bg-white border border-gray-200 rounded-xl p-8 shadow-lg"
-      >
-        <div className="flex items-center justify-between mb-8">
-          <div className="flex items-center space-x-4">
-            <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
-              <Calendar className="w-6 h-6 text-white" />
-            </div>
-            <div>
-              <h2 className="text-2xl font-bold text-gray-900">Daily Journal</h2>
-              <p className="text-gray-600 text-sm">Reflect, learn, and grow every day</p>
-            </div>
+          <div>
+            <h2 className="text-2xl font-bold text-gray-900">Daily Journal</h2>
+            <p className="text-gray-600 text-sm">Reflect, learn, and grow every day</p>
           </div>
-          {stats && (
-            <motion.button
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              onClick={() => setShowStats(!showStats)}
-              className="px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg text-sm font-medium transition-colors"
-            >
-              {showStats ? 'Hide Stats' : 'Show Stats'}
-            </motion.button>
-          )}
         </div>
 
         {/* New Entry Form */}
@@ -518,7 +397,7 @@ const VisionPage = () => {
             >
               <label className="flex items-center justify-between text-sm font-semibold text-gray-800 mb-3">
                 <span>Mood</span>
-                <span className="text-2xl">{getMoodEmoji(currentEntry.mood)}</span>
+                <span className="text-2xl">{getMoodIcon(currentEntry.mood)}</span>
               </label>
               <div className="flex items-center space-x-3">
                 <span className="text-xs text-gray-500">1</span>
@@ -541,7 +420,7 @@ const VisionPage = () => {
             >
               <label className="flex items-center justify-between text-sm font-semibold text-gray-800 mb-3">
                 <span>Energy</span>
-                <span className="text-2xl">{getEnergyEmoji(currentEntry.energy)}</span>
+                <span className="text-2xl">{getEnergyIcon(currentEntry.energy)}</span>
               </label>
               <div className="flex items-center space-x-3">
                 <span className="text-xs text-gray-500">1</span>
@@ -670,7 +549,7 @@ const VisionPage = () => {
                       {entry && (
                         <div className="absolute top-1 right-1 flex space-x-1">
                           <div className="w-1.5 h-1.5 bg-blue-500 rounded-full"></div>
-                          <span className="text-xs">{getMoodEmoji(entry.mood)}</span>
+                          <span className="text-xs">{getMoodIcon(entry.mood)}</span>
                         </div>
                       )}
                     </motion.div>
@@ -725,11 +604,11 @@ const VisionPage = () => {
                     </h3>
                     <div className="flex items-center space-x-4 mt-2">
                       <span className="flex items-center space-x-1 bg-gray-100 px-3 py-1 rounded-full text-sm">
-                        <span>{getMoodEmoji(selectedEntry.mood)}</span>
+                        <span>{getMoodIcon(selectedEntry.mood)}</span>
                         <span className="font-medium">Mood: {selectedEntry.mood}/10</span>
                       </span>
                       <span className="flex items-center space-x-1 bg-gray-100 px-3 py-1 rounded-full text-sm">
-                        <span>{getEnergyEmoji(selectedEntry.energy)}</span>
+                        <span>{getEnergyIcon(selectedEntry.energy)}</span>
                         <span className="font-medium">Energy: {selectedEntry.energy}/10</span>
                       </span>
                     </div>
@@ -801,7 +680,7 @@ const VisionPage = () => {
           message={confirmModal.message}
         />
       </motion.div>
-    </div>
+    </motion.div>
   );
 };
 

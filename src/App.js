@@ -62,9 +62,9 @@ const AppContent = () => {
   const currentQuote = getDailyQuote();
 
   const tabs = [
-    { id: 'vision', label: 'Vision & Journal', icon: Target, component: VisionPage, color: 'sage' },
+    { id: 'vision', label: 'Journal', icon: Target, component: VisionPage, color: 'sage' },
     { id: 'goals', label: 'Goals', icon: Calendar, component: GoalsPage, color: 'blue' },
-    { id: 'habits', label: 'Habits & Tasks', icon: CheckSquare, component: HabitsPage, color: 'orange' },
+    { id: 'habits', label: 'Habits', icon: CheckSquare, component: HabitsPage, color: 'orange' },
     { id: 'networth', label: 'Net Worth', icon: DollarSign, component: NetWorthPage, color: 'green' },
   ];
 
@@ -164,7 +164,7 @@ const AppContent = () => {
                   Billionaire OS
                 </h1>
                 <p className="text-sm text-gray-500 font-medium">
-                  {user.displayName || user.phoneNumber || 'User'}
+                  {user.displayName || 'User'}
                 </p>
               </div>
             </motion.div>
