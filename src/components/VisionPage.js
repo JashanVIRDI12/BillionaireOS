@@ -11,6 +11,7 @@ import {
 } from '../firebase/ultraSimple';
 import ConfirmModal from './ConfirmModal';
 import SoothingLoader, { CardSkeleton } from './SoothingLoader';
+import AIInsights from './AIInsights';
 
 const VisionPage = () => {
   const { user } = useAuth();
@@ -47,6 +48,8 @@ const VisionPage = () => {
   const [currentDate, setCurrentDate] = useState(new Date());
   const [selectedEntry, setSelectedEntry] = useState(null);
   const [showEntryModal, setShowEntryModal] = useState(false);
+  const [showAIInsights, setShowAIInsights] = useState(false);
+  const [latestAnalyzedEntry, setLatestAnalyzedEntry] = useState(null);
 
   const saveButtonRef = useRef(null);
 
@@ -97,6 +100,13 @@ const VisionPage = () => {
       const entriesResult = await getJournalEntries(user.uid);
       if (entriesResult.success) {
         setJournalEntries(entriesResult.entries);
+        
+        // Set the latest entry for AI analysis
+        const todayEntry = entriesResult.entries.find(entry => entry.date === currentEntry.date);
+        if (todayEntry) {
+          setLatestAnalyzedEntry(todayEntry);
+          setShowAIInsights(true);
+        }
       }
       
       // Reset form
@@ -390,51 +400,51 @@ const VisionPage = () => {
             </div>
           </div>
 
-          <div className="grid grid-cols-2 gap-6">
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm"
+              className="p-3 sm:p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm"
             >
               <label className="flex items-center justify-between text-sm font-semibold text-gray-800 mb-3">
                 <span>Mood</span>
-                <span className="text-2xl">{getMoodIcon(currentEntry.mood)}</span>
+                <span className="text-xl sm:text-2xl">{getMoodIcon(currentEntry.mood)}</span>
               </label>
-              <div className="flex items-center space-x-3">
-                <span className="text-xs text-gray-500">1</span>
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <span className="text-xs text-gray-500 flex-shrink-0">1</span>
                 <input
                   type="range"
                   min="1"
                   max="10"
                   value={currentEntry.mood}
                   onChange={(e) => setCurrentEntry({...currentEntry, mood: parseInt(e.target.value)})}
-                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer min-w-0"
                 />
-                <span className="text-xs text-gray-500">10</span>
+                <span className="text-xs text-gray-500 flex-shrink-0">10</span>
               </div>
-              <p className="text-center text-lg font-bold text-gray-900 mt-2">{currentEntry.mood}/10</p>
+              <p className="text-center text-base sm:text-lg font-bold text-gray-900 mt-2">{currentEntry.mood}/10</p>
             </motion.div>
             
             <motion.div
               whileHover={{ scale: 1.02 }}
-              className="p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm"
+              className="p-3 sm:p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm"
             >
               <label className="flex items-center justify-between text-sm font-semibold text-gray-800 mb-3">
                 <span>Energy</span>
-                <span className="text-2xl">{getEnergyIcon(currentEntry.energy)}</span>
+                <span className="text-xl sm:text-2xl">{getEnergyIcon(currentEntry.energy)}</span>
               </label>
-              <div className="flex items-center space-x-3">
-                <span className="text-xs text-gray-500">1</span>
+              <div className="flex items-center space-x-2 sm:space-x-3">
+                <span className="text-xs text-gray-500 flex-shrink-0">1</span>
                 <input
                   type="range"
                   min="1"
                   max="10"
                   value={currentEntry.energy}
                   onChange={(e) => setCurrentEntry({...currentEntry, energy: parseInt(e.target.value)})}
-                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer min-w-0"
                 />
-                <span className="text-xs text-gray-500">10</span>
+                <span className="text-xs text-gray-500 flex-shrink-0">10</span>
               </div>
-              <p className="text-center text-lg font-bold text-gray-900 mt-2">{currentEntry.energy}/10</p>
+              <p className="text-center text-base sm:text-lg font-bold text-gray-900 mt-2">{currentEntry.energy}/10</p>
             </motion.div>
           </div>
 
@@ -464,6 +474,17 @@ const VisionPage = () => {
             <span>{loading ? 'Saving...' : 'Add Today\'s Entry'}</span>
           </motion.button>
         </motion.div>
+
+        {/* AI Insights */}
+        {showAIInsights && latestAnalyzedEntry && (
+          <AIInsights 
+            latestEntry={latestAnalyzedEntry}
+            recentEntries={journalEntries}
+            onAnalysisComplete={(analysis) => {
+              console.log('AI Analysis completed:', analysis);
+            }}
+          />
+        )}
 
         {/* Calendar View */}
         <div className="space-y-6">
