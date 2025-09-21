@@ -239,28 +239,7 @@ Provide analysis in this exact JSON format:
 
 Focus on actionable insights and specific opportunities for differentiation.`;
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://billionaire-os.netlify.app',
-        'X-Title': 'Billionaire OS Competitor Analysis'
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 1500
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    const aiResponse = await makeOpenRouterCall(prompt, 1500);
     
     try {
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
@@ -391,28 +370,7 @@ Provide suggestions in this exact JSON format:
 
 Focus on proven, scalable revenue models with clear paths to profitability.`;
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://billionaire-os.netlify.app',
-        'X-Title': 'Billionaire OS Revenue Model Analysis'
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 1500
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    const aiResponse = await makeOpenRouterCall(prompt, 1500);
     
     try {
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
@@ -504,28 +462,7 @@ Provide a detailed plan in this exact JSON format:
 
 Focus on lean, cost-effective validation methods that provide maximum learning with minimum investment.`;
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://billionaire-os.netlify.app',
-        'X-Title': 'Billionaire OS MVP Validation'
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.7,
-        max_tokens: 1800
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    const aiResponse = await makeOpenRouterCall(prompt, 1800);
     
     try {
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
@@ -604,28 +541,7 @@ Generate ideas in this exact JSON format:
 
 Focus on realistic, actionable ideas that match the user's profile and current market opportunities.`;
 
-    const response = await fetch(OPENROUTER_API_URL, {
-      method: 'POST',
-      headers: {
-        'Authorization': `Bearer ${OPENROUTER_API_KEY}`,
-        'Content-Type': 'application/json',
-        'HTTP-Referer': 'https://billionaire-os.netlify.app',
-        'X-Title': 'Billionaire OS Business Ideas'
-      },
-      body: JSON.stringify({
-        model: MODEL,
-        messages: [{ role: 'user', content: prompt }],
-        temperature: 0.8,
-        max_tokens: 2000
-      })
-    });
-
-    if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status}`);
-    }
-
-    const data = await response.json();
-    const aiResponse = data.choices[0].message.content;
+    const aiResponse = await makeOpenRouterCall(prompt, 2000);
     
     try {
       const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
