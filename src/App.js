@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, ChevronDown } from 'lucide-react';
+import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, ChevronDown, Briefcase } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LocationProvider, useLocation } from './contexts/LocationContext';
@@ -8,6 +8,7 @@ import GoalsPage from './components/GoalsPage';
 import HabitsPage from './components/HabitsPage';
 import NetWorthPage from './components/NetWorthPage';
 import BusinessOpportunitiesPage from './components/BusinessOpportunitiesPage';
+import ProfessionIntelligencePage from './components/ProfessionIntelligencePage';
 import AuthModal from './components/AuthModal';
 import CookieConsent from './components/CookieConsent';
 import ProfileDropdown from './components/ProfileDropdown';
@@ -73,6 +74,7 @@ const AppContent = () => {
     { id: 'habits', label: 'Habits', icon: CheckSquare, component: HabitsPage, color: 'orange' },
     { id: 'networth', label: 'Net Worth', icon: DollarSign, component: NetWorthPage, color: 'green' },
     { id: 'business', label: 'Business Intel', icon: Rocket, component: BusinessOpportunitiesPage, color: 'purple' },
+    { id: 'profession', label: 'Profession Intel', icon: Briefcase, component: ProfessionIntelligencePage, color: 'indigo' },
   ];
 
   useEffect(() => {

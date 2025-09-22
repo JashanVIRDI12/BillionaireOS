@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from '../contexts/LocationContext';
-import { TrendingUp, Target, DollarSign, Lightbulb, Users, BarChart3, Search, Rocket, Brain, CheckCircle, AlertCircle, Clock, Zap, ChevronDown } from 'lucide-react';
+import { TrendingUp, Target, DollarSign, Lightbulb, Users, BarChart3, Search, Rocket, Brain, CheckCircle, AlertCircle, Clock, Zap, ChevronDown, Building2, TrendingDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   analyzeMarketTrends, 
@@ -478,7 +478,12 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-bold text-gray-900">💡 Personalized Business Ideas</h3>
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
+                      <Lightbulb className="w-4 h-4 text-yellow-600" />
+                    </div>
+                    <h3 className="text-xl font-light text-gray-900">Personalized Business Ideas</h3>
+                  </div>
                   
                   <div className="space-y-6">
                     {results.businessIdeas.map((idea, index) => (
@@ -662,7 +667,12 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-light text-gray-900">📊 Market Analysis for {results.industry}</h3>
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
+                      <BarChart3 className="w-4 h-4 text-blue-600" />
+                    </div>
+                    <h3 className="text-xl font-light text-gray-900">Market Analysis for {results.industry}</h3>
+                  </div>
                   
                   {/* Market Overview */}
                   <div className="bg-white border border-gray-200 rounded-lg p-6">
@@ -759,7 +769,7 @@ const BusinessOpportunitiesPage = () => {
                     <textarea
                       value={competitorForm.businessIdea}
                       onChange={(e) => setCompetitorForm({...competitorForm, businessIdea: e.target.value})}
-                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-red-500 outline-none resize-none transition-all rounded-lg bg-white"
+                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-red-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
                       placeholder="Describe your business idea in detail..."
                     />
                   </div>
@@ -772,7 +782,7 @@ const BusinessOpportunitiesPage = () => {
                       type="text"
                       value={competitorForm.targetMarket}
                       onChange={(e) => setCompetitorForm({...competitorForm, targetMarket: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-300 focus:border-red-500 outline-none transition-all rounded-lg bg-white"
+                      className="w-full p-3 border-2 border-gray-300 focus:border-red-500 outline-none transition-all rounded-lg bg-white text-sm"
                       placeholder="e.g., Small businesses, Millennials, B2B SaaS companies"
                     />
                   </div>
@@ -910,7 +920,7 @@ const BusinessOpportunitiesPage = () => {
                     <textarea
                       value={revenueForm.businessIdea}
                       onChange={(e) => setRevenueForm({...revenueForm, businessIdea: e.target.value})}
-                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-green-500 outline-none resize-none transition-all rounded-lg bg-white"
+                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-green-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
                       placeholder="Describe your business idea..."
                     />
                   </div>
@@ -924,7 +934,7 @@ const BusinessOpportunitiesPage = () => {
                         type="text"
                         value={revenueForm.targetCustomers}
                         onChange={(e) => setRevenueForm({...revenueForm, targetCustomers: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-green-500 outline-none transition-all rounded-lg bg-white"
+                        className="w-full p-3 border-2 border-gray-300 focus:border-green-500 outline-none transition-all rounded-lg bg-white text-sm"
                         placeholder="e.g., Small businesses, Consumers, Enterprises"
                       />
                     </div>
@@ -937,7 +947,7 @@ const BusinessOpportunitiesPage = () => {
                         type="text"
                         value={revenueForm.industry}
                         onChange={(e) => setRevenueForm({...revenueForm, industry: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-green-500 outline-none transition-all rounded-lg bg-white"
+                        className="w-full p-3 border-2 border-gray-300 focus:border-green-500 outline-none transition-all rounded-lg bg-white text-sm"
                         placeholder="e.g., SaaS, E-commerce, Healthcare"
                       />
                     </div>
@@ -965,7 +975,12 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-light text-gray-900">💰 Revenue Model Recommendations</h3>
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
+                      <DollarSign className="w-4 h-4 text-green-600" />
+                    </div>
+                    <h3 className="text-xl font-light text-gray-900">Revenue Model Recommendations</h3>
+                  </div>
                   
                   {/* Primary Revenue Models */}
                   <div className="space-y-6">
@@ -1082,7 +1097,7 @@ const BusinessOpportunitiesPage = () => {
                     <textarea
                       value={mvpForm.businessIdea}
                       onChange={(e) => setMvpForm({...mvpForm, businessIdea: e.target.value})}
-                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-purple-500 outline-none resize-none transition-all rounded-lg bg-white"
+                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-purple-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
                       placeholder="Describe your business idea in detail..."
                     />
                   </div>
@@ -1096,7 +1111,7 @@ const BusinessOpportunitiesPage = () => {
                         type="text"
                         value={mvpForm.targetCustomers}
                         onChange={(e) => setMvpForm({...mvpForm, targetCustomers: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-purple-500 outline-none transition-all rounded-lg bg-white"
+                        className="w-full p-3 border-2 border-gray-300 focus:border-purple-500 outline-none transition-all rounded-lg bg-white text-sm"
                         placeholder="e.g., Small business owners, Students, Freelancers"
                       />
                     </div>
@@ -1109,7 +1124,7 @@ const BusinessOpportunitiesPage = () => {
                         type="text"
                         value={mvpForm.budget}
                         onChange={(e) => setMvpForm({...mvpForm, budget: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-purple-500 outline-none transition-all rounded-lg bg-white"
+                        className="w-full p-3 border-2 border-gray-300 focus:border-purple-500 outline-none transition-all rounded-lg bg-white text-sm"
                         placeholder={`e.g., ${getCurrencySymbol() || '$'}500, ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}5,000`}
                       />
                     </div>
@@ -1137,7 +1152,12 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-light text-gray-900">🎯 MVP Validation Strategy</h3>
+                  <div className="flex items-center space-x-3 mb-6">
+                    <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
+                      <Target className="w-4 h-4 text-purple-600" />
+                    </div>
+                    <h3 className="text-xl font-light text-gray-900">MVP Validation Strategy</h3>
+                  </div>
                   
                   {/* MVP Approaches */}
                   <div className="space-y-6">
