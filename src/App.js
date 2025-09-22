@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
+import { LocationProvider, useLocation } from './contexts/LocationContext';
 import VisionPage from './components/VisionPage';
 import GoalsPage from './components/GoalsPage';
 import HabitsPage from './components/HabitsPage';
@@ -10,6 +11,7 @@ import BusinessOpportunitiesPage from './components/BusinessOpportunitiesPage';
 import AuthModal from './components/AuthModal';
 import CookieConsent from './components/CookieConsent';
 import ProfileDropdown from './components/ProfileDropdown';
+import LocationSelector from './components/LocationSelector';
 import { testFirebaseConnection } from './firebase/test';
 import { cn } from './utils/cn';
 
@@ -18,7 +20,9 @@ const AppContent = () => {
   const [showQuote, setShowQuote] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const [showLocationSelector, setShowLocationSelector] = useState(false);
   const { user, loading } = useAuth();
+  const { isLocationSet, updateLocation } = useLocation();
 
   // Array of inspirational quotes from notable figures
   const quotes = [
@@ -77,6 +81,13 @@ const AppContent = () => {
     console.log('Firebase connection test result:', testResult);
   }, []);
 
+  // Show location selector for new users
+  useEffect(() => {
+    if (user && !loading && !isLocationSet) {
+      setShowLocationSelector(true);
+    }
+  }, [user, loading, isLocationSet]);
+
   // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -108,6 +119,17 @@ const AppContent = () => {
 
   const handleAuthSuccess = (user) => {
     console.log('User signed in:', user);
+  };
+
+  const handleLocationSelect = async (location) => {
+    try {
+      await updateLocation(location);
+      setShowLocationSelector(false);
+    } catch (error) {
+      console.error('Error updating location:', error);
+      // Still close the selector even if Firebase save fails
+      setShowLocationSelector(false);
+    }
   };
 
   if (loading) {
@@ -188,7 +210,7 @@ const AppContent = () => {
             </motion.div>
             
             {/* Profile Dropdown */}
-            <ProfileDropdown />
+            <ProfileDropdown onLocationSettingsClick={() => setShowLocationSelector(true)} />
             
           </div>
         </div>
@@ -301,9 +323,16 @@ const AppContent = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="max-w-4xl mx-auto px-4 sm:px-6 py-8"
+        className="max-w-4xl mx-auto px-4 sm:px-6 py-8 relative"
       >
         {ActiveComponent && <ActiveComponent />}
+        
+        {/* Location Selector Modal - Positioned within main content */}
+        <LocationSelector
+          isOpen={showLocationSelector}
+          onLocationSelect={handleLocationSelect}
+          onClose={() => setShowLocationSelector(false)}
+        />
       </motion.main>
 
       {/* Simple Quote */}
@@ -339,7 +368,9 @@ const AppContent = () => {
 function App() {
   return (
     <AuthProvider>
-      <AppContent />
+      <LocationProvider>
+        <AppContent />
+      </LocationProvider>
     </AuthProvider>
   );
 }

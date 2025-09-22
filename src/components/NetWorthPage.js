@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { DollarSign, Plus, Edit3, Trash2, Eye, EyeOff, BookOpen, Bot, Handshake, Scissors, Briefcase, ChefHat, TrendingUp, Trophy, Lightbulb, Minus, Target, HelpCircle, Save, Check, X } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
+import { useLocation } from '../contexts/LocationContext';
 import {
   addUltraSimpleAsset,
   addUltraSimpleLiability,
@@ -19,6 +20,7 @@ import SoothingLoader, { SkeletonLoader, CardSkeleton } from './SoothingLoader';
 
 const NetWorthPage = () => {
   const { user, userSettings, updateUserSettings } = useAuth();
+  const { formatCurrency: formatLocationCurrency } = useLocation();
   const [currentNetWorth, setCurrentNetWorth] = useState(0);
   const [dreamNetWorth, setDreamNetWorth] = useState(0);
   const [isEditingDream, setIsEditingDream] = useState(false);
@@ -137,6 +139,10 @@ const NetWorthPage = () => {
   }, [assets, liabilities]);
 
   const formatCurrency = (amount) => {
+    // Use location-based formatting if available, otherwise fallback to USD
+    if (formatLocationCurrency) {
+      return formatLocationCurrency(amount);
+    }
     return new Intl.NumberFormat('en-US', {
       style: 'currency',
       currency: 'USD',

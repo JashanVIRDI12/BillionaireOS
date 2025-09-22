@@ -1,5 +1,5 @@
 // AI Analysis Service using OpenRouter API with DeepSeek model
-const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY || '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';
+const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY ;
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const MODEL = 'deepseek/deepseek-chat-v3.1:free';
 
@@ -47,9 +47,10 @@ const makeOpenRouterCall = async (prompt, maxTokens = 1500) => {
 };
 
 // Market Trend Analysis
-export const analyzeMarketTrends = async (industry, timeframe = '2024-2025') => {
+export const analyzeMarketTrends = async (industry, timeframe = '2024-2025', locationContext = '') => {
   try {
-    const prompt = `Analyze the ${industry} industry for ${timeframe}. Respond with valid JSON only:
+    const locationPrompt = locationContext ? `${locationContext} ` : '';
+    const prompt = `${locationPrompt}Analyze the ${industry} industry for ${timeframe}. Respond with valid JSON only:
 
 {
   "industry": "${industry}",
@@ -189,10 +190,11 @@ export const analyzeMarketTrends = async (industry, timeframe = '2024-2025') => 
 };
 
 // Competitor Research and Gap Analysis
-export const analyzeCompetitors = async (businessIdea, targetMarket) => {
+export const analyzeCompetitors = async (businessIdea, targetMarket, locationContext = '') => {
   try {
+    const locationPrompt = locationContext ? `${locationContext} ` : '';
     const prompt = `
-You are a competitive intelligence expert. Analyze the competitive landscape for this business idea: "${businessIdea}" targeting "${targetMarket}".
+You are a competitive intelligence expert. ${locationPrompt}Analyze the competitive landscape for this business idea: "${businessIdea}" targeting "${targetMarket}".
 
 Provide analysis in this exact JSON format:
 {
@@ -319,10 +321,11 @@ Focus on actionable insights and specific opportunities for differentiation.`;
 };
 
 // Revenue Model Suggestions
-export const suggestRevenueModels = async (businessIdea, targetCustomers, industry) => {
+export const suggestRevenueModels = async (businessIdea, targetCustomers, industry, locationContext = '') => {
   try {
+    const locationPrompt = locationContext ? `${locationContext} ` : '';
     const prompt = `
-You are a business model expert and startup advisor. Suggest optimal revenue models for this business: "${businessIdea}" targeting "${targetCustomers}" in the "${industry}" industry.
+You are a business model expert and startup advisor. ${locationPrompt}Suggest optimal revenue models for this business: "${businessIdea}" targeting "${targetCustomers}" in the "${industry}" industry.
 
 Provide suggestions in this exact JSON format:
 {
@@ -397,10 +400,11 @@ Focus on proven, scalable revenue models with clear paths to profitability.`;
 };
 
 // MVP Validation Framework
-export const createMVPValidationPlan = async (businessIdea, targetCustomers, budget) => {
+export const createMVPValidationPlan = async (businessIdea, targetCustomers, budget, locationContext = '') => {
   try {
+    const locationPrompt = locationContext ? `${locationContext} ` : '';
     const prompt = `
-You are a lean startup expert and MVP validation specialist. Create a comprehensive validation framework for this business idea: "${businessIdea}" targeting "${targetCustomers}" with a budget of "${budget}".
+You are a lean startup expert and MVP validation specialist. ${locationPrompt}Create a comprehensive validation framework for this business idea: "${businessIdea}" targeting "${targetCustomers}" with a budget of "${budget}".
 
 Provide a detailed plan in this exact JSON format:
 {
@@ -489,10 +493,11 @@ Focus on lean, cost-effective validation methods that provide maximum learning w
 };
 
 // Business Idea Generator
-export const generateBusinessIdeas = async (interests, skills, budget, timeCommitment) => {
+export const generateBusinessIdeas = async (interests, skills, budget, timeCommitment, locationContext = '') => {
   try {
+    const locationPrompt = locationContext ? `${locationContext} ` : '';
     const prompt = `
-You are a successful entrepreneur and business idea generator. Based on these inputs, generate innovative business ideas:
+You are a successful entrepreneur and business idea generator. ${locationPrompt}Based on these inputs, generate innovative business ideas:
 - Interests: ${interests}
 - Skills: ${skills}
 - Budget: ${budget}

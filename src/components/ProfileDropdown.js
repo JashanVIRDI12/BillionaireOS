@@ -1,12 +1,13 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { LogOut, User, Settings, ChevronDown } from 'lucide-react';
+import { LogOut, User, Settings, ChevronDown, Globe } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
-
-const ProfileDropdown = () => {
+import { useLocation } from '../contexts/LocationContext';
+const ProfileDropdown = ({ onLocationSettingsClick }) => {
   const [isOpen, setIsOpen] = useState(false);
   const dropdownRef = useRef(null);
   const { user, logout } = useAuth();
+  const { location, getCountryName, getCurrencySymbol } = useLocation();
 
   // Close dropdown when clicking outside
   useEffect(() => {
@@ -23,6 +24,13 @@ const ProfileDropdown = () => {
   const handleLogout = async () => {
     setIsOpen(false);
     await logout();
+  };
+
+  const handleLocationSettings = () => {
+    setIsOpen(false);
+    if (onLocationSettingsClick) {
+      onLocationSettingsClick();
+    }
   };
 
   const getDisplayName = () => {
@@ -113,6 +121,19 @@ const ProfileDropdown = () => {
               </button>
               
               <button
+                onClick={handleLocationSettings}
+                className="flex items-center justify-between w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
+              >
+                <div className="flex items-center space-x-3">
+                  <Globe className="w-4 h-4" />
+                  <span>Location</span>
+                </div>
+                <div className="text-xs text-gray-500">
+                  {location ? `${getCountryName()} (${getCurrencySymbol()})` : 'Not set'}
+                </div>
+              </button>
+              
+              <button
                 onClick={() => setIsOpen(false)}
                 className="flex items-center space-x-3 w-full px-4 py-2 text-sm text-gray-700 hover:bg-gray-50 transition-colors"
               >
@@ -133,6 +154,7 @@ const ProfileDropdown = () => {
           </motion.div>
         )}
       </AnimatePresence>
+
     </div>
   );
 };

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { useLocation } from '../contexts/LocationContext';
 import { TrendingUp, Target, DollarSign, Lightbulb, Users, BarChart3, Search, Rocket, Brain, CheckCircle, AlertCircle, Clock, Zap, ChevronDown } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
@@ -16,6 +17,7 @@ const BusinessOpportunitiesPage = () => {
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
+  const { getLocationContext, getCurrencySymbol } = useLocation();
 
   // Form states
   const [ideaForm, setIdeaForm] = useState({
@@ -83,7 +85,8 @@ const BusinessOpportunitiesPage = () => {
         ideaForm.interests,
         ideaForm.skills,
         ideaForm.budget,
-        ideaForm.timeCommitment
+        ideaForm.timeCommitment,
+        getLocationContext()
       );
       
       if (result.success) {
@@ -108,7 +111,7 @@ const BusinessOpportunitiesPage = () => {
     setError(null);
     
     try {
-      const result = await analyzeMarketTrends(marketForm.industry, marketForm.timeframe);
+      const result = await analyzeMarketTrends(marketForm.industry, marketForm.timeframe, getLocationContext());
       
       if (result.success) {
         setResults(result.analysis);
@@ -133,7 +136,7 @@ const BusinessOpportunitiesPage = () => {
     setError(null);
     
     try {
-      const result = await analyzeCompetitors(competitorForm.businessIdea, competitorForm.targetMarket);
+      const result = await analyzeCompetitors(competitorForm.businessIdea, competitorForm.targetMarket, getLocationContext());
       
       if (result.success) {
         setResults(result.analysis);
@@ -160,7 +163,8 @@ const BusinessOpportunitiesPage = () => {
       const result = await suggestRevenueModels(
         revenueForm.businessIdea,
         revenueForm.targetCustomers,
-        revenueForm.industry
+        revenueForm.industry,
+        getLocationContext()
       );
       
       if (result.success) {
@@ -188,7 +192,8 @@ const BusinessOpportunitiesPage = () => {
       const result = await createMVPValidationPlan(
         mvpForm.businessIdea,
         mvpForm.targetCustomers,
-        mvpForm.budget
+        mvpForm.budget,
+        getLocationContext()
       );
       
       if (result.success) {
@@ -430,7 +435,7 @@ const BusinessOpportunitiesPage = () => {
                         value={ideaForm.budget}
                         onChange={(e) => setIdeaForm({...ideaForm, budget: e.target.value})}
                         className="w-full p-3 border-2 border-gray-300 focus:border-yellow-500 outline-none transition-all rounded-lg bg-white text-sm"
-                        placeholder="e.g., $1,000, $10,000"
+                        placeholder={`e.g., ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}10,000`}
                       />
                     </div>
                     
@@ -1106,7 +1111,7 @@ const BusinessOpportunitiesPage = () => {
                         value={mvpForm.budget}
                         onChange={(e) => setMvpForm({...mvpForm, budget: e.target.value})}
                         className="w-full p-3 border-2 border-gray-300 focus:border-purple-500 outline-none transition-all rounded-lg bg-white"
-                        placeholder="e.g., $500, $1,000, $5,000"
+                        placeholder={`e.g., ${getCurrencySymbol() || '$'}500, ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}5,000`}
                       />
                     </div>
                   </div>

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Brain, TrendingUp, Lightbulb, Target, Zap, Heart, Award, ChevronDown, ChevronUp, Sparkles } from 'lucide-react';
+import { TrendingUp, Brain, Lightbulb, Target, ChevronDown, ChevronUp, Sparkles, Award, Heart, Zap } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { analyzeJournalEntry, analyzeDailyTrends } from '../services/aiAnalysis';
 
@@ -17,7 +17,7 @@ const AIInsights = ({ latestEntry, recentEntries, onAnalysisComplete }) => {
     if (latestEntry) {
       analyzeEntry();
     }
-  }, [latestEntry]);
+  }, [latestEntry]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const analyzeEntry = async () => {
     if (!latestEntry) return;
