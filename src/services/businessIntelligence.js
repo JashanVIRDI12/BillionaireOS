@@ -1,7 +1,7 @@
-// AI Analysis Service using OpenRouter API with DeepSeek model
+// AI Analysis Service using OpenRouter API with Llama model
 const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY ;
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'deepseek/deepseek-chat-v3.1:free';
+const MODEL = 'meta-llama/llama-3.1-8b-instruct:free';
 
 // Helper function to make API calls with better error handling
 const makeOpenRouterCall = async (prompt, maxTokens = 1500) => {

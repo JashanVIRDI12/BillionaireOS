@@ -210,19 +210,19 @@ const BusinessOpportunitiesPage = () => {
 
   const getProfitColor = (level) => {
     switch (level?.toLowerCase()) {
-      case 'high': return 'text-green-600 bg-green-50 border-green-200';
-      case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'low': return 'text-red-600 bg-red-50 border-red-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'high': return 'text-green-700 bg-green-100';
+      case 'medium': return 'text-yellow-700 bg-yellow-100';
+      case 'low': return 'text-red-700 bg-red-100';
+      default: return 'text-gray-700 bg-gray-100';
     }
   };
 
   const getCompetitionColor = (level) => {
     switch (level?.toLowerCase()) {
-      case 'high': return 'text-red-600 bg-red-50 border-red-200';
-      case 'medium': return 'text-yellow-600 bg-yellow-50 border-yellow-200';
-      case 'low': return 'text-green-600 bg-green-50 border-green-200';
-      default: return 'text-gray-600 bg-gray-50 border-gray-200';
+      case 'high': return 'text-red-700 bg-red-100';
+      case 'medium': return 'text-yellow-700 bg-yellow-100';
+      case 'low': return 'text-green-700 bg-green-100';
+      default: return 'text-gray-700 bg-gray-100';
     }
   };
 
@@ -480,75 +480,83 @@ const BusinessOpportunitiesPage = () => {
                 >
                   <h3 className="text-xl font-bold text-gray-900">💡 Personalized Business Ideas</h3>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4 sm:gap-6">
+                  <div className="space-y-6">
                     {results.businessIdeas.map((idea, index) => (
                       <motion.div
                         key={index}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-white border-2 border-gray-200 rounded-xl p-4 sm:p-6 hover:shadow-lg transition-all duration-200"
+                        className="bg-white border border-gray-200 rounded-lg p-6 hover:border-gray-300 transition-all duration-200"
                       >
+                        {/* Header */}
                         <div className="flex items-start justify-between mb-4">
-                          <h4 className="text-lg font-bold text-gray-900">{idea.title}</h4>
-                          <div className="flex space-x-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-bold border ${getProfitColor(idea.profitPotential)}`}>
+                          <div className="flex-1">
+                            <h4 className="text-xl font-light text-gray-900 mb-2">{idea.title}</h4>
+                            <p className="text-gray-600 text-sm leading-relaxed">{idea.description}</p>
+                          </div>
+                          <div className="flex flex-col space-y-2 ml-6">
+                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${getProfitColor(idea.profitPotential)}`}>
                               {idea.profitPotential} Profit
-                            </span>
-                            <span className={`px-2 py-1 rounded-full text-xs font-bold border ${getCompetitionColor(idea.competitionLevel)}`}>
+                            </div>
+                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${getCompetitionColor(idea.competitionLevel)}`}>
                               {idea.competitionLevel} Competition
-                            </span>
+                            </div>
                           </div>
                         </div>
                         
-                        <p className="text-gray-700 mb-4">{idea.description}</p>
-                        
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 mb-4 text-sm">
-                          <div>
-                            <span className="font-semibold text-gray-600">Industry:</span>
-                            <p className="text-gray-800">{idea.industry}</p>
+                        {/* Key Metrics */}
+                        <div className="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+                          <div className="text-center p-3 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500 mb-1">Industry</div>
+                            <div className="text-sm font-medium text-gray-900">{idea.industry}</div>
                           </div>
-                          <div>
-                            <span className="font-semibold text-gray-600">Target Market:</span>
-                            <p className="text-gray-800">{idea.targetMarket}</p>
+                          <div className="text-center p-3 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500 mb-1">Startup Cost</div>
+                            <div className="text-sm font-medium text-gray-900">{idea.startupCost}</div>
                           </div>
-                          <div>
-                            <span className="font-semibold text-gray-600">Startup Cost:</span>
-                            <p className="text-gray-800">{idea.startupCost}</p>
+                          <div className="text-center p-3 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500 mb-1">Time to Market</div>
+                            <div className="text-sm font-medium text-gray-900">{idea.timeToMarket}</div>
                           </div>
-                          <div>
-                            <span className="font-semibold text-gray-600">Time to Market:</span>
-                            <p className="text-gray-800">{idea.timeToMarket}</p>
+                          <div className="text-center p-3 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500 mb-1">Target Market</div>
+                            <div className="text-sm font-medium text-gray-900">{idea.targetMarket}</div>
                           </div>
                         </div>
                         
-                        {idea.keyAdvantages && (
-                          <div className="mb-4">
-                            <h5 className="font-semibold text-gray-800 mb-2">Key Advantages:</h5>
-                            <ul className="space-y-1">
-                              {idea.keyAdvantages.map((advantage, i) => (
-                                <li key={i} className="flex items-start space-x-2 text-sm text-gray-700">
-                                  <CheckCircle className="w-4 h-4 text-green-500 mt-0.5 flex-shrink-0" />
-                                  <span>{advantage}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
-                        
-                        {idea.firstSteps && (
-                          <div>
-                            <h5 className="font-semibold text-gray-800 mb-2">First Steps:</h5>
-                            <ul className="space-y-1">
-                              {idea.firstSteps.map((step, i) => (
-                                <li key={i} className="flex items-start space-x-2 text-sm text-gray-700">
-                                  <Target className="w-4 h-4 text-blue-500 mt-0.5 flex-shrink-0" />
-                                  <span>{step}</span>
-                                </li>
-                              ))}
-                            </ul>
-                          </div>
-                        )}
+                        {/* Advantages & Steps */}
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          {idea.keyAdvantages && (
+                            <div>
+                              <h5 className="text-sm font-medium text-gray-900 mb-3">Key Advantages</h5>
+                              <div className="space-y-2">
+                                {idea.keyAdvantages.slice(0, 3).map((advantage, i) => (
+                                  <div key={i} className="flex items-start space-x-2">
+                                    <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                    <span className="text-sm text-gray-700">{advantage}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                          
+                          {idea.firstSteps && (
+                            <div>
+                              <h5 className="text-sm font-medium text-gray-900 mb-3">First Steps</h5>
+                              <div className="space-y-2">
+                                {idea.firstSteps.slice(0, 3).map((step, i) => (
+                                  <div key={i} className="flex items-start space-x-2">
+                                    <div className="w-4 h-4 border border-gray-300 rounded-full flex items-center justify-center mt-0.5 flex-shrink-0">
+                                      <div className="text-xs text-gray-500">{i + 1}</div>
+                                    </div>
+                                    <span className="text-sm text-gray-700">{step}</span>
+                                  </div>
+                                ))}
+                              </div>
+                            </div>
+                          )}
+                        </div>
                       </motion.div>
                     ))}
                   </div>
@@ -654,82 +662,76 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-bold text-gray-900">📊 Market Analysis for {results.industry}</h3>
+                  <h3 className="text-xl font-light text-gray-900">📊 Market Analysis for {results.industry}</h3>
                   
                   {/* Market Overview */}
-                  <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                    <h4 className="text-lg font-bold text-gray-900 mb-4">Market Overview</h4>
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h4 className="text-lg font-medium text-gray-900 mb-6">Market Overview</h4>
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-                        <h5 className="font-semibold text-blue-900 mb-2">Market Size</h5>
-                        <p className="text-blue-800 text-sm">{results.marketSize}</p>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-xs text-gray-500 mb-2">Market Size</div>
+                        <div className="text-sm font-medium text-gray-900">{results.marketSize}</div>
                       </div>
-                      <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-                        <h5 className="font-semibold text-green-900 mb-2">Time to Market</h5>
-                        <p className="text-green-800 text-sm">{results.timeToMarket}</p>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-xs text-gray-500 mb-2">Time to Market</div>
+                        <div className="text-sm font-medium text-gray-900">{results.timeToMarket}</div>
                       </div>
-                      <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-                        <h5 className="font-semibold text-purple-900 mb-2">Capital Requirement</h5>
-                        <p className="text-purple-800 text-sm">{results.capitalRequirement}</p>
+                      <div className="text-center p-4 bg-gray-50 rounded-lg">
+                        <div className="text-xs text-gray-500 mb-2">Capital Requirement</div>
+                        <div className="text-sm font-medium text-gray-900">{results.capitalRequirement}</div>
                       </div>
                     </div>
                   </div>
 
                   {/* Key Trends */}
-                  <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                    <h4 className="text-lg font-bold text-gray-900 mb-4">🔥 Key Market Trends</h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                  <div className="bg-white border border-gray-200 rounded-lg p-6">
+                    <h4 className="text-lg font-medium text-gray-900 mb-6">Key Market Trends</h4>
+                    <div className="space-y-3">
                       {results.keyTrends.map((trend, index) => (
                         <div key={index} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
-                          <TrendingUp className="w-5 h-5 text-blue-500 mt-0.5 flex-shrink-0" />
-                          <span className="text-gray-800 text-sm">{trend}</span>
+                          <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                          <span className="text-gray-700 text-sm leading-relaxed">{trend}</span>
                         </div>
                       ))}
                     </div>
                   </div>
 
                   {/* Opportunities and Threats */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-green-900 mb-4 flex items-center space-x-2">
-                        <Target className="w-5 h-5" />
-                        <span>Opportunities</span>
-                      </h4>
-                      <ul className="space-y-3">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h4 className="text-lg font-medium text-gray-900 mb-4">Opportunities</h4>
+                      <div className="space-y-3">
                         {results.opportunities?.map((opportunity, index) => (
-                          <li key={index} className="flex items-start space-x-2 text-sm text-green-800">
-                            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span>{opportunity}</span>
-                          </li>
+                          <div key={index} className="flex items-start space-x-3">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-gray-700 leading-relaxed">{opportunity}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
 
-                    <div className="bg-red-50 border border-red-200 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-red-900 mb-4 flex items-center space-x-2">
-                        <AlertCircle className="w-5 h-5" />
-                        <span>Threats & Challenges</span>
-                      </h4>
-                      <ul className="space-y-3">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h4 className="text-lg font-medium text-gray-900 mb-4">Threats & Challenges</h4>
+                      <div className="space-y-3">
                         {results.threats?.map((threat, index) => (
-                          <li key={index} className="flex items-start space-x-2 text-sm text-red-800">
-                            <AlertCircle className="w-4 h-4 text-red-600 mt-0.5 flex-shrink-0" />
-                            <span>{threat}</span>
-                          </li>
+                          <div key={index} className="flex items-start space-x-3">
+                            <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-gray-700 leading-relaxed">{threat}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   </div>
 
                   {/* Success Factors */}
                   {results.successFactors && (
-                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-gray-900 mb-4">🎯 Critical Success Factors</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h4 className="text-lg font-medium text-gray-900 mb-4">Critical Success Factors</h4>
+                      <div className="space-y-3">
                         {results.successFactors.map((factor, index) => (
-                          <div key={index} className="flex items-start space-x-3 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
-                            <Zap className="w-4 h-4 text-yellow-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-yellow-800 text-sm">{factor}</span>
+                          <div key={index} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                            <div className="w-1.5 h-1.5 bg-yellow-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm leading-relaxed">{factor}</span>
                           </div>
                         ))}
                       </div>
@@ -797,94 +799,90 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-bold text-gray-900">🔍 Competitive Landscape Analysis</h3>
+                  <h3 className="text-xl font-light text-gray-900">🔍 Competitive Landscape Analysis</h3>
                   
                   {/* Direct Competitors */}
-                  <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                    <h4 className="text-lg font-bold text-gray-900 mb-4">Direct Competitors</h4>
-                    <div className="space-y-4">
-                      {results.directCompetitors.map((competitor, index) => (
-                        <div key={index} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-start justify-between mb-3">
-                            <h5 className="font-bold text-gray-900">{competitor.name}</h5>
-                            <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                              {competitor.marketShare}
-                            </span>
+                  <div className="space-y-6">
+                    {results.directCompetitors.map((competitor, index) => (
+                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h5 className="text-lg font-medium text-gray-900 mb-2">{competitor.name}</h5>
+                            <p className="text-gray-600 text-sm leading-relaxed">{competitor.description}</p>
                           </div>
-                          <p className="text-gray-700 mb-3">{competitor.description}</p>
-                          
-                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                            <div>
-                              <h6 className="font-semibold text-green-800 mb-2">Strengths:</h6>
-                              <ul className="space-y-1">
-                                {competitor.strengths?.map((strength, i) => (
-                                  <li key={i} className="flex items-start space-x-2 text-sm text-green-700">
-                                    <CheckCircle className="w-3 h-3 text-green-500 mt-1 flex-shrink-0" />
-                                    <span>{strength}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            
-                            <div>
-                              <h6 className="font-semibold text-red-800 mb-2">Weaknesses:</h6>
-                              <ul className="space-y-1">
-                                {competitor.weaknesses?.map((weakness, i) => (
-                                  <li key={i} className="flex items-start space-x-2 text-sm text-red-700">
-                                    <AlertCircle className="w-3 h-3 text-red-500 mt-1 flex-shrink-0" />
-                                    <span>{weakness}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                          <div className="ml-6">
+                            <div className="text-center p-3 bg-gray-50 rounded-lg">
+                              <div className="text-xs text-gray-500 mb-1">Market Share</div>
+                              <div className="text-sm font-medium text-gray-900">{competitor.marketShare}</div>
                             </div>
                           </div>
                         </div>
-                      ))}
-                    </div>
+                        
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                          <div>
+                            <h6 className="text-sm font-medium text-gray-900 mb-3">Strengths</h6>
+                            <div className="space-y-2">
+                              {competitor.strengths?.slice(0, 3).map((strength, i) => (
+                                <div key={i} className="flex items-start space-x-3">
+                                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <span className="text-sm text-gray-700">{strength}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                          
+                          <div>
+                            <h6 className="text-sm font-medium text-gray-900 mb-3">Weaknesses</h6>
+                            <div className="space-y-2">
+                              {competitor.weaknesses?.slice(0, 3).map((weakness, i) => (
+                                <div key={i} className="flex items-start space-x-3">
+                                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <span className="text-sm text-gray-700">{weakness}</span>
+                                </div>
+                              ))}
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Market Gaps and Opportunities */}
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                    <div className="bg-blue-50 border border-blue-200 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-blue-900 mb-4 flex items-center space-x-2">
-                        <Target className="w-5 h-5" />
-                        <span>Market Gaps</span>
-                      </h4>
-                      <ul className="space-y-3">
+                  <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h4 className="text-lg font-medium text-gray-900 mb-4">Market Gaps</h4>
+                      <div className="space-y-3">
                         {results.marketGaps?.map((gap, index) => (
-                          <li key={index} className="flex items-start space-x-2 text-sm text-blue-800">
-                            <Lightbulb className="w-4 h-4 text-blue-600 mt-0.5 flex-shrink-0" />
-                            <span>{gap}</span>
-                          </li>
+                          <div key={index} className="flex items-start space-x-3">
+                            <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-gray-700 leading-relaxed">{gap}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
 
-                    <div className="bg-green-50 border border-green-200 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-green-900 mb-4 flex items-center space-x-2">
-                        <Zap className="w-5 h-5" />
-                        <span>Competitive Advantages</span>
-                      </h4>
-                      <ul className="space-y-3">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h4 className="text-lg font-medium text-gray-900 mb-4">Competitive Advantages</h4>
+                      <div className="space-y-3">
                         {results.competitiveAdvantages?.map((advantage, index) => (
-                          <li key={index} className="flex items-start space-x-2 text-sm text-green-800">
-                            <CheckCircle className="w-4 h-4 text-green-600 mt-0.5 flex-shrink-0" />
-                            <span>{advantage}</span>
-                          </li>
+                          <div key={index} className="flex items-start space-x-3">
+                            <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-sm text-gray-700 leading-relaxed">{advantage}</span>
+                          </div>
                         ))}
-                      </ul>
+                      </div>
                     </div>
                   </div>
 
                   {/* Differentiation Opportunities */}
                   {results.differentiationOpportunities && (
-                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-gray-900 mb-4">🎯 Differentiation Opportunities</h4>
-                      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h4 className="text-lg font-medium text-gray-900 mb-4">Differentiation Opportunities</h4>
+                      <div className="space-y-3">
                         {results.differentiationOpportunities.map((opportunity, index) => (
-                          <div key={index} className="flex items-start space-x-3 p-3 bg-purple-50 border border-purple-200 rounded-lg">
-                            <Rocket className="w-4 h-4 text-purple-600 mt-0.5 flex-shrink-0" />
-                            <span className="text-purple-800 text-sm">{opportunity}</span>
+                          <div key={index} className="flex items-start space-x-3 p-4 bg-gray-50 rounded-lg">
+                            <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                            <span className="text-gray-700 text-sm leading-relaxed">{opportunity}</span>
                           </div>
                         ))}
                       </div>
@@ -967,71 +965,72 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-bold text-gray-900">💰 Revenue Model Recommendations</h3>
+                  <h3 className="text-xl font-light text-gray-900">💰 Revenue Model Recommendations</h3>
                   
                   {/* Primary Revenue Models */}
-                  <div className="space-y-4">
+                  <div className="space-y-6">
                     {results.primaryRevenueModels.map((model, index) => (
                       <motion.div
                         key={index}
                         initial={{ opacity: 0, y: 20 }}
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: index * 0.1 }}
-                        className="bg-white border-2 border-gray-200 rounded-xl p-6"
+                        className="bg-white border border-gray-200 rounded-lg p-6"
                       >
                         <div className="flex items-start justify-between mb-4">
-                          <h4 className="text-lg font-bold text-gray-900">{model.model}</h4>
-                          <div className="flex space-x-2">
-                            <span className={`px-2 py-1 rounded-full text-xs font-bold border ${
-                              model.scalability === 'High' ? 'text-green-600 bg-green-50 border-green-200' :
-                              model.scalability === 'Medium' ? 'text-yellow-600 bg-yellow-50 border-yellow-200' :
-                              'text-red-600 bg-red-50 border-red-200'
+                          <div className="flex-1">
+                            <h4 className="text-lg font-medium text-gray-900 mb-2">{model.model}</h4>
+                            <p className="text-gray-600 text-sm leading-relaxed">{model.description}</p>
+                          </div>
+                          <div className="ml-6">
+                            <div className={`px-3 py-1 rounded-full text-xs font-medium ${
+                              model.scalability === 'High' ? 'text-green-700 bg-green-100' :
+                              model.scalability === 'Medium' ? 'text-yellow-700 bg-yellow-100' :
+                              'text-red-700 bg-red-100'
                             }`}>
                               {model.scalability} Scalability
-                            </span>
+                            </div>
                           </div>
                         </div>
                         
-                        <p className="text-gray-700 mb-4">{model.description}</p>
-                        
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
                           <div>
-                            <h5 className="font-semibold text-green-800 mb-2">Pros:</h5>
-                            <ul className="space-y-1">
-                              {model.pros?.map((pro, i) => (
-                                <li key={i} className="flex items-start space-x-2 text-sm text-green-700">
-                                  <CheckCircle className="w-3 h-3 text-green-500 mt-1 flex-shrink-0" />
-                                  <span>{pro}</span>
-                                </li>
+                            <h5 className="text-sm font-medium text-gray-900 mb-3">Advantages</h5>
+                            <div className="space-y-2">
+                              {model.pros?.slice(0, 3).map((pro, i) => (
+                                <div key={i} className="flex items-start space-x-3">
+                                  <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <span className="text-sm text-gray-700">{pro}</span>
+                                </div>
                               ))}
-                            </ul>
+                            </div>
                           </div>
                           
                           <div>
-                            <h5 className="font-semibold text-red-800 mb-2">Cons:</h5>
-                            <ul className="space-y-1">
-                              {model.cons?.map((con, i) => (
-                                <li key={i} className="flex items-start space-x-2 text-sm text-red-700">
-                                  <AlertCircle className="w-3 h-3 text-red-500 mt-1 flex-shrink-0" />
-                                  <span>{con}</span>
-                                </li>
+                            <h5 className="text-sm font-medium text-gray-900 mb-3">Challenges</h5>
+                            <div className="space-y-2">
+                              {model.cons?.slice(0, 3).map((con, i) => (
+                                <div key={i} className="flex items-start space-x-3">
+                                  <div className="w-1.5 h-1.5 bg-red-500 rounded-full mt-2 flex-shrink-0"></div>
+                                  <span className="text-sm text-gray-700">{con}</span>
+                                </div>
                               ))}
-                            </ul>
+                            </div>
                           </div>
                         </div>
                         
-                        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 text-sm">
-                          <div>
-                            <span className="font-semibold text-gray-600">Time to Revenue:</span>
-                            <p className="text-gray-800">{model.timeToRevenue}</p>
+                        <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
+                          <div className="text-center p-3 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500 mb-1">Time to Revenue</div>
+                            <div className="text-sm font-medium text-gray-900">{model.timeToRevenue}</div>
                           </div>
-                          <div>
-                            <span className="font-semibold text-gray-600">Capital Required:</span>
-                            <p className="text-gray-800">{model.capitalRequirement}</p>
+                          <div className="text-center p-3 bg-gray-50 rounded-lg">
+                            <div className="text-xs text-gray-500 mb-1">Capital Required</div>
+                            <div className="text-sm font-medium text-gray-900">{model.capitalRequirement}</div>
                           </div>
-                          <div className="col-span-2">
-                            <span className="font-semibold text-gray-600">Examples:</span>
-                            <p className="text-gray-800">{model.examples?.join(', ')}</p>
+                          <div className="text-center p-3 bg-gray-50 rounded-lg col-span-2 lg:col-span-1">
+                            <div className="text-xs text-gray-500 mb-1">Examples</div>
+                            <div className="text-sm font-medium text-gray-900">{model.examples?.slice(0, 2).join(', ')}</div>
                           </div>
                         </div>
                       </motion.div>
@@ -1138,78 +1137,83 @@ const BusinessOpportunitiesPage = () => {
                   animate={{ opacity: 1, y: 0 }}
                   className="space-y-6"
                 >
-                  <h3 className="text-xl font-bold text-gray-900">🎯 MVP Validation Strategy</h3>
+                  <h3 className="text-xl font-light text-gray-900">🎯 MVP Validation Strategy</h3>
                   
                   {/* MVP Approaches */}
-                  <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                    <h4 className="text-lg font-bold text-gray-900 mb-4">Recommended MVP Approaches</h4>
-                    <div className="space-y-4">
-                      {results.mvpApproaches.map((approach, index) => (
-                        <div key={index} className="border border-gray-200 rounded-lg p-4">
-                          <div className="flex items-start justify-between mb-3">
-                            <h5 className="font-bold text-gray-900">{approach.type}</h5>
-                            <div className="text-right text-sm text-gray-600">
-                              <div>{approach.cost}</div>
-                              <div>{approach.timeToCreate}</div>
+                  <div className="space-y-6">
+                    {results.mvpApproaches.map((approach, index) => (
+                      <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
+                        <div className="flex items-start justify-between mb-4">
+                          <div className="flex-1">
+                            <h5 className="text-lg font-medium text-gray-900 mb-2">{approach.type}</h5>
+                            <p className="text-gray-600 text-sm leading-relaxed">{approach.description}</p>
+                          </div>
+                          <div className="ml-6 space-y-2">
+                            <div className="text-center p-3 bg-gray-50 rounded-lg">
+                              <div className="text-xs text-gray-500 mb-1">Cost</div>
+                              <div className="text-sm font-medium text-gray-900">{approach.cost}</div>
+                            </div>
+                            <div className="text-center p-3 bg-gray-50 rounded-lg">
+                              <div className="text-xs text-gray-500 mb-1">Timeline</div>
+                              <div className="text-sm font-medium text-gray-900">{approach.timeToCreate}</div>
                             </div>
                           </div>
-                          <p className="text-gray-700 mb-3">{approach.description}</p>
-                          
-                          <div>
-                            <h6 className="font-semibold text-purple-800 mb-2">Validation Goals:</h6>
-                            <ul className="space-y-1">
-                              {approach.validationGoals?.map((goal, i) => (
-                                <li key={i} className="flex items-start space-x-2 text-sm text-purple-700">
-                                  <Target className="w-3 h-3 text-purple-500 mt-1 flex-shrink-0" />
-                                  <span>{goal}</span>
-                                </li>
-                              ))}
-                            </ul>
+                        </div>
+                        
+                        <div>
+                          <h6 className="text-sm font-medium text-gray-900 mb-3">Validation Goals</h6>
+                          <div className="space-y-2">
+                            {approach.validationGoals?.slice(0, 3).map((goal, i) => (
+                              <div key={i} className="flex items-start space-x-3">
+                                <div className="w-1.5 h-1.5 bg-purple-500 rounded-full mt-2 flex-shrink-0"></div>
+                                <span className="text-sm text-gray-700">{goal}</span>
+                              </div>
+                            ))}
                           </div>
                         </div>
-                      ))}
-                    </div>
+                      </div>
+                    ))}
                   </div>
 
                   {/* Experiment Plan */}
                   {results.experimentPlan && (
-                    <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-                      <h4 className="text-lg font-bold text-gray-900 mb-4 flex items-center space-x-2">
-                        <Clock className="w-5 h-5" />
-                        <span>Week-by-Week Experiment Plan</span>
-                      </h4>
-                      <div className="space-y-4">
+                    <div className="bg-white border border-gray-200 rounded-lg p-6">
+                      <h4 className="text-lg font-medium text-gray-900 mb-6">Week-by-Week Experiment Plan</h4>
+                      <div className="space-y-6">
                         {results.experimentPlan.map((week, index) => (
-                          <div key={index} className="border-l-4 border-purple-500 pl-4 py-2">
-                            <div className="flex items-center justify-between mb-2">
-                              <h5 className="font-semibold text-gray-900">{week.week}</h5>
-                              <span className="text-sm text-gray-600 bg-gray-100 px-2 py-1 rounded">
-                                {week.budget}
-                              </span>
+                          <div key={index} className="border-l-2 border-purple-300 pl-6 py-4">
+                            <div className="flex items-center justify-between mb-4">
+                              <h5 className="text-base font-medium text-gray-900">{week.week}</h5>
+                              <div className="text-center p-2 bg-gray-50 rounded-lg">
+                                <div className="text-xs text-gray-500 mb-1">Budget</div>
+                                <div className="text-sm font-medium text-gray-900">{week.budget}</div>
+                              </div>
                             </div>
                             
-                            <div className="mb-2">
-                              <h6 className="font-medium text-gray-800 mb-1">Activities:</h6>
-                              <ul className="space-y-1">
-                                {week.activities?.map((activity, i) => (
-                                  <li key={i} className="flex items-start space-x-2 text-sm text-gray-700">
-                                    <CheckCircle className="w-3 h-3 text-green-500 mt-1 flex-shrink-0" />
-                                    <span>{activity}</span>
-                                  </li>
-                                ))}
-                              </ul>
-                            </div>
-                            
-                            <div>
-                              <h6 className="font-medium text-gray-800 mb-1">Deliverables:</h6>
-                              <ul className="space-y-1">
-                                {week.deliverables?.map((deliverable, i) => (
-                                  <li key={i} className="flex items-start space-x-2 text-sm text-gray-700">
-                                    <Target className="w-3 h-3 text-blue-500 mt-1 flex-shrink-0" />
-                                    <span>{deliverable}</span>
-                                  </li>
-                                ))}
-                              </ul>
+                            <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                              <div>
+                                <h6 className="text-sm font-medium text-gray-900 mb-3">Activities</h6>
+                                <div className="space-y-2">
+                                  {week.activities?.slice(0, 3).map((activity, i) => (
+                                    <div key={i} className="flex items-start space-x-3">
+                                      <div className="w-1.5 h-1.5 bg-green-500 rounded-full mt-2 flex-shrink-0"></div>
+                                      <span className="text-sm text-gray-700">{activity}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                              
+                              <div>
+                                <h6 className="text-sm font-medium text-gray-900 mb-3">Deliverables</h6>
+                                <div className="space-y-2">
+                                  {week.deliverables?.slice(0, 3).map((deliverable, i) => (
+                                    <div key={i} className="flex items-start space-x-3">
+                                      <div className="w-1.5 h-1.5 bg-blue-500 rounded-full mt-2 flex-shrink-0"></div>
+                                      <span className="text-sm text-gray-700">{deliverable}</span>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
                             </div>
                           </div>
                         ))}
