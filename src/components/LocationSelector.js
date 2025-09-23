@@ -70,14 +70,14 @@ const LocationSelector = ({ onLocationSelect, isOpen, onClose }) => {
       animate={{ opacity: 1, y: 0 }}
       exit={{ opacity: 0, y: -8 }}
       transition={{ duration: 0.2, ease: "easeOut" }}
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50 sm:bg-transparent sm:absolute sm:top-0 sm:left-0 sm:right-0 sm:p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black bg-opacity-50"
     >
       <motion.div
         initial={{ opacity: 0, scale: 0.95 }}
         animate={{ opacity: 1, scale: 1 }}
         exit={{ opacity: 0, scale: 0.95 }}
         transition={{ duration: 0.15, ease: "easeOut" }}
-        className="bg-white rounded-xl shadow-lg border border-gray-200 w-full max-w-md max-h-[80vh] sm:max-h-[60vh] overflow-hidden"
+        className="bg-white rounded-xl shadow-xl border border-gray-200 w-full max-w-md max-h-[85vh] overflow-hidden"
       >
         {/* Header */}
         <div className="p-4 sm:p-6 border-b border-gray-100">
