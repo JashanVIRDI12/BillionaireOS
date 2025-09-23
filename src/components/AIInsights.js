@@ -140,7 +140,7 @@ const AIInsights = ({ latestEntry, recentEntries, onAnalysisComplete }) => {
                 <span className="font-semibold text-gray-900">Today's Analysis</span>
                 {analysis.overallScore && (
                   <span className={`px-3 py-1 rounded-full text-sm font-bold border ${getScoreColor(analysis.overallScore)}`}>
-                    {analysis.overallScore}/10
+                    {analysis.overallScore.toString().split('/')[0]}/10
                   </span>
                 )}
               </div>
