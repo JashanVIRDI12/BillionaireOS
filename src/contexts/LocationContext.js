@@ -18,6 +18,35 @@ export const LocationProvider = ({ children }) => {
   const [isLoadingLocation, setIsLoadingLocation] = useState(false);
   const { user } = useAuth();
 
+  // Get user's device timezone information
+  const getDeviceTimezone = () => {
+    try {
+      const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
+      const now = new Date();
+      const timezoneName = now.toLocaleString('en', { timeZoneName: 'long' }).split(', ')[1];
+      const timezoneShort = now.toLocaleString('en', { timeZoneName: 'short' }).split(', ')[1];
+      const offset = now.getTimezoneOffset();
+      const offsetHours = Math.floor(Math.abs(offset) / 60);
+      const offsetMinutes = Math.abs(offset) % 60;
+      const offsetSign = offset <= 0 ? '+' : '-';
+      const offsetString = `UTC${offsetSign}${offsetHours.toString().padStart(2, '0')}:${offsetMinutes.toString().padStart(2, '0')}`;
+      
+      return {
+        timezone,
+        timezoneName,
+        timezoneShort,
+        offset,
+        offsetString,
+        localTime: now.toLocaleString(),
+        localDate: now.toLocaleDateString(),
+        localTimeOnly: now.toLocaleTimeString()
+      };
+    } catch (error) {
+      console.error('Error getting device timezone:', error);
+      return null;
+    }
+  };
+
   // Load location from Firebase when user is authenticated
   useEffect(() => {
     const loadUserLocation = async () => {
@@ -73,9 +102,16 @@ export const LocationProvider = ({ children }) => {
   }, [user, isLocationSet, isLoadingLocation]);
 
   const updateLocation = async (newLocation) => {
-    setLocation(newLocation);
+    // Add timezone information to the location
+    const timezoneInfo = getDeviceTimezone();
+    const locationWithTimezone = {
+      ...newLocation,
+      timezone: timezoneInfo
+    };
+    
+    setLocation(locationWithTimezone);
     setIsLocationSet(true);
-    localStorage.setItem('billionaire-os-location', JSON.stringify(newLocation));
+    localStorage.setItem('billionaire-os-location', JSON.stringify(locationWithTimezone));
     
     // Save to Firebase if user is authenticated
     if (user) {
@@ -93,6 +129,61 @@ export const LocationProvider = ({ children }) => {
     setLocation(null);
     setIsLocationSet(false);
     localStorage.removeItem('billionaire-os-location');
+  };
+
+  // Timezone utility functions
+  const getCurrentTime = (format = 'full') => {
+    const now = new Date();
+    const timezone = location?.timezone?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    
+    switch (format) {
+      case 'time':
+        return now.toLocaleTimeString('en-US', { timeZone: timezone });
+      case 'date':
+        return now.toLocaleDateString('en-US', { timeZone: timezone });
+      case 'datetime':
+        return now.toLocaleString('en-US', { timeZone: timezone });
+      case 'iso':
+        return now.toISOString();
+      default:
+        return now.toLocaleString('en-US', { 
+          timeZone: timezone,
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+    }
+  };
+
+  const getTimezoneInfo = () => {
+    return location?.timezone || getDeviceTimezone();
+  };
+
+  const formatTimeInTimezone = (date, format = 'full') => {
+    const timezone = location?.timezone?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone;
+    const dateObj = typeof date === 'string' ? new Date(date) : date;
+    
+    switch (format) {
+      case 'time':
+        return dateObj.toLocaleTimeString('en-US', { timeZone: timezone });
+      case 'date':
+        return dateObj.toLocaleDateString('en-US', { timeZone: timezone });
+      case 'datetime':
+        return dateObj.toLocaleString('en-US', { timeZone: timezone });
+      default:
+        return dateObj.toLocaleString('en-US', { 
+          timeZone: timezone,
+          weekday: 'long',
+          year: 'numeric',
+          month: 'long',
+          day: 'numeric',
+          hour: '2-digit',
+          minute: '2-digit'
+        });
+    }
   };
 
   // Helper functions for formatting
@@ -183,7 +274,12 @@ export const LocationProvider = ({ children }) => {
     getCountryName,
     getCountryCode,
     getCurrencyCode,
-    getLocationContext
+    getLocationContext,
+    // Timezone functions
+    getCurrentTime,
+    getTimezoneInfo,
+    formatTimeInTimezone,
+    getDeviceTimezone
   };
 
   return (

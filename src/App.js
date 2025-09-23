@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, ChevronDown, Briefcase } from 'lucide-react';
+import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, ChevronDown, Briefcase, Brain, TrendingUp } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LocationProvider, useLocation } from './contexts/LocationContext';
@@ -13,6 +13,7 @@ import AuthModal from './components/AuthModal';
 import CookieConsent from './components/CookieConsent';
 import ProfileDropdown from './components/ProfileDropdown';
 import LocationSelector from './components/LocationSelector';
+import Footer from './components/Footer';
 import { testFirebaseConnection } from './firebase/test';
 import { cn } from './utils/cn';
 
@@ -22,6 +23,8 @@ const AppContent = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showLocationSelector, setShowLocationSelector] = useState(false);
+  const [showProductivityDropdown, setShowProductivityDropdown] = useState(false);
+  const [showIntelligenceDropdown, setShowIntelligenceDropdown] = useState(false);
   const { user, loading } = useAuth();
   const { isLocationSet, updateLocation } = useLocation();
 
@@ -68,14 +71,19 @@ const AppContent = () => {
 
   const currentQuote = getDailyQuote();
 
-  const tabs = [
+  const productivityTabs = [
     { id: 'vision', label: 'Journal', icon: Target, component: VisionPage, color: 'sage' },
     { id: 'goals', label: 'Goals', icon: Calendar, component: GoalsPage, color: 'blue' },
     { id: 'habits', label: 'Habits', icon: CheckSquare, component: HabitsPage, color: 'orange' },
     { id: 'networth', label: 'Net Worth', icon: DollarSign, component: NetWorthPage, color: 'green' },
+  ];
+
+  const intelligenceTabs = [
     { id: 'business', label: 'Business Intel', icon: Rocket, component: BusinessOpportunitiesPage, color: 'purple' },
     { id: 'profession', label: 'Profession Intel', icon: Briefcase, component: ProfessionIntelligencePage, color: 'indigo' },
   ];
+
+  const allTabs = [...productivityTabs, ...intelligenceTabs];
 
   useEffect(() => {
     // Test Firebase connection
@@ -90,11 +98,17 @@ const AppContent = () => {
     }
   }, [user, loading, isLocationSet]);
 
-  // Close mobile menu when clicking outside
+  // Close dropdowns when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showMobileMenu && !event.target.closest('.mobile-nav-container')) {
         setShowMobileMenu(false);
+      }
+      if (showProductivityDropdown && !event.target.closest('.productivity-dropdown')) {
+        setShowProductivityDropdown(false);
+      }
+      if (showIntelligenceDropdown && !event.target.closest('.intelligence-dropdown')) {
+        setShowIntelligenceDropdown(false);
       }
     };
 
@@ -102,9 +116,9 @@ const AppContent = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMobileMenu]);
+  }, [showMobileMenu, showProductivityDropdown, showIntelligenceDropdown]);
 
-  const ActiveComponent = tabs.find(tab => tab.id === activeTab)?.component;
+  const ActiveComponent = allTabs.find(tab => tab.id === activeTab)?.component;
 
   const handleTabChange = (tabId) => {
     // Visual feedback for tab change
@@ -188,137 +202,264 @@ const AppContent = () => {
   return (
     <div className="min-h-screen bg-white font-sans antialiased">
 
-      {/* Enhanced Minimalist Header */}
-      <header className="sticky top-0 z-50 bg-white backdrop-blur-md bg-opacity-95 border-b border-gray-100 shadow-sm">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="flex justify-between items-center h-20">
+      {/* Beautiful Header with Navigation */}
+      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100/50 shadow-sm">
+        <div className="max-w-7xl mx-auto px-6">
+          <div className="flex justify-between items-center h-16">
             {/* Logo Section */}
             <motion.div 
-              className="flex items-center space-x-4"
-              whileHover={{ scale: 1.02 }}
+              className="flex items-center space-x-3"
+              whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.2 }}
             >
-              <div className="w-10 h-10 bg-gradient-to-br from-gray-900 to-black rounded-xl flex items-center justify-center shadow-lg">
-                <Sparkles className="w-5 h-5 text-white" />
+              <div className="relative">
+                <div className="w-9 h-9 bg-gradient-to-br from-gray-900 via-gray-800 to-black rounded-xl flex items-center justify-center shadow-lg">
+                  <Sparkles className="w-4 h-4 text-white" />
+                </div>
+                <div className="absolute -top-1 -right-1 w-3 h-3 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full animate-pulse"></div>
               </div>
               <div>
-                <h1 className="text-2xl font-bold text-gray-900 tracking-tight">
+                <h1 className="text-xl font-bold text-gray-900 tracking-tight">
                   Billionaire OS
                 </h1>
-                <p className="text-sm text-gray-500 font-medium">
-                  {user.displayName || 'User'}
+                <p className="text-xs text-gray-500 font-medium -mt-0.5">
+                  Personal Intelligence Suite
                 </p>
               </div>
             </motion.div>
-            
-            {/* Profile Dropdown */}
-            <ProfileDropdown onLocationSettingsClick={() => setShowLocationSelector(true)} />
-            
-          </div>
-        </div>
-      </header>
 
-      {/* Minimal Navigation */}
-      <motion.nav
-        initial={{ opacity: 0, y: -10 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.2 }}
-        className="mt-6 mb-8 relative"
-      >
-        {/* Desktop Navigation */}
-        <div className="hidden md:flex justify-center">
-          <div className="inline-flex bg-white border border-gray-200 rounded-full p-1 shadow-sm">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
+            {/* Desktop Navigation */}
+            <div className="hidden md:flex items-center space-x-1">
+              {/* Productivity Dropdown */}
+              <div className="relative productivity-dropdown">
                 <motion.button
-                  key={tab.id}
-                  onClick={() => handleTabChange(tab.id)}
+                  onClick={() => {
+                    setShowProductivityDropdown(!showProductivityDropdown);
+                    setShowIntelligenceDropdown(false);
+                  }}
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
-                  className={cn(
-                    "flex items-center space-x-2 px-4 py-2.5 rounded-full font-medium text-sm transition-all duration-200 whitespace-nowrap",
-                    isActive
-                      ? "bg-black text-white"
-                      : "text-gray-600 hover:text-black hover:bg-gray-50"
-                  )}
+                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
                 >
-                  <Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
+                  <TrendingUp className="w-4 h-4" />
+                  <span>Productivity</span>
+                  <motion.div
+                    animate={{ rotate: showProductivityDropdown ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="w-3 h-3" />
+                  </motion.div>
                 </motion.button>
-              );
-            })}
-          </div>
-        </div>
 
-        {/* Mobile Navigation */}
-        <div className="md:hidden px-4">
-          <div className="relative mobile-nav-container">
+                <AnimatePresence>
+                  {showProductivityDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+                    >
+                      {productivityTabs.map((tab, index) => {
+                        const Icon = tab.icon;
+                        const isActive = activeTab === tab.id;
+                        return (
+                          <motion.button
+                            key={tab.id}
+                            onClick={() => {
+                              handleTabChange(tab.id);
+                              setShowProductivityDropdown(false);
+                            }}
+                            whileHover={{ backgroundColor: "#f9fafb" }}
+                            className={cn(
+                              "w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-200",
+                              isActive ? "bg-gray-900 text-white" : "text-gray-700 hover:text-gray-900",
+                              index !== productivityTabs.length - 1 && "border-b border-gray-100"
+                            )}
+                          >
+                            <Icon className="w-4 h-4" />
+                            <span className="font-medium">{tab.label}</span>
+                          </motion.button>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+
+              {/* Intelligence Dropdown */}
+              <div className="relative intelligence-dropdown">
+                <motion.button
+                  onClick={() => {
+                    setShowIntelligenceDropdown(!showIntelligenceDropdown);
+                    setShowProductivityDropdown(false);
+                  }}
+                  whileHover={{ scale: 1.02 }}
+                  whileTap={{ scale: 0.98 }}
+                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                >
+                  <Brain className="w-4 h-4" />
+                  <span>Intelligence</span>
+                  <motion.div
+                    animate={{ rotate: showIntelligenceDropdown ? 180 : 0 }}
+                    transition={{ duration: 0.2 }}
+                  >
+                    <ChevronDown className="w-3 h-3" />
+                  </motion.div>
+                </motion.button>
+
+                <AnimatePresence>
+                  {showIntelligenceDropdown && (
+                    <motion.div
+                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
+                      animate={{ opacity: 1, y: 0, scale: 1 }}
+                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
+                      transition={{ duration: 0.2 }}
+                      className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
+                    >
+                      {intelligenceTabs.map((tab, index) => {
+                        const Icon = tab.icon;
+                        const isActive = activeTab === tab.id;
+                        return (
+                          <motion.button
+                            key={tab.id}
+                            onClick={() => {
+                              handleTabChange(tab.id);
+                              setShowIntelligenceDropdown(false);
+                            }}
+                            whileHover={{ backgroundColor: "#f9fafb" }}
+                            className={cn(
+                              "w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-200",
+                              isActive ? "bg-gray-900 text-white" : "text-gray-700 hover:text-gray-900",
+                              index !== intelligenceTabs.length - 1 && "border-b border-gray-100"
+                            )}
+                          >
+                            <Icon className="w-4 h-4" />
+                            <span className="font-medium">{tab.label}</span>
+                          </motion.button>
+                        );
+                      })}
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+              </div>
+            </div>
+
             {/* Mobile Menu Button */}
-            <motion.button
-              onClick={() => setShowMobileMenu(!showMobileMenu)}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
-              className="w-full flex items-center justify-between bg-white border border-gray-200 rounded-full px-4 py-3 font-medium text-sm shadow-sm"
-            >
-              <div className="flex items-center space-x-3">
+            <div className="md:hidden mobile-nav-container">
+              <motion.button
+                onClick={() => setShowMobileMenu(!showMobileMenu)}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
+                className="flex items-center space-x-2 px-3 py-2 rounded-xl font-medium text-sm transition-all duration-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+              >
                 {(() => {
-                  const activeTabData = tabs.find(tab => tab.id === activeTab);
+                  const activeTabData = allTabs.find(tab => tab.id === activeTab);
                   const Icon = activeTabData?.icon;
                   return (
                     <>
-                      <Icon className="w-4 h-4 text-gray-700" />
-                      <span className="text-gray-900">{activeTabData?.label}</span>
+                      <Icon className="w-4 h-4" />
+                      <span>{activeTabData?.label}</span>
+                      <motion.div
+                        animate={{ rotate: showMobileMenu ? 180 : 0 }}
+                        transition={{ duration: 0.2 }}
+                      >
+                        <ChevronDown className="w-3 h-3" />
+                      </motion.div>
                     </>
                   );
                 })()}
-              </div>
-              <motion.div
-                animate={{ rotate: showMobileMenu ? 180 : 0 }}
-                transition={{ duration: 0.2 }}
-              >
-                <ChevronDown className="w-4 h-4 text-gray-500" />
-              </motion.div>
-            </motion.button>
+              </motion.button>
+            </div>
 
-            {/* Mobile Dropdown Menu */}
-            <AnimatePresence>
-              {showMobileMenu && (
-                <motion.div
-                  initial={{ opacity: 0, y: -10 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  exit={{ opacity: 0, y: -10 }}
-                  transition={{ duration: 0.2 }}
-                  className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-2xl shadow-lg overflow-hidden z-50"
-                >
-                  {tabs.map((tab, index) => {
-                    const Icon = tab.icon;
-                    const isActive = activeTab === tab.id;
-                    return (
-                      <motion.button
-                        key={tab.id}
-                        onClick={() => handleTabChange(tab.id)}
-                        whileHover={{ backgroundColor: "#f9fafb" }}
-                        className={cn(
-                          "w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-200",
-                          isActive
-                            ? "bg-black text-white"
-                            : "text-gray-600 hover:text-black",
-                          index !== tabs.length - 1 && "border-b border-gray-100"
-                        )}
-                      >
-                        <Icon className="w-4 h-4" />
-                        <span className="font-medium">{tab.label}</span>
-                      </motion.button>
-                    );
-                  })}
-                </motion.div>
-              )}
-            </AnimatePresence>
+            {/* Profile Dropdown */}
+            <ProfileDropdown onLocationSettingsClick={() => setShowLocationSelector(true)} />
           </div>
         </div>
-      </motion.nav>
+
+        {/* Mobile Dropdown Menu */}
+        <AnimatePresence>
+          {showMobileMenu && (
+            <motion.div
+              initial={{ opacity: 0, height: 0 }}
+              animate={{ opacity: 1, height: "auto" }}
+              exit={{ opacity: 0, height: 0 }}
+              transition={{ duration: 0.3 }}
+              className="md:hidden bg-white border-t border-gray-100"
+            >
+              <div className="max-w-7xl mx-auto px-6 py-4">
+                {/* Productivity Section */}
+                <div className="mb-6">
+                  <div className="flex items-center space-x-2 mb-3">
+                    <TrendingUp className="w-4 h-4 text-gray-600" />
+                    <h3 className="text-sm font-semibold text-gray-900">Productivity</h3>
+                  </div>
+                  <div className="grid grid-cols-2 gap-2">
+                    {productivityTabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <motion.button
+                          key={tab.id}
+                          onClick={() => {
+                            handleTabChange(tab.id);
+                            setShowMobileMenu(false);
+                          }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className={cn(
+                            "flex items-center space-x-2 px-3 py-2.5 rounded-lg font-medium text-sm transition-all duration-200",
+                            isActive
+                              ? "bg-gray-900 text-white"
+                              : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                          )}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{tab.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+
+                {/* Intelligence Section */}
+                <div>
+                  <div className="flex items-center space-x-2 mb-3">
+                    <Brain className="w-4 h-4 text-gray-600" />
+                    <h3 className="text-sm font-semibold text-gray-900">Intelligence</h3>
+                  </div>
+                  <div className="space-y-2">
+                    {intelligenceTabs.map((tab) => {
+                      const Icon = tab.icon;
+                      const isActive = activeTab === tab.id;
+                      return (
+                        <motion.button
+                          key={tab.id}
+                          onClick={() => {
+                            handleTabChange(tab.id);
+                            setShowMobileMenu(false);
+                          }}
+                          whileHover={{ scale: 1.02 }}
+                          whileTap={{ scale: 0.98 }}
+                          className={cn(
+                            "w-full flex items-center space-x-3 px-3 py-2.5 rounded-lg font-medium text-sm transition-all duration-200",
+                            isActive
+                              ? "bg-gray-900 text-white"
+                              : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                          )}
+                        >
+                          <Icon className="w-4 h-4" />
+                          <span>{tab.label}</span>
+                        </motion.button>
+                      );
+                    })}
+                  </div>
+                </div>
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
+      </header>
 
       {/* Main Content */}
       <motion.main
@@ -362,6 +503,7 @@ const AppContent = () => {
         )}
       </AnimatePresence>
       
+      <Footer />
       <CookieConsent />
     </div>
   );

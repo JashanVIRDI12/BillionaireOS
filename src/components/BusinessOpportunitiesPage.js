@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation } from '../contexts/LocationContext';
-import { TrendingUp, Target, DollarSign, Lightbulb, Users, BarChart3, Search, Rocket, Brain, CheckCircle, AlertCircle, Clock, Zap, ChevronDown, Building2, TrendingDown } from 'lucide-react';
+import { TrendingUp, Target, DollarSign, Lightbulb, Users, BarChart3, CheckCircle, AlertCircle, Clock, Zap, Loader2, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   analyzeMarketTrends, 
@@ -17,7 +17,7 @@ const BusinessOpportunitiesPage = () => {
   const [results, setResults] = useState(null);
   const [error, setError] = useState(null);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
-  const { getLocationContext, getCurrencySymbol } = useLocation();
+  const { location, getLocationContext, getCurrencySymbol, getCountryName } = useLocation();
 
   // Form states
   const [ideaForm, setIdeaForm] = useState({
@@ -233,246 +233,242 @@ const BusinessOpportunitiesPage = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-white"
     >
-      {/* Header */}
-      <div className="border-b border-gray-100 pb-6 mb-8">
-        <div className="flex items-center space-x-3 mb-2">
-          <div className="w-8 h-8 bg-gradient-to-br from-purple-600 to-blue-600 rounded-lg flex items-center justify-center">
-            <Rocket className="w-4 h-4 text-white" />
-          </div>
-          <h1 className="text-2xl sm:text-3xl font-light text-black">Business Intelligence</h1>
-        </div>
-        <p className="text-gray-400 text-sm sm:text-base font-light ml-11">
-          AI-powered business opportunity analysis and validation
-        </p>
-      </div>
-
-      {/* Responsive Navigation */}
-      <div className="mb-6 sm:mb-8">
-        {/* Desktop Navigation */}
-        <div className="hidden md:block">
-          <div className="flex space-x-1 bg-gray-50 rounded-xl p-1">
-            {tabs.map((tab) => {
-              const Icon = tab.icon;
-              const isActive = activeTab === tab.id;
-              return (
-                <motion.button
-                  key={tab.id}
-                  onClick={() => {
-                    setActiveTab(tab.id);
-                    setResults(null);
-                    setError(null);
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className={`
-                    flex items-center space-x-2 px-4 py-2.5 text-sm font-medium rounded-lg transition-all duration-200 whitespace-nowrap
-                    ${isActive
-                      ? "bg-white text-black shadow-sm border border-gray-200"
-                      : "text-gray-600 hover:text-gray-900 hover:bg-white hover:bg-opacity-50"
-                    }
-                  `}
-                >
-                  <Icon className="w-4 h-4" />
-                  <span>{tab.label}</span>
-                </motion.button>
-              );
-            })}
-          </div>
+      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
+        {/* Clean Header */}
+        <div className="text-center mb-20">
+          <h1 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 tracking-tight">
+            Business Intelligence
+          </h1>
+          <div className="w-16 h-0.5 bg-gray-900 mx-auto mb-8"></div>
+          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
+            AI-powered business opportunity analysis and validation 
+            tailored for <span className="font-medium text-gray-900">{location ? getCountryName(location.country) : 'your location'}</span>.
+          </p>
         </div>
 
-        {/* Mobile Navigation - Dropdown */}
-        <div className="md:hidden relative mobile-business-nav">
-          {/* Mobile Menu Button */}
-          <motion.button
-            onClick={() => setShowMobileMenu(!showMobileMenu)}
-            whileHover={{ scale: 1.01 }}
-            whileTap={{ scale: 0.99 }}
-            className="w-full flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 font-medium text-sm shadow-sm"
-          >
-            <div className="flex items-center space-x-3">
-              {(() => {
-                const activeTabData = tabs.find(tab => tab.id === activeTab);
-                const Icon = activeTabData?.icon;
+        {/* Clean Location Info */}
+        {location && (
+          <div className="flex items-center justify-center space-x-3 mb-16">
+            <MapPin className="w-4 h-4 text-gray-500" />
+            <span className="text-sm text-gray-600 font-medium">
+              {getCountryName(location.country)} • {location.currency} ({getCurrencySymbol(location.currency)})
+            </span>
+          </div>
+        )}
+
+        {/* Minimal Tabs */}
+        <div className="mb-20">
+          <div className="flex justify-center">
+            <div className="inline-flex bg-gray-50 rounded-xl p-1.5 border border-gray-200 shadow-sm">
+              {tabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
                 return (
-                  <>
-                    <Icon className="w-4 h-4 text-gray-700" />
-                    <span className="text-gray-900">{activeTabData?.label}</span>
-                  </>
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      setActiveTab(tab.id);
+                      setResults(null);
+                      setError(null);
+                    }}
+                    className={`flex items-center space-x-2.5 px-6 py-3 rounded-lg font-medium text-sm transition-all duration-200 ${
+                      isActive
+                        ? 'bg-white text-gray-900 shadow-md'
+                        : 'text-gray-600 hover:text-gray-900 hover:bg-white/60'
+                    }`}
+                  >
+                    <Icon className="w-4 h-4" />
+                    <span className="hidden sm:inline">{tab.label}</span>
+                  </button>
                 );
-              })()}
+              })}
             </div>
-            <motion.div
-              animate={{ rotate: showMobileMenu ? 180 : 0 }}
-              transition={{ duration: 0.2 }}
-            >
-              <ChevronDown className="w-4 h-4 text-gray-500" />
-            </motion.div>
-          </motion.button>
-
-          {/* Mobile Dropdown Menu */}
-          <AnimatePresence>
-            {showMobileMenu && (
-              <motion.div
-                initial={{ opacity: 0, y: -10 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -10 }}
-                transition={{ duration: 0.2 }}
-                className="absolute top-full left-0 right-0 mt-2 bg-white border border-gray-200 rounded-xl shadow-lg overflow-hidden z-50"
-              >
-                {tabs.map((tab, index) => {
-                  const Icon = tab.icon;
-                  const isActive = activeTab === tab.id;
-                  return (
-                    <motion.button
-                      key={tab.id}
-                      onClick={() => {
-                        setActiveTab(tab.id);
-                        setResults(null);
-                        setError(null);
-                        setShowMobileMenu(false);
-                      }}
-                      whileHover={{ backgroundColor: "#f9fafb" }}
-                      className={`
-                        w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-200
-                        ${isActive
-                          ? "bg-black text-white"
-                          : "text-gray-600 hover:text-black"
-                        }
-                        ${index !== tabs.length - 1 ? "border-b border-gray-100" : ""}
-                      `}
-                    >
-                      <Icon className="w-4 h-4" />
-                      <span className="font-medium">{tab.label}</span>
-                    </motion.button>
-                  );
-                })}
-              </motion.div>
-            )}
-          </AnimatePresence>
-        </div>
-      </div>
-
-      {/* Error Display */}
-      {error && (
-        <motion.div
-          initial={{ opacity: 0, y: -10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-6 bg-red-50 border border-red-200 rounded-xl p-4"
-        >
-          <div className="flex items-center space-x-2">
-            <AlertCircle className="w-5 h-5 text-red-600" />
-            <p className="text-red-700 font-medium">{error}</p>
           </div>
-        </motion.div>
-      )}
+          
+          {/* Quick Examples */}
+          <div className="mt-8 flex flex-wrap gap-3 justify-center">
+            {activeTab === 'ideas' && (
+              <>
+                <button
+                  onClick={() => setIdeaForm({ interests: 'Technology, AI, Automation', skills: 'Programming, Data Analysis', budget: '$5,000', timeCommitment: 'Part-time (10-20 hours/week)' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: Tech Entrepreneur</button>
+                <button
+                  onClick={() => setIdeaForm({ interests: 'Health, Fitness, Wellness', skills: 'Marketing, Content Creation', budget: '$2,000', timeCommitment: 'Side project (5-10 hours/week)' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: Health Coach</button>
+              </>
+            )}
+            {activeTab === 'market' && (
+              <>
+                <button
+                  onClick={() => setMarketForm({ industry: 'Artificial Intelligence', timeframe: '2024-2025' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: AI Industry</button>
+                <button
+                  onClick={() => setMarketForm({ industry: 'E-commerce', timeframe: 'Next 5 years' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: E-commerce</button>
+              </>
+            )}
+            {activeTab === 'competitors' && (
+              <>
+                <button
+                  onClick={() => setCompetitorForm({ businessIdea: 'AI-powered fitness app', targetMarket: 'Health-conscious millennials' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: Fitness App</button>
+                <button
+                  onClick={() => setCompetitorForm({ businessIdea: 'Sustainable food delivery', targetMarket: 'Eco-conscious consumers' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: Eco Delivery</button>
+              </>
+            )}
+            {activeTab === 'revenue' && (
+              <>
+                <button
+                  onClick={() => setRevenueForm({ businessIdea: 'Online learning platform', targetCustomers: 'Working professionals', industry: 'Education Technology' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: EdTech Platform</button>
+                <button
+                  onClick={() => setRevenueForm({ businessIdea: 'Local service marketplace', targetCustomers: 'Homeowners', industry: 'Home Services' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: Service Marketplace</button>
+              </>
+            )}
+            {activeTab === 'mvp' && (
+              <>
+                <button
+                  onClick={() => setMvpForm({ businessIdea: 'Smart budgeting app', targetCustomers: 'Young professionals', budget: '$3,000' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: Budgeting App</button>
+                <button
+                  onClick={() => setMvpForm({ businessIdea: 'Virtual event platform', targetCustomers: 'Small businesses', budget: '$8,000' })}
+                  className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
+                >Try: Event Platform</button>
+              </>
+            )}
+          </div>
+        </div>
 
-      {/* Loading State */}
-      {loading && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          className="mb-8"
-        >
-          <SoothingLoader 
-            message="Analyzing business opportunities..." 
-            icon={Brain}
-          />
-        </motion.div>
-      )}
+        {/* Clean Error Display */}
+        {error && (
+          <div className="mb-12 max-w-3xl mx-auto">
+            <div className="bg-red-50 border border-red-200 rounded-xl p-6">
+              <div className="flex items-center space-x-3">
+                <AlertCircle className="w-5 h-5 text-red-600 flex-shrink-0" />
+                <p className="text-red-800 text-sm">{error}</p>
+              </div>
+            </div>
+          </div>
+        )}
+
 
       {/* Tab Content */}
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={activeTab}
-          initial={{ opacity: 0, x: 20 }}
-          animate={{ opacity: 1, x: 0 }}
-          exit={{ opacity: 0, x: -20 }}
-          transition={{ duration: 0.3 }}
-        >
+      <div className="pb-16">
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={activeTab}
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            exit={{ opacity: 0, x: -20 }}
+            transition={{ duration: 0.3 }}
+          >
           {/* Business Idea Generator */}
           {activeTab === 'ideas' && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-yellow-50 to-orange-50 border border-yellow-200 rounded-xl p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <Lightbulb className="w-6 h-6 text-yellow-600" />
-                  <h2 className="text-xl font-bold text-gray-900">Generate Business Ideas</h2>
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
+                    <Lightbulb className="w-5 h-5 text-yellow-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-medium text-gray-900">Generate Business Ideas</h2>
+                    <p className="text-sm text-gray-600">AI-powered personalized business opportunities</p>
+                  </div>
                 </div>
                 
-                <div className="space-y-4 mb-6">
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Your Interests *
-                      </label>
-                      <textarea
-                        value={ideaForm.interests}
-                        onChange={(e) => setIdeaForm({...ideaForm, interests: e.target.value})}
-                        className="w-full h-16 sm:h-20 p-3 border-2 border-gray-300 focus:border-yellow-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
-                        placeholder="e.g., Technology, Health, Finance..."
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Your Skills *
-                      </label>
-                      <textarea
-                        value={ideaForm.skills}
-                        onChange={(e) => setIdeaForm({...ideaForm, skills: e.target.value})}
-                        className="w-full h-16 sm:h-20 p-3 border-2 border-gray-300 focus:border-yellow-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
-                        placeholder="e.g., Programming, Marketing, Sales..."
-                      />
-                    </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Interests *
+                    </label>
+                    <textarea
+                      value={ideaForm.interests}
+                      onChange={(e) => setIdeaForm({...ideaForm, interests: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      rows={3}
+                      placeholder="e.g., Technology, Health, Finance..."
+                    />
                   </div>
                   
-                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Available Budget
-                      </label>
-                      <input
-                        type="text"
-                        value={ideaForm.budget}
-                        onChange={(e) => setIdeaForm({...ideaForm, budget: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-yellow-500 outline-none transition-all rounded-lg bg-white text-sm"
-                        placeholder={`e.g., ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}10,000`}
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Time Commitment
-                      </label>
-                      <select
-                        value={ideaForm.timeCommitment}
-                        onChange={(e) => setIdeaForm({...ideaForm, timeCommitment: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-yellow-500 outline-none transition-all rounded-lg bg-white text-sm"
-                      >
-                        <option value="">Select time commitment</option>
-                        <option value="Part-time (10-20 hours/week)">Part-time (10-20 hrs/week)</option>
-                        <option value="Full-time (40+ hours/week)">Full-time (40+ hrs/week)</option>
-                        <option value="Side project (5-10 hours/week)">Side project (5-10 hrs/week)</option>
-                      </select>
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Your Skills *
+                    </label>
+                    <textarea
+                      value={ideaForm.skills}
+                      onChange={(e) => setIdeaForm({...ideaForm, skills: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      rows={3}
+                      placeholder="e.g., Programming, Marketing, Sales..."
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Available Budget
+                    </label>
+                    <input
+                      type="text"
+                      value={ideaForm.budget}
+                      onChange={(e) => setIdeaForm({...ideaForm, budget: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      placeholder={`e.g., ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}10,000`}
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Time Commitment
+                    </label>
+                    <select
+                      value={ideaForm.timeCommitment}
+                      onChange={(e) => setIdeaForm({...ideaForm, timeCommitment: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                    >
+                      <option value="">Select time commitment</option>
+                      <option value="Part-time (10-20 hours/week)">Part-time (10-20 hrs/week)</option>
+                      <option value="Full-time (40+ hours/week)">Full-time (40+ hrs/week)</option>
+                      <option value="Side project (5-10 hours/week)">Side project (5-10 hrs/week)</option>
+                    </select>
                   </div>
                 </div>
                 
-                <motion.button
+                <button
                   onClick={handleGenerateIdeas}
                   disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-yellow-500 to-orange-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-yellow-600 hover:to-orange-600 transition-all duration-200 disabled:opacity-50"
+                  className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
-                  <div className="flex items-center justify-center space-x-2">
-                    <Zap className="w-5 h-5" />
-                    <span>Generate Business Ideas</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Generating Ideas...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Lightbulb className="w-4 h-4" />
+                      <span>Generate Business Ideas</span>
+                    </>
+                  )}
+                </button>
+                {loading && (
+                  <div className="mt-6">
+                    <SoothingLoader message="Generating personalized business ideas..." />
                   </div>
-                </motion.button>
-              </div>
+                )}
 
-              {/* Business Ideas Results */}
-              {results && results.businessIdeas && (
+                {/* Business Ideas Results */}
+                {results && results.businessIdeas && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
@@ -603,41 +599,47 @@ const BusinessOpportunitiesPage = () => {
                     )}
                   </div>
                 </motion.div>
-              )}
+                )}
+              </div>
             </div>
           )}
 
           {/* Market Trends Analysis */}
           {activeTab === 'market' && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-blue-50 to-indigo-50 border border-blue-200 rounded-xl p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <TrendingUp className="w-6 h-6 text-blue-600" />
-                  <h2 className="text-xl font-bold text-gray-900">Market Trend Analysis</h2>
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
+                    <TrendingUp className="w-5 h-5 text-blue-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-medium text-gray-900">Market Trend Analysis</h2>
+                    <p className="text-sm text-gray-600">Industry analysis and market opportunities</p>
+                  </div>
                 </div>
                 
-                <div className="space-y-4 mb-6">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Industry *
                     </label>
                     <input
                       type="text"
                       value={marketForm.industry}
                       onChange={(e) => setMarketForm({...marketForm, industry: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-300 focus:border-blue-500 outline-none transition-all rounded-lg bg-white text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
                       placeholder="e.g., AI, FinTech, E-commerce, Healthcare"
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Timeframe
                     </label>
                     <select
                       value={marketForm.timeframe}
                       onChange={(e) => setMarketForm({...marketForm, timeframe: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-300 focus:border-blue-500 outline-none transition-all rounded-lg bg-white text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
                     >
                       <option value="2024-2025">2024-2025</option>
                       <option value="2025-2026">2025-2026</option>
@@ -646,20 +648,28 @@ const BusinessOpportunitiesPage = () => {
                   </div>
                 </div>
                 
-                <motion.button
+                <button
                   onClick={handleMarketAnalysis}
                   disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-blue-500 to-indigo-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-blue-600 hover:to-indigo-600 transition-all duration-200 disabled:opacity-50"
+                  className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
-                  <div className="flex items-center justify-center space-x-2">
-                    <BarChart3 className="w-5 h-5" />
-                    <span>Analyze Market Trends</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Analyzing Market...</span>
+                    </>
+                  ) : (
+                    <>
+                      <TrendingUp className="w-4 h-4" />
+                      <span>Analyze Market Trends</span>
+                    </>
+                  )}
+                </button>
+                {loading && (
+                  <div className="mt-6">
+                    <SoothingLoader message="Analyzing market trends and opportunities..." />
                   </div>
-                </motion.button>
-              </div>
-
+                )}
               {/* Market Analysis Results */}
               {results && results.keyTrends && (
                 <motion.div
@@ -749,59 +759,74 @@ const BusinessOpportunitiesPage = () => {
                   )}
                 </motion.div>
               )}
+              </div>
             </div>
           )}
 
           {/* Competitor Analysis */}
           {activeTab === 'competitors' && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-red-50 to-pink-50 border border-red-200 rounded-xl p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <Users className="w-6 h-6 text-red-600" />
-                  <h2 className="text-xl font-bold text-gray-900">Competitor Analysis</h2>
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
+                    <Users className="w-5 h-5 text-red-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-medium text-gray-900">Competitor Analysis</h2>
+                    <p className="text-sm text-gray-600">Market competition and differentiation opportunities</p>
+                  </div>
                 </div>
                 
-                <div className="grid grid-cols-1 gap-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Business Idea *
                     </label>
                     <textarea
                       value={competitorForm.businessIdea}
                       onChange={(e) => setCompetitorForm({...competitorForm, businessIdea: e.target.value})}
-                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-red-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      rows={3}
                       placeholder="Describe your business idea in detail..."
                     />
                   </div>
                   
                   <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Target Market *
                     </label>
                     <input
                       type="text"
                       value={competitorForm.targetMarket}
                       onChange={(e) => setCompetitorForm({...competitorForm, targetMarket: e.target.value})}
-                      className="w-full p-3 border-2 border-gray-300 focus:border-red-500 outline-none transition-all rounded-lg bg-white text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
                       placeholder="e.g., Small businesses, Millennials, B2B SaaS companies"
                     />
                   </div>
                 </div>
                 
-                <motion.button
+                <button
                   onClick={handleCompetitorAnalysis}
                   disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-red-500 to-pink-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-red-600 hover:to-pink-600 transition-all duration-200 disabled:opacity-50"
+                  className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
-                  <div className="flex items-center justify-center space-x-2">
-                    <Search className="w-5 h-5" />
-                    <span>Analyze Competitors</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Analyzing Competitors...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Users className="w-4 h-4" />
+                      <span>Analyze Competitors</span>
+                    </>
+                  )}
+                </button>
+                {loading && (
+                  <div className="mt-6">
+                    <SoothingLoader message="Analyzing competitive landscape..." />
                   </div>
-                </motion.button>
-              </div>
-
+                )}
               {/* Competitor Analysis Results */}
               {results && results.directCompetitors && (
                 <motion.div
@@ -900,74 +925,87 @@ const BusinessOpportunitiesPage = () => {
                   )}
                 </motion.div>
               )}
+              </div>
             </div>
           )}
 
           {/* Revenue Models */}
           {activeTab === 'revenue' && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-green-50 to-emerald-50 border border-green-200 rounded-xl p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <DollarSign className="w-6 h-6 text-green-600" />
-                  <h2 className="text-xl font-bold text-gray-900">Revenue Model Analysis</h2>
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
+                    <DollarSign className="w-5 h-5 text-green-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-medium text-gray-900">Revenue Model Analysis</h2>
+                    <p className="text-sm text-gray-600">Monetization strategies and revenue optimization</p>
+                  </div>
                 </div>
                 
-                <div className="grid grid-cols-1 gap-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Business Idea *
                     </label>
                     <textarea
                       value={revenueForm.businessIdea}
                       onChange={(e) => setRevenueForm({...revenueForm, businessIdea: e.target.value})}
-                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-green-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      rows={3}
                       placeholder="Describe your business idea..."
                     />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Target Customers *
-                      </label>
-                      <input
-                        type="text"
-                        value={revenueForm.targetCustomers}
-                        onChange={(e) => setRevenueForm({...revenueForm, targetCustomers: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-green-500 outline-none transition-all rounded-lg bg-white text-sm"
-                        placeholder="e.g., Small businesses, Consumers, Enterprises"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Industry
-                      </label>
-                      <input
-                        type="text"
-                        value={revenueForm.industry}
-                        onChange={(e) => setRevenueForm({...revenueForm, industry: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-green-500 outline-none transition-all rounded-lg bg-white text-sm"
-                        placeholder="e.g., SaaS, E-commerce, Healthcare"
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Target Customers *
+                    </label>
+                    <input
+                      type="text"
+                      value={revenueForm.targetCustomers}
+                      onChange={(e) => setRevenueForm({...revenueForm, targetCustomers: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      placeholder="e.g., Small businesses, Consumers, Enterprises"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Industry
+                    </label>
+                    <input
+                      type="text"
+                      value={revenueForm.industry}
+                      onChange={(e) => setRevenueForm({...revenueForm, industry: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      placeholder="e.g., SaaS, E-commerce, Healthcare"
+                    />
                   </div>
                 </div>
                 
-                <motion.button
+                <button
                   onClick={handleRevenueAnalysis}
                   disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-green-500 to-emerald-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-green-600 hover:to-emerald-600 transition-all duration-200 disabled:opacity-50"
+                  className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
-                  <div className="flex items-center justify-center space-x-2">
-                    <DollarSign className="w-5 h-5" />
-                    <span>Analyze Revenue Models</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Analyzing Revenue Models...</span>
+                    </>
+                  ) : (
+                    <>
+                      <DollarSign className="w-4 h-4" />
+                      <span>Analyze Revenue Models</span>
+                    </>
+                  )}
+                </button>
+                {loading && (
+                  <div className="mt-6">
+                    <SoothingLoader message="Analyzing monetization strategies..." />
                   </div>
-                </motion.button>
-              </div>
-
+                )}
               {/* Revenue Model Results */}
               {results && results.primaryRevenueModels && (
                 <motion.div
@@ -1077,74 +1115,87 @@ const BusinessOpportunitiesPage = () => {
                   )}
                 </motion.div>
               )}
+              </div>
             </div>
           )}
 
           {/* MVP Validation */}
           {activeTab === 'mvp' && (
-            <div className="space-y-6">
-              <div className="bg-gradient-to-br from-purple-50 to-indigo-50 border border-purple-200 rounded-xl p-6">
-                <div className="flex items-center space-x-3 mb-4">
-                  <Target className="w-6 h-6 text-purple-600" />
-                  <h2 className="text-xl font-bold text-gray-900">MVP Validation Framework</h2>
+            <div className="max-w-4xl mx-auto">
+              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+                <div className="flex items-center space-x-3 mb-6">
+                  <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
+                    <Target className="w-5 h-5 text-purple-600" />
+                  </div>
+                  <div>
+                    <h2 className="text-xl font-medium text-gray-900">MVP Validation Framework</h2>
+                    <p className="text-sm text-gray-600">Validate your business idea with structured experiments</p>
+                  </div>
                 </div>
                 
-                <div className="grid grid-cols-1 gap-4 mb-6">
-                  <div>
-                    <label className="block text-sm font-semibold text-gray-800 mb-2">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                  <div className="md:col-span-2">
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
                       Business Idea *
                     </label>
                     <textarea
                       value={mvpForm.businessIdea}
                       onChange={(e) => setMvpForm({...mvpForm, businessIdea: e.target.value})}
-                      className="w-full h-20 p-3 border-2 border-gray-300 focus:border-purple-500 outline-none resize-none transition-all rounded-lg bg-white text-sm"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      rows={3}
                       placeholder="Describe your business idea in detail..."
                     />
                   </div>
                   
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Target Customers *
-                      </label>
-                      <input
-                        type="text"
-                        value={mvpForm.targetCustomers}
-                        onChange={(e) => setMvpForm({...mvpForm, targetCustomers: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-purple-500 outline-none transition-all rounded-lg bg-white text-sm"
-                        placeholder="e.g., Small business owners, Students, Freelancers"
-                      />
-                    </div>
-                    
-                    <div>
-                      <label className="block text-sm font-semibold text-gray-800 mb-2">
-                        Validation Budget
-                      </label>
-                      <input
-                        type="text"
-                        value={mvpForm.budget}
-                        onChange={(e) => setMvpForm({...mvpForm, budget: e.target.value})}
-                        className="w-full p-3 border-2 border-gray-300 focus:border-purple-500 outline-none transition-all rounded-lg bg-white text-sm"
-                        placeholder={`e.g., ${getCurrencySymbol() || '$'}500, ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}5,000`}
-                      />
-                    </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Target Customers *
+                    </label>
+                    <input
+                      type="text"
+                      value={mvpForm.targetCustomers}
+                      onChange={(e) => setMvpForm({...mvpForm, targetCustomers: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      placeholder="e.g., Small business owners, Students, Freelancers"
+                    />
+                  </div>
+                  
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Validation Budget
+                    </label>
+                    <input
+                      type="text"
+                      value={mvpForm.budget}
+                      onChange={(e) => setMvpForm({...mvpForm, budget: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      placeholder={`e.g., ${getCurrencySymbol() || '$'}500, ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}5,000`}
+                    />
                   </div>
                 </div>
                 
-                <motion.button
+                <button
                   onClick={handleMVPAnalysis}
                   disabled={loading}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="w-full bg-gradient-to-r from-purple-500 to-indigo-500 text-white font-semibold py-3 px-6 rounded-lg hover:from-purple-600 hover:to-indigo-600 transition-all duration-200 disabled:opacity-50"
+                  className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
-                  <div className="flex items-center justify-center space-x-2">
-                    <Target className="w-5 h-5" />
-                    <span>Create MVP Validation Plan</span>
+                  {loading ? (
+                    <>
+                      <Loader2 className="w-4 h-4 animate-spin" />
+                      <span>Creating Validation Plan...</span>
+                    </>
+                  ) : (
+                    <>
+                      <Target className="w-4 h-4" />
+                      <span>Create MVP Validation Plan</span>
+                    </>
+                  )}
+                </button>
+                {loading && (
+                  <div className="mt-6">
+                    <SoothingLoader message="Creating your MVP validation framework..." />
                   </div>
-                </motion.button>
-              </div>
-
+                )}
               {/* MVP Validation Results */}
               {results && results.mvpApproaches && (
                 <motion.div
@@ -1263,10 +1314,13 @@ const BusinessOpportunitiesPage = () => {
                   )}
                 </motion.div>
               )}
+              </div>
             </div>
           )}
         </motion.div>
       </AnimatePresence>
+      </div>
+      </div>
     </motion.div>
   );
 };
