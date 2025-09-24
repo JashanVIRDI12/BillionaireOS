@@ -3,6 +3,7 @@ import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, Chevron
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LocationProvider, useLocation } from './contexts/LocationContext';
+import HomePage from './components/HomePage';
 import VisionPage from './components/VisionPage';
 import GoalsPage from './components/GoalsPage';
 import HabitsPage from './components/HabitsPage';
@@ -18,7 +19,7 @@ import { testFirebaseConnection } from './firebase/test';
 import { cn } from './utils/cn';
 
 const AppContent = () => {
-  const [activeTab, setActiveTab] = useState('vision');
+  const [activeTab, setActiveTab] = useState('home');
   const [showQuote, setShowQuote] = useState(true);
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
@@ -83,7 +84,8 @@ const AppContent = () => {
     { id: 'profession', label: 'Profession Intel', icon: Briefcase, component: ProfessionIntelligencePage, color: 'indigo' },
   ];
 
-  const allTabs = [...productivityTabs, ...intelligenceTabs];
+  const homeTab = { id: 'home', label: 'Home', icon: Sparkles, component: HomePage };
+  const allTabs = [homeTab, ...productivityTabs, ...intelligenceTabs];
 
   useEffect(() => {
     // Test Firebase connection
@@ -119,6 +121,10 @@ const AppContent = () => {
   }, [showMobileMenu, showProductivityDropdown, showIntelligenceDropdown]);
 
   const ActiveComponent = allTabs.find(tab => tab.id === activeTab)?.component;
+  
+  const handleNavigate = (tabId) => {
+    setActiveTab(tabId);
+  };
 
   const handleTabChange = (tabId) => {
     // Visual feedback for tab change
@@ -207,7 +213,8 @@ const AppContent = () => {
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo Section */}
-            <motion.div 
+            <motion.button 
+              onClick={() => handleTabChange('home')}
               className="flex items-center space-x-2 sm:space-x-3"
               whileHover={{ scale: 1.01 }}
               transition={{ duration: 0.2 }}
@@ -226,7 +233,7 @@ const AppContent = () => {
                   Personal Intelligence Suite
                 </p>
               </div>
-            </motion.div>
+            </motion.button>
 
             {/* Desktop Navigation */}
             <div className="hidden md:flex items-center space-x-1">
@@ -467,9 +474,13 @@ const AppContent = () => {
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         transition={{ delay: 0.1 }}
-        className="max-w-4xl mx-auto px-4 sm:px-6 py-8 relative"
+        className={activeTab === 'home' ? '' : 'max-w-4xl mx-auto px-4 sm:px-6 py-8 relative'}
       >
-        {ActiveComponent && <ActiveComponent />}
+        {ActiveComponent && (
+          activeTab === 'home' ? 
+            <ActiveComponent onNavigate={handleNavigate} /> : 
+            <ActiveComponent />
+        )}
         
         {/* Location Selector Modal - Positioned within main content */}
         <LocationSelector
@@ -481,7 +492,7 @@ const AppContent = () => {
 
       {/* Simple Quote */}
       <AnimatePresence>
-        {showQuote && (
+        {showQuote && activeTab !== 'home' && (
           <motion.div
             initial={{ opacity: 0, x: 100 }}
             animate={{ opacity: 1, x: 0 }}
@@ -504,7 +515,7 @@ const AppContent = () => {
         )}
       </AnimatePresence>
       
-      <Footer />
+      {activeTab !== 'home' && <Footer />}
       <CookieConsent />
     </div>
   );
