@@ -1,7 +1,7 @@
-// AI Analysis Service using OpenRouter API with Google Gemini 2.0 Flash Experimental model
+// AI Analysis Service using OpenRouter API with Mistral Small 3.2 24B Instruct model
 const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY ;
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'google/gemini-2.0-flash-exp:free';
+const MODEL = 'mistralai/mistral-small-3.2-24b-instruct:free';
 
 // Helper function to make API calls with better error handling
 const makeOpenRouterCall = async (prompt, maxTokens = 1500) => {
@@ -535,71 +535,85 @@ export const createIdeaTestingPlan = async (businessIdea, targetCustomers, budge
   try {
     const locationPrompt = locationContext ? `${locationContext} ` : '';
     const prompt = `
-You are a lean startup expert and idea testing specialist. ${locationPrompt}Create a comprehensive testing framework for this business idea: "${businessIdea}" targeting "${targetCustomers}" with a budget of "${budget}".
+You are an expert lean startup advisor specializing in business idea validation. ${locationPrompt}
 
-IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON object. Do not use markdown formatting.
+Create a comprehensive testing framework for:
+- Business Idea: "${businessIdea}"
+- Target Customers: "${targetCustomers}"  
+- Budget: "${budget}"
 
-Provide a detailed plan in this exact JSON format:
+Provide actionable, specific recommendations focused on rapid validation with minimal cost.
+
+Return ONLY valid JSON in this exact structure:
 {
   "businessIdea": "${businessIdea}",
   "targetCustomers": "${targetCustomers}",
   "budget": "${budget}",
   "validationHypotheses": [
     {
-      "hypothesis": "Key assumption to test",
-      "riskLevel": "High/Medium/Low",
-      "testMethod": "How to test this assumption"
+      "hypothesis": "Specific assumption to test about customer problem or solution",
+      "riskLevel": "High",
+      "testMethod": "Concrete method to validate this assumption"
+    },
+    {
+      "hypothesis": "Second key assumption about market demand",
+      "riskLevel": "Medium", 
+      "testMethod": "Specific validation approach"
     }
   ],
   "mvpApproaches": [
     {
-      "type": "MVP type (Landing Page, Prototype, Concierge, etc.)",
-      "description": "What this MVP involves",
-      "timeToCreate": "Time needed to build",
-      "cost": "Estimated cost",
-      "validationGoals": ["What you'll learn from this MVP"]
+      "type": "Landing Page MVP",
+      "description": "Detailed description of what to build and test",
+      "timeToCreate": "1-2 weeks",
+      "cost": "$50-200",
+      "validationGoals": ["Measure interest", "Collect emails", "Test messaging"]
     }
   ],
   "validationMethods": [
     {
-      "method": "Validation technique",
-      "description": "How to execute this method",
-      "cost": "Estimated cost",
-      "timeframe": "How long it takes",
-      "successMetrics": ["What indicates success"]
+      "method": "Customer Problem Interviews",
+      "description": "Step-by-step process for conducting interviews",
+      "cost": "$0-50",
+      "timeframe": "2-3 weeks",
+      "successMetrics": ["80% confirm problem exists", "Clear pain points identified"]
     }
   ],
   "customerInterviews": {
-    "targetNumber": "Number of interviews needed",
-    "keyQuestions": ["Critical questions to ask"],
-    "successCriteria": "What responses indicate validation"
+    "targetNumber": "15-20 interviews",
+    "keyQuestions": ["Do you currently face this problem?", "How do you solve it today?", "What would ideal solution look like?"],
+    "successCriteria": "70% of interviewees confirm problem and express willingness to pay"
   },
   "experimentPlan": [
     {
-      "week": "Week number",
-      "activities": ["Specific activities for this week"],
-      "deliverables": ["What you should have by end of week"],
-      "budget": "Budget allocation for this week"
+      "week": "Week 1",
+      "activities": ["Create landing page", "Set up analytics", "Launch social media ads"],
+      "deliverables": ["Live landing page", "100 visitors", "Email signups"],
+      "budget": "$100"
     }
   ],
   "successMetrics": [
     {
-      "metric": "Key metric to track",
-      "target": "Target value",
-      "measurement": "How to measure"
+      "metric": "Email signup conversion rate",
+      "target": "5-10%",
+      "measurement": "Visitors to email signups ratio"
     }
   ],
   "pivotTriggers": [
-    "Signals that indicate need to pivot or abandon idea"
+    "Less than 2% landing page conversion after 200 visitors",
+    "Customer interviews show no real pain point",
+    "Unable to find target customers willing to pay"
   ],
   "nextSteps": [
-    "Actions to take based on validation results"
+    "If validated: Build minimal viable product",
+    "If not validated: Pivot to different customer segment or problem",
+    "Continue customer development interviews"
   ]
 }
 
-Focus on lean, cost-effective validation methods that provide maximum learning with minimum investment.`;
+Focus on practical, low-cost experiments that provide clear go/no-go signals.`;
 
-    const aiResponse = await makeOpenRouterCall(prompt, 2500);
+    const aiResponse = await makeOpenRouterCall(prompt, 3500);
     
     try {
       // Try to find JSON in the response
@@ -627,7 +641,7 @@ Focus on lean, cost-effective validation methods that provide maximum learning w
         const analysis = JSON.parse(cleanJson);
         return { success: true, analysis };
       } else {
-        // Fallback response for idea testing
+        // Enhanced fallback response for idea testing
         return {
           success: true,
           analysis: {
@@ -636,19 +650,19 @@ Focus on lean, cost-effective validation methods that provide maximum learning w
             budget: budget,
             validationHypotheses: [
               {
-                hypothesis: "Customers have the problem we're solving",
+                hypothesis: `${targetCustomers} experience a significant problem that ${businessIdea} solves`,
                 riskLevel: "High",
-                testMethod: "Customer interviews and surveys"
+                testMethod: "Conduct 15-20 customer problem interviews to validate pain points"
               },
               {
-                hypothesis: "Our solution addresses the problem effectively",
+                hypothesis: `${targetCustomers} are willing to pay for ${businessIdea}`,
                 riskLevel: "High", 
-                testMethod: "Prototype testing and user feedback"
+                testMethod: "Create landing page with pricing and measure conversion rates"
               },
               {
-                hypothesis: "Customers are willing to pay for the solution",
+                hypothesis: `We can reach ${targetCustomers} cost-effectively`,
                 riskLevel: "Medium",
-                testMethod: "Landing page with pricing and pre-orders"
+                testMethod: "Test marketing channels with small ad spend to measure acquisition costs"
               }
             ],
             mvpApproaches: [
