@@ -341,7 +341,7 @@ const ProfessionIntelligencePage = () => {
           {/* Clean Salary Analysis Tab */}
           {activeTab === 'salary' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-5 h-5 text-green-600" />
@@ -425,7 +425,7 @@ const ProfessionIntelligencePage = () => {
           {/* Clean Job Market Tab */}
           {activeTab === 'market' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                     <BarChart3 className="w-5 h-5 text-blue-600" />
@@ -478,7 +478,7 @@ const ProfessionIntelligencePage = () => {
           {/* Career Path Tab */}
           {activeTab === 'career' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Target className="w-5 h-5 text-purple-600" />
@@ -575,7 +575,7 @@ const ProfessionIntelligencePage = () => {
           {/* Skills Gap Tab */}
           {activeTab === 'skills' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-indigo-100 rounded-lg flex items-center justify-center">
                     <GraduationCap className="w-5 h-5 text-indigo-600" />

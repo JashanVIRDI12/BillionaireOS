@@ -6,7 +6,7 @@ import {
   analyzeMarketTrends, 
   analyzeCompetitors, 
   suggestRevenueModels, 
-  createMVPValidationPlan,
+  createIdeaTestingPlan,
   generateBusinessIdeas 
 } from '../services/businessIntelligence';
 import SoothingLoader from './SoothingLoader';
@@ -43,7 +43,7 @@ const BusinessOpportunitiesPage = () => {
     industry: ''
   });
 
-  const [mvpForm, setMvpForm] = useState({
+  const [ideaTestingForm, setIdeaTestingForm] = useState({
     businessIdea: '',
     targetCustomers: '',
     budget: ''
@@ -54,7 +54,7 @@ const BusinessOpportunitiesPage = () => {
     { id: 'market', label: 'Market Trends', icon: TrendingUp, color: 'blue' },
     { id: 'competitors', label: 'Competitor Analysis', icon: Users, color: 'red' },
     { id: 'revenue', label: 'Revenue Models', icon: DollarSign, color: 'green' },
-    { id: 'mvp', label: 'MVP Validation', icon: Target, color: 'purple' }
+    { id: 'mvp', label: 'Idea Testing', icon: Target, color: 'purple' }
   ];
 
   // Close mobile menu when clicking outside
@@ -179,8 +179,8 @@ const BusinessOpportunitiesPage = () => {
     }
   };
 
-  const handleMVPAnalysis = async () => {
-    if (!mvpForm.businessIdea.trim() || !mvpForm.targetCustomers.trim()) {
+  const handleIdeaTestingAnalysis = async () => {
+    if (!ideaTestingForm.businessIdea.trim() || !ideaTestingForm.targetCustomers.trim()) {
       setError('Please fill in business idea and target customers');
       return;
     }
@@ -189,10 +189,10 @@ const BusinessOpportunitiesPage = () => {
     setError(null);
     
     try {
-      const result = await createMVPValidationPlan(
-        mvpForm.businessIdea,
-        mvpForm.targetCustomers,
-        mvpForm.budget,
+      const result = await createIdeaTestingPlan(
+        ideaTestingForm.businessIdea,
+        ideaTestingForm.targetCustomers,
+        ideaTestingForm.budget,
         getLocationContext()
       );
       
@@ -202,7 +202,7 @@ const BusinessOpportunitiesPage = () => {
         setError(result.error);
       }
     } catch (err) {
-      setError('Failed to create MVP validation plan');
+      setError('Failed to create idea testing plan');
     } finally {
       setLoading(false);
     }
@@ -233,16 +233,16 @@ const BusinessOpportunitiesPage = () => {
       transition={{ duration: 0.5 }}
       className="min-h-screen bg-white"
     >
-      <div className="max-w-7xl mx-auto px-6 lg:px-8 py-12">
-        {/* Clean Header */}
-        <div className="text-center mb-20">
-          <h1 className="text-4xl md:text-5xl font-light text-gray-900 mb-6 tracking-tight">
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 py-6 sm:py-8 lg:py-12">
+        {/* Clean Minimalist Header */}
+        <div className="text-center mb-12 sm:mb-16 lg:mb-20">
+          <h1 className="text-3xl sm:text-4xl lg:text-5xl font-light text-gray-900 mb-4 sm:mb-6 tracking-tight">
             Business Intelligence
           </h1>
-          <div className="w-16 h-0.5 bg-gray-900 mx-auto mb-8"></div>
-          <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
-            AI-powered business opportunity analysis and validation 
-            tailored for <span className="font-medium text-gray-900">{location ? getCountryName(location.country) : 'your location'}</span>.
+          <div className="w-16 h-0.5 bg-gray-900 mx-auto mb-6 sm:mb-8"></div>
+          <p className="text-base sm:text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed font-light">
+            AI-powered business opportunity analysis and validation
+            {location && <span className="block sm:inline mt-1 sm:mt-0"> tailored for <span className="font-medium text-gray-900">{getCountryName(location.country)}</span></span>}
           </p>
         </div>
 
@@ -338,15 +338,16 @@ const BusinessOpportunitiesPage = () => {
             {activeTab === 'mvp' && (
               <>
                 <button
-                  onClick={() => setMvpForm({ businessIdea: 'Smart budgeting app', targetCustomers: 'Young professionals', budget: '$3,000' })}
+                  onClick={() => setIdeaTestingForm({ businessIdea: 'Smart budgeting app', targetCustomers: 'Young professionals', budget: '$3,000' })}
                   className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
                 >Try: Budgeting App</button>
                 <button
-                  onClick={() => setMvpForm({ businessIdea: 'Virtual event platform', targetCustomers: 'Small businesses', budget: '$8,000' })}
+                  onClick={() => setIdeaTestingForm({ businessIdea: 'Virtual event platform', targetCustomers: 'Small businesses', budget: '$8,000' })}
                   className="text-xs px-4 py-2 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition-colors font-medium"
                 >Try: Event Platform</button>
               </>
             )}
+            </div>
           </div>
         </div>
 
@@ -376,7 +377,7 @@ const BusinessOpportunitiesPage = () => {
           {/* Business Idea Generator */}
           {activeTab === 'ideas' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-yellow-100 rounded-lg flex items-center justify-center">
                     <Lightbulb className="w-5 h-5 text-yellow-600" />
@@ -472,9 +473,9 @@ const BusinessOpportunitiesPage = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-6"
+                  className="space-y-6 mt-12"
                 >
-                  <div className="flex items-center space-x-3 mb-6">
+                  <div className="flex items-center space-x-3 mb-8">
                     <div className="w-8 h-8 bg-yellow-100 rounded-lg flex items-center justify-center">
                       <Lightbulb className="w-4 h-4 text-yellow-600" />
                     </div>
@@ -607,7 +608,7 @@ const BusinessOpportunitiesPage = () => {
           {/* Market Trends Analysis */}
           {activeTab === 'market' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-blue-100 rounded-lg flex items-center justify-center">
                     <TrendingUp className="w-5 h-5 text-blue-600" />
@@ -675,9 +676,9 @@ const BusinessOpportunitiesPage = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-6"
+                  className="space-y-6 mt-12"
                 >
-                  <div className="flex items-center space-x-3 mb-6">
+                  <div className="flex items-center space-x-3 mb-8">
                     <div className="w-8 h-8 bg-blue-100 rounded-lg flex items-center justify-center">
                       <BarChart3 className="w-4 h-4 text-blue-600" />
                     </div>
@@ -766,7 +767,7 @@ const BusinessOpportunitiesPage = () => {
           {/* Competitor Analysis */}
           {activeTab === 'competitors' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-red-100 rounded-lg flex items-center justify-center">
                     <Users className="w-5 h-5 text-red-600" />
@@ -832,9 +833,9 @@ const BusinessOpportunitiesPage = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-6"
+                  className="space-y-6 mt-12"
                 >
-                  <h3 className="text-xl font-light text-gray-900">🔍 Competitive Landscape Analysis</h3>
+                  <h3 className="text-xl font-light text-gray-900 mb-8">🔍 Competitive Landscape Analysis</h3>
                   
                   {/* Direct Competitors */}
                   <div className="space-y-6">
@@ -932,7 +933,7 @@ const BusinessOpportunitiesPage = () => {
           {/* Revenue Models */}
           {activeTab === 'revenue' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-green-100 rounded-lg flex items-center justify-center">
                     <DollarSign className="w-5 h-5 text-green-600" />
@@ -1011,9 +1012,9 @@ const BusinessOpportunitiesPage = () => {
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-6"
+                  className="space-y-6 mt-12"
                 >
-                  <div className="flex items-center space-x-3 mb-6">
+                  <div className="flex items-center space-x-3 mb-8">
                     <div className="w-8 h-8 bg-green-100 rounded-lg flex items-center justify-center">
                       <DollarSign className="w-4 h-4 text-green-600" />
                     </div>
@@ -1119,17 +1120,17 @@ const BusinessOpportunitiesPage = () => {
             </div>
           )}
 
-          {/* MVP Validation */}
+          {/* Idea Testing */}
           {activeTab === 'mvp' && (
             <div className="max-w-4xl mx-auto">
-              <div className="bg-white border border-gray-200 rounded-xl p-8 shadow-sm">
+              <div className="bg-white sm:border sm:border-gray-200 sm:rounded-xl p-4 sm:p-8 sm:shadow-sm">
                 <div className="flex items-center space-x-3 mb-6">
                   <div className="w-10 h-10 bg-purple-100 rounded-lg flex items-center justify-center">
                     <Target className="w-5 h-5 text-purple-600" />
                   </div>
                   <div>
-                    <h2 className="text-xl font-medium text-gray-900">MVP Validation Framework</h2>
-                    <p className="text-sm text-gray-600">Validate your business idea with structured experiments</p>
+                    <h2 className="text-xl font-medium text-gray-900">Idea Testing Framework</h2>
+                    <p className="text-sm text-gray-600">Test your business idea with structured experiments</p>
                   </div>
                 </div>
                 
@@ -1139,8 +1140,8 @@ const BusinessOpportunitiesPage = () => {
                       Business Idea *
                     </label>
                     <textarea
-                      value={mvpForm.businessIdea}
-                      onChange={(e) => setMvpForm({...mvpForm, businessIdea: e.target.value})}
+                      value={ideaTestingForm.businessIdea}
+                      onChange={(e) => setIdeaTestingForm({...ideaTestingForm, businessIdea: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
                       rows={3}
                       placeholder="Describe your business idea in detail..."
@@ -1153,8 +1154,8 @@ const BusinessOpportunitiesPage = () => {
                     </label>
                     <input
                       type="text"
-                      value={mvpForm.targetCustomers}
-                      onChange={(e) => setMvpForm({...mvpForm, targetCustomers: e.target.value})}
+                      value={ideaTestingForm.targetCustomers}
+                      onChange={(e) => setIdeaTestingForm({...ideaTestingForm, targetCustomers: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
                       placeholder="e.g., Small business owners, Students, Freelancers"
                     />
@@ -1162,12 +1163,12 @@ const BusinessOpportunitiesPage = () => {
                   
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Validation Budget
+                      Testing Budget
                     </label>
                     <input
                       type="text"
-                      value={mvpForm.budget}
-                      onChange={(e) => setMvpForm({...mvpForm, budget: e.target.value})}
+                      value={ideaTestingForm.budget}
+                      onChange={(e) => setIdeaTestingForm({...ideaTestingForm, budget: e.target.value})}
                       className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
                       placeholder={`e.g., ${getCurrencySymbol() || '$'}500, ${getCurrencySymbol() || '$'}1,000, ${getCurrencySymbol() || '$'}5,000`}
                     />
@@ -1175,42 +1176,42 @@ const BusinessOpportunitiesPage = () => {
                 </div>
                 
                 <button
-                  onClick={handleMVPAnalysis}
+                  onClick={handleIdeaTestingAnalysis}
                   disabled={loading}
                   className="w-full bg-gray-900 text-white py-3 px-6 rounded-lg font-medium hover:bg-gray-800 disabled:opacity-50 disabled:cursor-not-allowed transition-colors flex items-center justify-center space-x-2"
                 >
                   {loading ? (
                     <>
                       <Loader2 className="w-4 h-4 animate-spin" />
-                      <span>Creating Validation Plan...</span>
+                      <span>Creating Testing Plan...</span>
                     </>
                   ) : (
                     <>
                       <Target className="w-4 h-4" />
-                      <span>Create MVP Validation Plan</span>
+                      <span>Create Idea Testing Plan</span>
                     </>
                   )}
                 </button>
                 {loading && (
                   <div className="mt-6">
-                    <SoothingLoader message="Creating your MVP validation framework..." />
+                    <SoothingLoader message="Creating your idea testing framework..." />
                   </div>
                 )}
-              {/* MVP Validation Results */}
+              {/* Idea Testing Results */}
               {results && results.mvpApproaches && (
                 <motion.div
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
-                  className="space-y-6"
+                  className="space-y-6 mt-12"
                 >
-                  <div className="flex items-center space-x-3 mb-6">
+                  <div className="flex items-center space-x-3 mb-8">
                     <div className="w-8 h-8 bg-purple-100 rounded-lg flex items-center justify-center">
                       <Target className="w-4 h-4 text-purple-600" />
                     </div>
-                    <h3 className="text-xl font-light text-gray-900">MVP Validation Strategy</h3>
+                    <h3 className="text-xl font-light text-gray-900">Idea Testing Strategy</h3>
                   </div>
                   
-                  {/* MVP Approaches */}
+                  {/* Testing Approaches */}
                   <div className="space-y-6">
                     {results.mvpApproaches.map((approach, index) => (
                       <div key={index} className="bg-white border border-gray-200 rounded-lg p-6">
@@ -1232,7 +1233,7 @@ const BusinessOpportunitiesPage = () => {
                         </div>
                         
                         <div>
-                          <h6 className="text-sm font-medium text-gray-900 mb-3">Validation Goals</h6>
+                          <h6 className="text-sm font-medium text-gray-900 mb-3">Testing Goals</h6>
                           <div className="space-y-2">
                             {approach.validationGoals?.slice(0, 3).map((goal, i) => (
                               <div key={i} className="flex items-start space-x-3">
@@ -1319,7 +1320,6 @@ const BusinessOpportunitiesPage = () => {
           )}
         </motion.div>
       </AnimatePresence>
-      </div>
       </div>
     </motion.div>
   );

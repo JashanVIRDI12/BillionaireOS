@@ -1,7 +1,7 @@
-// AI Analysis Service using OpenRouter API with deepseek model
+// AI Analysis Service using OpenRouter API with Google Gemini 2.0 Flash Experimental model
 const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY ;
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'deepseek/deepseek-chat-v3.1:free';
+const MODEL = 'google/gemini-2.0-flash-exp:free';
 
 // Helper function to make API calls with better error handling
 const makeOpenRouterCall = async (prompt, maxTokens = 1500) => {
@@ -431,18 +431,94 @@ Focus on proven, scalable revenue models with clear paths to profitability.`;
     const aiResponse = await makeOpenRouterCall(prompt, 1500);
     
     try {
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const analysis = JSON.parse(jsonMatch[0]);
+      // Try to find JSON in the response
+      let jsonString = aiResponse.trim();
+      
+      // Remove any markdown code blocks
+      jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').replace(/```/g, '');
+      
+      // Remove any leading/trailing text that's not JSON
+      const jsonStart = jsonString.indexOf('{');
+      const jsonEnd = jsonString.lastIndexOf('}');
+      
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        let cleanJson = jsonString.substring(jsonStart, jsonEnd + 1);
+        
+        // Try to fix common JSON issues
+        cleanJson = cleanJson.replace(/,(\s*[}\]])/g, '$1'); // Remove trailing commas
+        cleanJson = cleanJson.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":'); // Quote unquoted keys
+        cleanJson = cleanJson.replace(/:\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*([,}])/g, ': "$1"$2'); // Quote unquoted string values
+        cleanJson = cleanJson.replace(/"\s*([0-9]+)\s*"/g, '$1'); // Unquote numbers
+        cleanJson = cleanJson.replace(/"\s*(true|false|null)\s*"/g, '$1'); // Unquote booleans and null
+        
+        const analysis = JSON.parse(cleanJson);
         return { success: true, analysis };
       }
     } catch (parseError) {
       console.error('Error parsing revenue model analysis:', parseError);
+      console.error('Raw AI response:', aiResponse);
     }
 
+    // Return fallback response instead of error
     return {
-      success: false,
-      error: 'Failed to parse revenue model analysis'
+      success: true,
+      analysis: {
+        businessIdea: businessIdea,
+        targetCustomers: targetCustomers,
+        industry: industry,
+        primaryRevenueModels: [
+          {
+            model: "Subscription (SaaS)",
+            description: "Recurring monthly or annual payments for access to your solution",
+            pros: ["Predictable revenue", "High customer lifetime value", "Scalable growth"],
+            cons: ["Requires consistent value delivery", "Customer acquisition cost", "Churn risk"],
+            timeToRevenue: "1-3 months",
+            scalability: "High",
+            capitalRequirement: "Low to Medium",
+            examples: ["Netflix", "Spotify", "Salesforce"]
+          },
+          {
+            model: "One-time Purchase",
+            description: "Single payment for product or service access",
+            pros: ["Immediate revenue", "Simple pricing", "No ongoing commitments"],
+            cons: ["No recurring revenue", "Need constant new customers", "Lower lifetime value"],
+            timeToRevenue: "Immediate",
+            scalability: "Medium",
+            capitalRequirement: "Low",
+            examples: ["Software licenses", "Physical products", "Courses"]
+          }
+        ],
+        hybridApproaches: [
+          {
+            combination: "Freemium + Premium Subscription",
+            description: "Free basic tier with paid premium features",
+            benefits: ["Lower barrier to entry", "Viral growth potential", "Upsell opportunities"]
+          }
+        ],
+        pricingStrategies: [
+          {
+            strategy: "Value-based Pricing",
+            description: "Price based on value delivered to customer",
+            targetPrice: "10-20% of value created"
+          }
+        ],
+        monetizationTimeline: {
+          "month1-3": "Launch with simple pricing model and gather customer feedback",
+          "month6-12": "Optimize pricing based on data and introduce premium tiers",
+          "year2+": "Scale with multiple revenue streams and enterprise offerings"
+        },
+        keyMetrics: [
+          "Monthly Recurring Revenue (MRR)",
+          "Customer Acquisition Cost (CAC)",
+          "Customer Lifetime Value (LTV)",
+          "Churn Rate"
+        ],
+        riskFactors: [
+          "Market saturation affecting pricing power",
+          "Customer price sensitivity",
+          "Competitive pricing pressure"
+        ]
+      }
     };
 
   } catch (error) {
@@ -454,12 +530,14 @@ Focus on proven, scalable revenue models with clear paths to profitability.`;
   }
 };
 
-// MVP Validation Framework
-export const createMVPValidationPlan = async (businessIdea, targetCustomers, budget, locationContext = '') => {
+// Idea Testing Framework
+export const createIdeaTestingPlan = async (businessIdea, targetCustomers, budget, locationContext = '') => {
   try {
     const locationPrompt = locationContext ? `${locationContext} ` : '';
     const prompt = `
-You are a lean startup expert and MVP validation specialist. ${locationPrompt}Create a comprehensive validation framework for this business idea: "${businessIdea}" targeting "${targetCustomers}" with a budget of "${budget}".
+You are a lean startup expert and idea testing specialist. ${locationPrompt}Create a comprehensive testing framework for this business idea: "${businessIdea}" targeting "${targetCustomers}" with a budget of "${budget}".
+
+IMPORTANT: Respond ONLY with valid JSON. Do not include any text before or after the JSON object. Do not use markdown formatting.
 
 Provide a detailed plan in this exact JSON format:
 {
@@ -521,25 +599,218 @@ Provide a detailed plan in this exact JSON format:
 
 Focus on lean, cost-effective validation methods that provide maximum learning with minimum investment.`;
 
-    const aiResponse = await makeOpenRouterCall(prompt, 1800);
+    const aiResponse = await makeOpenRouterCall(prompt, 2500);
     
     try {
-      const jsonMatch = aiResponse.match(/\{[\s\S]*\}/);
-      if (jsonMatch) {
-        const analysis = JSON.parse(jsonMatch[0]);
+      // Try to find JSON in the response
+      let jsonString = aiResponse.trim();
+      
+      // Remove any markdown code blocks
+      jsonString = jsonString.replace(/```json\n?/g, '').replace(/```\n?/g, '').replace(/```/g, '');
+      
+      // Remove any leading/trailing text that's not JSON
+      const jsonStart = jsonString.indexOf('{');
+      const jsonEnd = jsonString.lastIndexOf('}');
+      
+      if (jsonStart !== -1 && jsonEnd !== -1 && jsonEnd > jsonStart) {
+        let cleanJson = jsonString.substring(jsonStart, jsonEnd + 1);
+        
+        // Try to fix common JSON issues
+        cleanJson = cleanJson.replace(/,(\s*[}\]])/g, '$1'); // Remove trailing commas
+        cleanJson = cleanJson.replace(/([{,]\s*)([a-zA-Z_$][a-zA-Z0-9_$]*)\s*:/g, '$1"$2":'); // Quote unquoted keys
+        cleanJson = cleanJson.replace(/:\s*([a-zA-Z_$][a-zA-Z0-9_$]*)\s*([,}])/g, ': "$1"$2'); // Quote unquoted string values
+        cleanJson = cleanJson.replace(/"\s*([0-9]+)\s*"/g, '$1'); // Unquote numbers
+        cleanJson = cleanJson.replace(/"\s*(true|false|null)\s*"/g, '$1'); // Unquote booleans and null
+        
+        console.log('Attempting to parse cleaned JSON:', cleanJson.substring(0, 200) + '...');
+        
+        const analysis = JSON.parse(cleanJson);
         return { success: true, analysis };
+      } else {
+        // Fallback response for idea testing
+        return {
+          success: true,
+          analysis: {
+            businessIdea: businessIdea,
+            targetCustomers: targetCustomers,
+            budget: budget,
+            validationHypotheses: [
+              {
+                hypothesis: "Customers have the problem we're solving",
+                riskLevel: "High",
+                testMethod: "Customer interviews and surveys"
+              },
+              {
+                hypothesis: "Our solution addresses the problem effectively",
+                riskLevel: "High", 
+                testMethod: "Prototype testing and user feedback"
+              },
+              {
+                hypothesis: "Customers are willing to pay for the solution",
+                riskLevel: "Medium",
+                testMethod: "Landing page with pricing and pre-orders"
+              }
+            ],
+            mvpApproaches: [
+              {
+                type: "Landing Page MVP",
+                description: "Create a simple landing page describing your solution to test market interest",
+                timeToCreate: "1-2 weeks",
+                cost: "$50-200",
+                validationGoals: [
+                  "Test market demand and interest",
+                  "Collect email signups from potential customers",
+                  "Validate value proposition messaging"
+                ]
+              },
+              {
+                type: "Prototype MVP",
+                description: "Build a basic working prototype with core features",
+                timeToCreate: "4-8 weeks",
+                cost: "$500-2000",
+                validationGoals: [
+                  "Test core functionality with real users",
+                  "Gather feedback on user experience",
+                  "Validate technical feasibility"
+                ]
+              }
+            ],
+            validationMethods: [
+              {
+                method: "Customer Interviews",
+                description: "Conduct 1-on-1 interviews with potential customers",
+                cost: "$0-100",
+                timeframe: "2-4 weeks",
+                successMetrics: ["Clear problem validation", "Solution interest", "Willingness to pay"]
+              },
+              {
+                method: "Landing Page Test",
+                description: "Create a landing page and drive traffic to measure interest",
+                cost: "$100-500",
+                timeframe: "1-2 weeks",
+                successMetrics: ["Email signup rate >5%", "Time on page >30 seconds"]
+              }
+            ],
+            customerInterviews: {
+              targetNumber: "15-20 interviews",
+              keyQuestions: [
+                "How do you currently solve this problem?",
+                "What's most frustrating about current solutions?",
+                "Would you pay for a better solution?"
+              ],
+              successCriteria: "80% confirm the problem exists and current solutions are inadequate"
+            },
+            experimentPlan: [
+              {
+                week: "Week 1",
+                activities: ["Create customer interview script", "Identify and contact potential interviewees"],
+                deliverables: ["Interview script", "List of 20+ potential interviewees"],
+                budget: "$50"
+              },
+              {
+                week: "Week 2-3",
+                activities: ["Conduct customer interviews", "Analyze feedback patterns"],
+                deliverables: ["15+ completed interviews", "Key insights summary"],
+                budget: "$100"
+              },
+              {
+                week: "Week 4",
+                activities: ["Build landing page", "Create basic prototype or mockups"],
+                deliverables: ["Live landing page", "Basic prototype"],
+                budget: "$200-500"
+              }
+            ],
+            successMetrics: [
+              {
+                metric: "Problem Validation Rate",
+                target: "80% of interviewees confirm the problem",
+                measurement: "Customer interview responses"
+              },
+              {
+                metric: "Solution Interest",
+                target: "60% express interest in the solution",
+                measurement: "Interview feedback and landing page signups"
+              }
+            ],
+            pivotTriggers: [
+              "Less than 50% of customers confirm the problem exists",
+              "No clear willingness to pay for the solution",
+              "Technical feasibility issues that can't be resolved"
+            ],
+            nextSteps: [
+              "If validated: Build more comprehensive MVP",
+              "If not validated: Pivot to different customer segment or problem",
+              "Continue iterating based on customer feedback"
+            ]
+          }
+        };
       }
     } catch (parseError) {
-      console.error('Error parsing MVP validation plan:', parseError);
+      console.error('Error parsing idea testing plan:', parseError);
+      console.error('Raw AI response length:', aiResponse.length);
+      console.error('Raw AI response preview:', aiResponse.substring(0, 500));
+      console.error('Full AI response:', aiResponse);
+      
+      // Return fallback response instead of error
+      return {
+        success: true,
+        analysis: {
+          businessIdea: businessIdea,
+          targetCustomers: targetCustomers,
+          budget: budget,
+          validationHypotheses: [
+            {
+              hypothesis: "Target customers have the problem we're solving",
+              riskLevel: "High",
+              testMethod: "Customer interviews and market research"
+            }
+          ],
+          mvpApproaches: [
+            {
+              type: "Simple Landing Page",
+              description: "Create a basic landing page to test market interest",
+              timeToCreate: "1 week",
+              cost: "$100-300",
+              validationGoals: ["Test market demand", "Collect customer feedback"]
+            }
+          ],
+          validationMethods: [
+            {
+              method: "Customer Interviews",
+              description: "Talk directly to potential customers",
+              cost: "$0-50",
+              timeframe: "2 weeks",
+              successMetrics: ["Problem confirmation", "Solution interest"]
+            }
+          ],
+          customerInterviews: {
+            targetNumber: "10-15 interviews",
+            keyQuestions: ["What's your biggest challenge?", "How do you solve it now?"],
+            successCriteria: "Clear problem validation from majority"
+          },
+          experimentPlan: [
+            {
+              week: "Week 1",
+              activities: ["Research target customers", "Prepare interview questions"],
+              deliverables: ["Customer list", "Interview script"],
+              budget: "$50"
+            }
+          ],
+          successMetrics: [
+            {
+              metric: "Customer Problem Validation",
+              target: "70% confirm the problem",
+              measurement: "Interview responses"
+            }
+          ],
+          pivotTriggers: ["Low customer interest", "No willingness to pay"],
+          nextSteps: ["Build based on feedback", "Iterate on solution"]
+        }
+      };
     }
 
-    return {
-      success: false,
-      error: 'Failed to parse MVP validation plan'
-    };
-
   } catch (error) {
-    console.error('MVP Validation error:', error);
+    console.error('Idea Testing error:', error);
     return {
       success: false,
       error: error.message

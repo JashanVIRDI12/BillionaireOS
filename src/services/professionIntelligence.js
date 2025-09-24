@@ -1,7 +1,7 @@
-// AI Analysis Service for Profession Intelligence using OpenRouter API
+// AI Analysis Service for Profession Intelligence using OpenRouter API with Google Gemini 2.0 Flash Experimental model
 const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY;
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
-const MODEL = 'deepseek/deepseek-chat-v3.1:free';
+const MODEL = 'google/gemini-2.0-flash-exp:free';
 
 // Helper function to make API calls with better error handling
 const makeOpenRouterCall = async (prompt, maxTokens = 1500) => {
