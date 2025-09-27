@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import FirstTimeGuide from './FirstTimeGuide';
 import { useLocation } from '../contexts/LocationContext';
 import { TrendingUp, Target, DollarSign, Lightbulb, Users, BarChart3, CheckCircle, AlertCircle, Clock, Zap, Loader2, MapPin } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
@@ -12,6 +13,16 @@ import {
 import SoothingLoader from './SoothingLoader';
 
 const BusinessOpportunitiesPage = () => {
+  // Show onboarding guide for first-time users
+  const [showGuide, setShowGuide] = useState(false);
+  useEffect(() => {
+    const seen = localStorage.getItem('seenBusinessIntelligenceGuide');
+    if (!seen) setShowGuide(true);
+  }, []);
+  const handleCloseGuide = () => {
+    setShowGuide(false);
+    localStorage.setItem('seenBusinessIntelligenceGuide', 'true');
+  }
   const [activeTab, setActiveTab] = useState('ideas');
   const [loading, setLoading] = useState(false);
   const [results, setResults] = useState(null);
@@ -227,7 +238,10 @@ const BusinessOpportunitiesPage = () => {
   };
 
   return (
-    <motion.div
+    <>
+
+      <FirstTimeGuide open={showGuide} onClose={handleCloseGuide} type="business" />
+      <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -1322,6 +1336,7 @@ const BusinessOpportunitiesPage = () => {
       </AnimatePresence>
       </div>
     </motion.div>
+    </>
   );
 };
 

@@ -1,4 +1,5 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import FirstTimeGuide from './FirstTimeGuide';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   DollarSign, 
@@ -23,6 +24,16 @@ import {
 import SoothingLoader from './SoothingLoader';
 
 const ProfessionIntelligencePage = () => {
+  // Show onboarding guide for first-time users
+  const [showGuide, setShowGuide] = useState(false);
+  useEffect(() => {
+    const seen = localStorage.getItem('seenProfessionIntelligenceGuide');
+    if (!seen) setShowGuide(true);
+  }, []);
+  const handleCloseGuide = () => {
+    setShowGuide(false);
+    localStorage.setItem('seenProfessionIntelligenceGuide', 'true');
+  }
   const { location, getCountryName, getCurrencySymbol } = useLocation();
   const [activeTab, setActiveTab] = useState('salary');
   const [loading, setLoading] = useState(false);
@@ -48,6 +59,7 @@ const ProfessionIntelligencePage = () => {
   const [salaryForm, setSalaryForm] = useState({
     profession: '',
     experience: '',
+    status: 'Employed',
     currentSalary: ''
   });
 
@@ -85,8 +97,13 @@ const ProfessionIntelligencePage = () => {
 
   // Salary Analysis Handler
   const handleSalaryAnalysis = async () => {
-    if (!salaryForm.profession || !salaryForm.experience || !salaryForm.currentSalary) {
+    if (!salaryForm.profession || !salaryForm.experience) {
       setError('Please fill in all required fields');
+      return;
+    }
+    const needsSalary = ['Employed', 'Self-employed'].includes(salaryForm.status || '');
+    if (needsSalary && !salaryForm.currentSalary) {
+      setError('Please enter your current salary for employed status');
       return;
     }
 
@@ -94,12 +111,12 @@ const ProfessionIntelligencePage = () => {
     setError(null);
 
     try {
-      const locationContext = location ? `Location context: ${getCountryName(location.country)} (${location.currency}).` : '';
+      const locationContext = `${location ? `Location context: ${getCountryName(location.country)} (${location.currency}). ` : ''}Employment status: ${salaryForm.status || 'Unknown'}.`;
       const result = await analyzeSalary(
         salaryForm.profession,
         salaryForm.experience,
         location ? getCountryName(location.country) : 'Global',
-        salaryForm.currentSalary,
+        salaryForm.currentSalary || 'Not applicable',
         locationContext
       );
 
@@ -214,7 +231,10 @@ const ProfessionIntelligencePage = () => {
   };
 
   return (
-    <motion.div
+    <>
+
+      <FirstTimeGuide open={showGuide} onClose={handleCloseGuide} type="profession" />
+      <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
@@ -224,7 +244,7 @@ const ProfessionIntelligencePage = () => {
         {/* Clean Header */}
         <div className="text-center mb-16">
           <h1 className="text-4xl md:text-5xl font-light text-gray-900 mb-4 tracking-tight">
-            Profession Intelligence
+            Career Intelligence
           </h1>
           <div className="w-16 h-0.5 bg-gray-900 mx-auto mb-6"></div>
           <p className="text-lg text-gray-600 max-w-2xl mx-auto leading-relaxed">
@@ -276,13 +296,17 @@ const ProfessionIntelligencePage = () => {
             {activeTab === 'salary' && (
               <>
                 <button
-                  onClick={() => setSalaryForm({ profession: 'Software Engineer', experience: 'Mid Level (3-5 years)', currentSalary: `${getCurrencySymbol(location?.currency || 'USD')}85,000` })}
+                  onClick={() => setSalaryForm({ profession: 'Software Engineer', experience: 'Mid Level (3-5 years)', status: 'Employed', currentSalary: `${getCurrencySymbol(location?.currency || 'USD')}85,000` })}
                   className="text-xs px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
                 >Try: Software Engineer • Mid • 85k</button>
                 <button
-                  onClick={() => setSalaryForm({ profession: 'Marketing Manager', experience: 'Senior Level (6-10 years)', currentSalary: `${getCurrencySymbol(location?.currency || 'USD')}120,000` })}
+                  onClick={() => setSalaryForm({ profession: 'Marketing Manager', experience: 'Senior Level (6-10 years)', status: 'Employed', currentSalary: `${getCurrencySymbol(location?.currency || 'USD')}120,000` })}
                   className="text-xs px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
                 >Try: Marketing Manager • Senior • 120k</button>
+                <button
+                  onClick={() => setSalaryForm({ profession: 'Computer Science Student', experience: 'Entry Level (0-2 years)', status: 'Student', currentSalary: '' })}
+                  className="text-xs px-3 py-1.5 rounded-full bg-gray-100 hover:bg-gray-200 text-gray-700 transition"
+                >Try: CS Student • Entry • No salary</button>
               </>
             )}
             {activeTab === 'market' && (
@@ -382,16 +406,34 @@ const ProfessionIntelligencePage = () => {
                     </select>
                   </div>
 
-                  <div className="md:col-span-2">
+                  <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
-                      Current Salary *
+                      Employment Status *
+                    </label>
+                    <select
+                      value={salaryForm.status}
+                      onChange={(e) => setSalaryForm({...salaryForm, status: e.target.value})}
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                    >
+                      <option value="Employed">Employed</option>
+                      <option value="Self-employed">Self-employed</option>
+                      <option value="Student">Student</option>
+                      <option value="No job">No job</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-2">
+                      Current Salary {['Employed','Self-employed'].includes(salaryForm.status) ? '*' : '(if employed)'}
                     </label>
                     <input
                       type="text"
                       value={salaryForm.currentSalary}
                       onChange={(e) => setSalaryForm({...salaryForm, currentSalary: e.target.value})}
+                      disabled={!['Employed','Self-employed'].includes(salaryForm.status)}
                       placeholder={`e.g., ${getCurrencySymbol(location?.currency || 'USD')}75,000 per year`}
-                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors"
+                      className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-900 focus:border-transparent transition-colors disabled:opacity-60 disabled:cursor-not-allowed"
                     />
                   </div>
                 </div>
@@ -1177,6 +1219,7 @@ const ProfessionIntelligencePage = () => {
         </div>
       </div>
     </motion.div>
+    </>
   );
 };
 

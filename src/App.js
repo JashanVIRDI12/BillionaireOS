@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, ChevronDown, Briefcase, Brain, TrendingUp } from 'lucide-react';
+import { Target, Calendar, CheckSquare, Sparkles, X, DollarSign, Rocket, ChevronDown, Briefcase, Brain, TrendingUp, FileText } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { AuthProvider, useAuth } from './contexts/AuthContext';
 import { LocationProvider, useLocation } from './contexts/LocationContext';
@@ -10,6 +10,7 @@ import HabitsPage from './components/HabitsPage';
 import NetWorthPage from './components/NetWorthPage';
 import BusinessOpportunitiesPage from './components/BusinessOpportunitiesPage';
 import ProfessionIntelligencePage from './components/ProfessionIntelligencePage';
+import ResumePage from './components/ResumePage';
 import AuthModal from './components/AuthModal';
 import CookieConsent from './components/CookieConsent';
 import ProfileDropdown from './components/ProfileDropdown';
@@ -81,7 +82,8 @@ const AppContent = () => {
 
   const intelligenceTabs = [
     { id: 'business', label: 'Business Intel', icon: Rocket, component: BusinessOpportunitiesPage, color: 'purple' },
-    { id: 'profession', label: 'Profession Intel', icon: Briefcase, component: ProfessionIntelligencePage, color: 'indigo' },
+    { id: 'profession', label: 'Career Intel', icon: Briefcase, component: ProfessionIntelligencePage, color: 'indigo' },
+    { id: 'resume', label: 'Resume AI', icon: FileText, component: ResumePage, color: 'gray' },
   ];
 
   const homeTab = { id: 'home', label: 'Home', icon: Sparkles, component: HomePage };

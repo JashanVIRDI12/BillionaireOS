@@ -92,7 +92,7 @@ const Footer = () => {
               </li>
               <li>
                 <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left">
-                  Profession Intelligence
+                  Career Intelligence
                 </button>
               </li>
             </ul>

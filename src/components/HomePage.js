@@ -12,6 +12,8 @@ const HomePage = ({ onNavigate }) => {
   const { user } = useAuth();
   const { location } = useLocation();
   const [currentFeature, setCurrentFeature] = useState(0);
+  // Compact mode to keep homepage short and premium
+  const [compact] = useState(true);
   
   // Debug location object
   console.log('Location object:', location);
@@ -101,12 +103,12 @@ const HomePage = ({ onNavigate }) => {
     }
   ];
 
-  // Stats
+  // Badges (startup-friendly, no vanity metrics)
   const stats = [
-    { icon: Users, value: '10K+', label: 'Active Users' },
-    { icon: Target, value: '50K+', label: 'Goals Achieved' },
-    { icon: TrendingUp, value: '95%', label: 'Success Rate' },
-    { icon: Award, value: '4.9/5', label: 'User Rating' }
+    { icon: Rocket, value: 'Private Beta', label: 'Invite-only access' },
+    { icon: Shield, value: 'Privacy-first', label: 'Your data stays yours' },
+    { icon: Zap, value: 'Fast & Minimal', label: 'Built for speed' },
+    { icon: Globe, value: 'Global-ready', label: 'Timezones & currencies' }
   ];
 
   // Auto-rotate hero features
@@ -221,6 +223,18 @@ const HomePage = ({ onNavigate }) => {
                 </motion.button>
               </div>
 
+              {/* Compact Stats strip inside Hero */}
+              {compact && (
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-4 pt-2">
+                  {stats.map((stat, index) => (
+                    <div key={index} className="text-center">
+                      <div className="text-xl font-light bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent">{stat.value}</div>
+                      <div className="text-gray-500 text-xs font-light">{stat.label}</div>
+                    </div>
+                  ))}
+                </div>
+              )}
+
               {/* User greeting */}
               {user && (
                 <motion.div
@@ -300,22 +314,45 @@ const HomePage = ({ onNavigate }) => {
         </div>
       </section>
 
-      {/* Stats Section */}
-      <section className="py-20 bg-white/50 backdrop-blur-sm">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
-            {stats.map((stat, index) => (
-              <div
-                key={index}
-                className="text-center"
-              >
-                <div className="text-2xl font-light bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-1">{stat.value}</div>
-                <div className="text-gray-500 text-sm font-light">{stat.label}</div>
-              </div>
-            ))}
+      {/* Quick Start actions (compact) */}
+      {compact && (
+        <section className="py-8">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+              {[
+                { id: 'vision', label: 'Write Journal' },
+                { id: 'goals', label: 'Update Goals' },
+                { id: 'business', label: 'Business Intel' },
+                { id: 'profession', label: 'Career Intel' },
+              ].map((q) => (
+                <button
+                  key={q.id}
+                  onClick={() => onNavigate(q.id)}
+                  className="w-full bg-white/80 backdrop-blur-sm border border-gray-200 hover:border-gray-900 text-gray-900 text-sm py-2.5 rounded-lg transition-colors"
+                >
+                  {q.label}
+                </button>
+              ))}
+            </div>
           </div>
-        </div>
-      </section>
+        </section>
+      )}
+
+      {/* Stats Section (expanded mode only) */}
+      {!compact && (
+        <section className="py-20 bg-white/50 backdrop-blur-sm">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="grid grid-cols-2 lg:grid-cols-4 gap-12">
+              {stats.map((stat, index) => (
+                <div key={index} className="text-center">
+                  <div className="text-2xl font-light bg-gradient-to-r from-gray-900 to-gray-700 bg-clip-text text-transparent mb-1">{stat.value}</div>
+                  <div className="text-gray-500 text-sm font-light">{stat.label}</div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* Productivity Features */}
       <section className="py-16 bg-gradient-to-b from-white to-gray-50/50 border-t border-gray-100">
@@ -334,7 +371,7 @@ const HomePage = ({ onNavigate }) => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
-            {productivityFeatures.map((feature, index) => (
+            {(compact ? productivityFeatures.slice(0, 2) : productivityFeatures).map((feature, index) => (
               <FeatureCard 
                 key={feature.id} 
                 feature={feature} 
@@ -343,6 +380,17 @@ const HomePage = ({ onNavigate }) => {
               />
             ))}
           </div>
+          {compact && (
+            <div className="text-center mt-10">
+              <button
+                onClick={() => onNavigate('goals')}
+                className="inline-flex items-center px-5 py-2.5 text-sm bg-white border border-gray-200 hover:border-gray-900 text-gray-900 transition rounded-lg"
+              >
+                Explore more productivity
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
 
@@ -363,7 +411,7 @@ const HomePage = ({ onNavigate }) => {
           </div>
 
           <div className="grid md:grid-cols-2 gap-12">
-            {intelligenceFeatures.map((feature, index) => (
+            {(compact ? intelligenceFeatures.slice(0, 2) : intelligenceFeatures).map((feature, index) => (
               <FeatureCard 
                 key={feature.id} 
                 feature={feature} 
@@ -372,56 +420,66 @@ const HomePage = ({ onNavigate }) => {
               />
             ))}
           </div>
-        </div>
-      </section>
-
-      {/* Why Choose Section */}
-      <section className="py-16 bg-gradient-to-b from-white to-gray-50/30 border-t border-gray-100">
-        <div className="max-w-6xl mx-auto px-6">
-          <div className="text-center mb-12">
-            <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
-              Why Billionaire OS?
-            </h2>
-            <p className="text-gray-500 max-w-2xl mx-auto font-light">
-              Built for ambitious individuals who demand excellence.
-            </p>
-          </div>
-
-          <div className="grid md:grid-cols-3 gap-16">
-            {[
-              {
-                icon: Zap,
-                title: 'Lightning Fast',
-                description: 'Optimized for speed and efficiency'
-              },
-              {
-                icon: Shield,
-                title: 'Privacy First',
-                description: 'Your data is encrypted and secure'
-              },
-              {
-                icon: Globe,
-                title: 'Global Ready',
-                description: 'Multiple currencies and timezones'
-              }
-            ].map((item, index) => (
-              <div
-                key={index}
-                className="text-center"
+          {compact && (
+            <div className="text-center mt-10">
+              <button
+                onClick={() => onNavigate('business')}
+                className="inline-flex items-center px-5 py-2.5 text-sm bg-white border border-gray-200 hover:border-gray-900 text-gray-900 transition rounded-lg"
               >
-                <div className="w-8 h-8 mx-auto mb-6 bg-gradient-to-r from-gray-900 to-gray-700 flex items-center justify-center shadow-lg">
-                  <item.icon className="w-4 h-4 text-white" />
-                </div>
-                <h3 className="text-lg font-light text-gray-900 mb-3">{item.title}</h3>
-                <p className="text-gray-500 text-sm font-light">{item.description}</p>
-              </div>
-            ))}
-          </div>
+                Explore more intelligence
+                <ArrowRight className="w-4 h-4 ml-2" />
+              </button>
+            </div>
+          )}
         </div>
       </section>
+
+      {/* Why Choose Section (expanded mode only) */}
+      {!compact && (
+        <section className="py-16 bg-gradient-to-b from-white to-gray-50/30 border-t border-gray-100">
+          <div className="max-w-6xl mx-auto px-6">
+            <div className="text-center mb-12">
+              <h2 className="text-3xl lg:text-4xl font-light text-gray-900 mb-4">
+                Why Billionaire OS?
+              </h2>
+              <p className="text-gray-500 max-w-2xl mx-auto font-light">
+                Built for ambitious individuals who demand excellence.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-3 gap-16">
+              {[
+                {
+                  icon: Zap,
+                  title: 'Lightning Fast',
+                  description: 'Optimized for speed and efficiency'
+                },
+                {
+                  icon: Shield,
+                  title: 'Privacy First',
+                  description: 'Your data is encrypted and secure'
+                },
+                {
+                  icon: Globe,
+                  title: 'Global Ready',
+                  description: 'Multiple currencies and timezones'
+                }
+              ].map((item, index) => (
+                <div key={index} className="text-center">
+                  <div className="w-8 h-8 mx-auto mb-6 bg-gradient-to-r from-gray-900 to-gray-700 flex items-center justify-center shadow-lg">
+                    <item.icon className="w-4 h-4 text-white" />
+                  </div>
+                  <h3 className="text-lg font-light text-gray-900 mb-3">{item.title}</h3>
+                  <p className="text-gray-500 text-sm font-light">{item.description}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </section>
+      )}
 
       {/* CTA Section */}
-      <section className="py-32 bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white relative overflow-hidden">
+      <section className="py-20 bg-gradient-to-r from-gray-900 via-gray-800 to-black text-white relative overflow-hidden">
         {/* Background Elements */}
         <div className="absolute inset-0">
           <div className="absolute top-10 left-10 w-64 h-64 bg-gradient-to-r from-blue-500/10 to-purple-500/10 rounded-full blur-3xl"></div>
