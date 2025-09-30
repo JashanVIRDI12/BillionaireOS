@@ -83,7 +83,7 @@ const AppContent = () => {
   const intelligenceTabs = [
     { id: 'business', label: 'Business Intel', icon: Rocket, component: BusinessOpportunitiesPage, color: 'purple' },
     { id: 'profession', label: 'Career Intel', icon: Briefcase, component: ProfessionIntelligencePage, color: 'indigo' },
-    { id: 'resume', label: 'Resume AI', icon: FileText, component: ResumePage, color: 'gray' },
+    { id: 'resume', label: 'Resume Intel', icon: FileText, component: ResumePage, color: 'gray' },
   ];
 
   const homeTab = { id: 'home', label: 'Home', icon: Sparkles, component: HomePage };
