@@ -84,7 +84,7 @@ const HomePage = ({ onNavigate }) => {
       {/* Hero Section */}
       <section 
         ref={heroContainerRef}
-        className="relative overflow-hidden pt-20 pb-32"
+        className="relative overflow-hidden pt-32 pb-40"
       >
         {/* Liquid Chrome Background */}
         <div className="absolute inset-0">
@@ -100,33 +100,47 @@ const HomePage = ({ onNavigate }) => {
         </div>
         {/* Subtle Background Pattern */}
         <div className="absolute inset-0 bg-grid-gray-100 opacity-20"></div>
-        <div className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="relative max-w-7xl mx-auto px-6 sm:px-8 lg:px-12">
           <div className="text-center">
             <motion.div
               initial={{ opacity: 0, y: 30 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8 }}
-              className="mb-8"
+              className="mb-16"
             >
-              <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 mb-6">
+              <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 mb-12">
                 <Sparkles className="w-4 h-4 text-purple-600" />
                 <span className="text-sm font-medium text-purple-800">Powered by Advanced AI</span>
               </div>
-              <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold mb-8 tracking-tight leading-none" style={{
-                WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.7) 100%)',
-                mask: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.7) 100%)'
-              }}>
-                <VariableProximity
-                  label="The AI Operating System"
-                  fromFontVariationSettings="'wght' 600"
-                  toFontVariationSettings="'wght' 900"
-                  containerRef={heroContainerRef}
-                  radius={120}
-                  falloff="exponential"
-                  className="block mb-3 font-black text-gray-900"
-                />
-                <br />
-                <span className="bg-gradient-to-r from-purple-600 via-blue-600 to-cyan-600 bg-clip-text text-transparent font-black animate-gradient-x">
+              <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold mb-12 tracking-tight leading-tight">
+                <div 
+                  className="block font-black text-gray-900 py-2"
+                  style={{
+                    WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
+                    mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
+                  }}
+                >
+                  <VariableProximity
+                    label="The AI Operating System"
+                    fromFontVariationSettings="'wght' 600"
+                    toFontVariationSettings="'wght' 900"
+                    containerRef={heroContainerRef}
+                    radius={120}
+                    falloff="exponential"
+                  />
+                </div>
+                <div 
+                  className="font-black -mt-2 py-2"
+                  style={{
+                    background: 'linear-gradient(90deg, #9333ea, #2563eb, #0891b2)',
+                    WebkitBackgroundClip: 'text',
+                    backgroundClip: 'text',
+                    WebkitTextFillColor: 'transparent',
+                    color: 'transparent',
+                    WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
+                    mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
+                  }}
+                >
                   <VariableProximity
                     label="for Wealth, Career & Growth"
                     fromFontVariationSettings="'wght' 700"
@@ -135,9 +149,9 @@ const HomePage = ({ onNavigate }) => {
                     radius={100}
                     falloff="gaussian"
                   />
-                </span>
+                </div>
               </h1>
-              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">
+              <p className="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed mb-8">
                 Harness the power of artificial intelligence to optimize every aspect of your success journey. 
                 From financial growth to career advancement and personal development.
               </p>
@@ -148,7 +162,7 @@ const HomePage = ({ onNavigate }) => {
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.2 }}
-              className="flex flex-col sm:flex-row items-center justify-center space-y-4 sm:space-y-0 sm:space-x-6 mb-16"
+              className="flex flex-col sm:flex-row items-center justify-center space-y-6 sm:space-y-0 sm:space-x-8 mt-12"
             >
               <button
                 onClick={() => onNavigate('business')}
