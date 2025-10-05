@@ -111,18 +111,12 @@ const HomePage = ({ onNavigate }) => {
               transition={{ duration: 0.8 }}
               className="mb-16"
             >
-              <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-4 py-2 mb-12">
+              <div className="inline-flex items-center space-x-2 bg-white/20 backdrop-blur-xl border border-white/30 rounded-full px-6 py-3 mb-12 shadow-xl hover:bg-white/25 hover:border-white/40 transition-all duration-300">
                 <Sparkles className="w-4 h-4 text-purple-600" />
                 <span className="text-sm font-medium text-purple-800">Powered by Advanced AI</span>
               </div>
               <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold mb-12 tracking-tight leading-tight">
-                <div 
-                  className="block font-black text-gray-900 py-2"
-                  style={!isSafari ? {
-                    WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
-                    mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
-                  } : {}}
-                >
+                <div className="block font-black text-gray-900 py-2">
                   <VariableProximity
                     label="The AI Operating System"
                     fromFontVariationSettings="'wght' 600"
@@ -135,16 +129,12 @@ const HomePage = ({ onNavigate }) => {
                 <div 
                   className="font-black -mt-2 py-2"
                   style={{
-                    background: '-webkit-linear-gradient(90deg, #9333ea, #2563eb, #0891b2)',
-                    background: 'linear-gradient(90deg, #9333ea, #2563eb, #0891b2)',
+                    background: 'linear-gradient(135deg, rgba(147,51,234,0.9) 0%, rgba(37,99,235,0.8) 30%, rgba(8,145,178,0.9) 70%, rgba(6,182,212,0.8) 100%)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                     color: 'transparent',
-                    ...((!isSafari) && {
-                      WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
-                      mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
-                    })
+                    filter: 'drop-shadow(0 2px 8px rgba(147,51,234,0.3))'
                   }}
                 >
                   <VariableProximity
