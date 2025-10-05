@@ -17,6 +17,9 @@ const HomePage = ({ onNavigate }) => {
   const [activeCategory, setActiveCategory] = useState('productivity');
   const heroContainerRef = useRef(null);
 
+  // Detect Safari browser
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+
   // Feature categories - Based on actual app structure
   const featureCategories = {
     productivity: {
@@ -115,10 +118,10 @@ const HomePage = ({ onNavigate }) => {
               <h1 className="text-5xl sm:text-6xl lg:text-8xl font-bold mb-12 tracking-tight leading-tight">
                 <div 
                   className="block font-black text-gray-900 py-2"
-                  style={{
+                  style={!isSafari ? {
                     WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
                     mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
-                  }}
+                  } : {}}
                 >
                   <VariableProximity
                     label="The AI Operating System"
@@ -132,13 +135,16 @@ const HomePage = ({ onNavigate }) => {
                 <div 
                   className="font-black -mt-2 py-2"
                   style={{
+                    background: '-webkit-linear-gradient(90deg, #9333ea, #2563eb, #0891b2)',
                     background: 'linear-gradient(90deg, #9333ea, #2563eb, #0891b2)',
                     WebkitBackgroundClip: 'text',
-                    backgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',
+                    backgroundClip: 'text',
                     color: 'transparent',
-                    WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
-                    mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
+                    ...((!isSafari) && {
+                      WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
+                      mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
+                    })
                   }}
                 >
                   <VariableProximity
