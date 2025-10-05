@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { Plus, Trash2, Check, Target, X, ChevronLeft, ChevronRight, BarChart3, Calendar, TrendingUp, Flame } from 'lucide-react';
+import { Plus, Trash2, Check, Target, X, ChevronLeft, ChevronRight, BarChart3, Calendar, TrendingUp, Flame, Brain, Sparkles } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import {
@@ -9,6 +9,7 @@ import {
   toggleHabitCompletion
 } from '../firebase/ultraSimple';
 import SoothingLoader from './SoothingLoader';
+import AIHabitSuggestions from './AIHabitSuggestions';
 
 const HabitsPage = () => {
   const { user } = useAuth();
@@ -16,7 +17,9 @@ const HabitsPage = () => {
   const [newHabit, setNewHabit] = useState('');
   const [showAddHabit, setShowAddHabit] = useState(false);
   const [showStats, setShowStats] = useState(false);
+  const [showAISuggestions, setShowAISuggestions] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [addingHabits, setAddingHabits] = useState(false);
   const [currentWeek, setCurrentWeek] = useState(getWeekStart(new Date()));
   
   const todayDate = new Date().toISOString().split('T')[0];
@@ -137,6 +140,29 @@ const HabitsPage = () => {
     }
   };
 
+  // Add multiple habits from AI suggestions
+  const addMultipleHabits = async (habitNames) => {
+    if (!user || !habitNames.length) return;
+
+    setAddingHabits(true);
+    try {
+      // Add habits one by one
+      for (const habitName of habitNames) {
+        await addHabitToDb(user.uid, habitName);
+      }
+      
+      // Reload all habits
+      const habitsResult = await getHabits(user.uid);
+      if (habitsResult.success) {
+        setHabits(habitsResult.habits);
+      }
+    } catch (error) {
+      console.error('Error adding multiple habits:', error);
+    } finally {
+      setAddingHabits(false);
+    }
+  };
+
   // Delete habit
   const deleteHabit = async (habitId) => {
     if (!user) return;
@@ -244,15 +270,28 @@ const HabitsPage = () => {
           </div>
         </div>
         
-        <motion.button
-          whileHover={{ scale: 1.05 }}
-          whileTap={{ scale: 0.95 }}
-          onClick={() => setShowStats(true)}
-          className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm sm:text-base"
-        >
-          <BarChart3 className="w-4 h-4" />
-          <span className="font-medium">Stats</span>
-        </motion.button>
+        <div className="flex space-x-2 sm:space-x-3">
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowAISuggestions(true)}
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gradient-to-r from-purple-600 to-blue-600 text-white rounded-lg hover:from-purple-700 hover:to-blue-700 transition-all duration-200 text-sm sm:text-base font-medium"
+          >
+            <Brain className="w-4 h-4" />
+            <span className="hidden sm:inline">AI Habits</span>
+            <span className="sm:hidden">AI</span>
+          </motion.button>
+          
+          <motion.button
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+            onClick={() => setShowStats(true)}
+            className="flex items-center space-x-2 px-3 sm:px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-lg transition-colors text-sm sm:text-base"
+          >
+            <BarChart3 className="w-4 h-4" />
+            <span className="font-medium">Stats</span>
+          </motion.button>
+        </div>
       </div>
 
       {/* Week Navigation */}
@@ -556,6 +595,16 @@ const HabitsPage = () => {
               </motion.button>
             </div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* AI Habit Suggestions Modal */}
+      <AnimatePresence>
+        {showAISuggestions && (
+          <AIHabitSuggestions
+            onAddHabits={addMultipleHabits}
+            onClose={() => setShowAISuggestions(false)}
+          />
         )}
       </AnimatePresence>
 
