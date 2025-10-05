@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import FirstTimeGuide from './FirstTimeGuide';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   DollarSign, 
@@ -18,22 +17,10 @@ import { useLocation } from '../contexts/LocationContext';
 import { 
   analyzeSalary, 
   analyzeJobMarket, 
-  generateCareerPath, 
-  analyzeSkillsGap 
 } from '../services/professionIntelligence';
 import SoothingLoader from './SoothingLoader';
 
 const ProfessionIntelligencePage = () => {
-  // Show onboarding guide for first-time users
-  const [showGuide, setShowGuide] = useState(false);
-  useEffect(() => {
-    const seen = localStorage.getItem('seenProfessionIntelligenceGuide');
-    if (!seen) setShowGuide(true);
-  }, []);
-  const handleCloseGuide = () => {
-    setShowGuide(false);
-    localStorage.setItem('seenProfessionIntelligenceGuide', 'true');
-  }
   const { location, getCountryName, getCurrencySymbol } = useLocation();
   const [activeTab, setActiveTab] = useState('salary');
   const [loading, setLoading] = useState(false);
@@ -233,7 +220,6 @@ const ProfessionIntelligencePage = () => {
   return (
     <>
 
-      <FirstTimeGuide open={showGuide} onClose={handleCloseGuide} type="profession" />
       <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
