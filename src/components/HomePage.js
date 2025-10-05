@@ -1,10 +1,8 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   Target, Calendar, CheckSquare, DollarSign, Rocket, Briefcase, 
-  Brain, TrendingUp, ArrowRight, Users, Sparkles, Wand2,
-  Shield, Zap, Globe, Award, FileText, BarChart3, PieChart,
-  Lightbulb, Eye, Cpu, Network, Star
+  Brain, TrendingUp, ArrowRight, Sparkles, FileText
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from '../contexts/LocationContext';
@@ -135,7 +133,6 @@ const HomePage = ({ onNavigate }) => {
                 <div 
                   className="font-black -mt-2 py-2"
                   style={{
-                    background: '-webkit-linear-gradient(90deg, #9333ea, #2563eb, #0891b2)',
                     background: 'linear-gradient(90deg, #9333ea, #2563eb, #0891b2)',
                     WebkitBackgroundClip: 'text',
                     WebkitTextFillColor: 'transparent',

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { 
   DollarSign, 
@@ -14,10 +14,7 @@ import {
   AlertCircle
 } from 'lucide-react';
 import { useLocation } from '../contexts/LocationContext';
-import { 
-  analyzeSalary, 
-  analyzeJobMarket, 
-} from '../services/professionIntelligence';
+import * as professionService from '../services/professionIntelligence';
 import SoothingLoader from './SoothingLoader';
 
 const ProfessionIntelligencePage = () => {
@@ -99,7 +96,7 @@ const ProfessionIntelligencePage = () => {
 
     try {
       const locationContext = `${location ? `Location context: ${getCountryName(location.country)} (${location.currency}). ` : ''}Employment status: ${salaryForm.status || 'Unknown'}.`;
-      const result = await analyzeSalary(
+      const result = await professionService.analyzeSalary(
         salaryForm.profession,
         salaryForm.experience,
         location ? getCountryName(location.country) : 'Global',
@@ -131,7 +128,7 @@ const ProfessionIntelligencePage = () => {
 
     try {
       const locationContext = location ? `Location context: ${getCountryName(location.country)} (${location.currency}).` : '';
-      const result = await analyzeJobMarket(
+      const result = await professionService.analyzeJobMarket(
         jobMarketForm.profession,
         location ? getCountryName(location.country) : 'Global',
         locationContext
@@ -161,7 +158,7 @@ const ProfessionIntelligencePage = () => {
 
     try {
       const locationContext = location ? `Location context: ${getCountryName(location.country)} (${location.currency}).` : '';
-      const result = await generateCareerPath(
+      const result = await professionService.generateCareerPath(
         careerPathForm.currentRole,
         careerPathForm.experience,
         careerPathForm.skills,
@@ -193,7 +190,7 @@ const ProfessionIntelligencePage = () => {
 
     try {
       const locationContext = location ? `Location context: ${getCountryName(location.country)} (${location.currency}).` : '';
-      const result = await analyzeSkillsGap(
+      const result = await professionService.analyzeSkillsGap(
         skillsGapForm.currentSkills,
         skillsGapForm.targetRole,
         skillsGapForm.industry,
