@@ -120,10 +120,10 @@ const HomePage = ({ onNavigate }) => {
               <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 sm:mb-12 tracking-tight leading-tight px-2 sm:px-0">
                 <div 
                   className="block font-black text-gray-900 py-2"
-                  style={!isSafari ? {
-                    WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
-                    mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
-                  } : {}}
+                  style={{
+                    WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.7) 100%)',
+                    mask: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.7) 100%)'
+                  }}
                 >
                   <VariableProximity
                     label="The AI Operating System"
@@ -142,10 +142,8 @@ const HomePage = ({ onNavigate }) => {
                     WebkitTextFillColor: 'transparent',
                     backgroundClip: 'text',
                     color: 'transparent',
-                    ...((!isSafari) && {
-                      WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)',
-                      mask: 'linear-gradient(90deg, rgba(0,0,0,0.9) 0%, rgba(0,0,0,1) 10%, rgba(0,0,0,1) 90%, rgba(0,0,0,0.9) 100%)'
-                    })
+                    WebkitMask: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.7) 100%)',
+                    mask: 'linear-gradient(90deg, rgba(0,0,0,0.7) 0%, rgba(0,0,0,1) 25%, rgba(0,0,0,1) 75%, rgba(0,0,0,0.7) 100%)'
                   }}
                 >
                   <VariableProximity
