@@ -81,7 +81,7 @@ const HomePage = ({ onNavigate }) => {
 
 
   return (
-    <div className="min-h-screen bg-gray-100">
+    <div className="min-h-screen bg-gray-200">
       {/* Hero Section */}
       <section 
         ref={heroContainerRef}
