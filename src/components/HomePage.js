@@ -109,9 +109,13 @@ const HomePage = ({ onNavigate }) => {
               transition={{ duration: 0.8 }}
               className="mb-8 sm:mb-16"
             >
-              <div className="inline-flex items-center space-x-2 bg-gray-100 rounded-full px-3 sm:px-4 py-2 mb-6 sm:mb-12">
-                <Sparkles className="w-4 h-4 text-purple-600" />
-                <span className="text-xs sm:text-sm font-medium text-purple-800">Powered by Advanced AI</span>
+              <div className="group relative inline-flex items-center space-x-2 bg-white/10 backdrop-blur-xl border border-white/20 rounded-full px-3 sm:px-4 py-2 mb-6 sm:mb-12 shadow-2xl hover:shadow-3xl transition-all duration-500 hover:bg-white/15 hover:border-white/30 overflow-hidden">
+                {/* Glass reflection effect */}
+                <div className="absolute inset-0 bg-gradient-to-br from-white/20 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative z-10 flex items-center space-x-2">
+                  <Sparkles className="w-4 h-4 text-purple-600 group-hover:text-purple-500 transition-colors duration-300" />
+                  <span className="text-xs sm:text-sm font-medium text-purple-800 group-hover:text-purple-700 transition-colors duration-300">Powered by Advanced AI</span>
+                </div>
               </div>
               <h1 className="text-3xl sm:text-5xl md:text-6xl lg:text-8xl font-bold mb-6 sm:mb-12 tracking-tight leading-tight px-2 sm:px-0">
                 <div 
