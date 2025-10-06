@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
-import { Calendar, Plus, Target, Trash2, Frown, Meh, Smile, SmilePlus, Star, Battery, BatteryLow, Zap, Flame, TrendingUp, Sparkles, ChevronLeft, ChevronRight, X } from 'lucide-react';
+import { Calendar, Plus, Target, Trash2, Frown, Meh, Smile, SmilePlus, Star, Battery, BatteryLow, Zap, Flame, TrendingUp, Sparkles, ChevronLeft, ChevronRight, X, BookOpen, Heart } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 
@@ -259,221 +259,184 @@ const VisionPage = () => {
   }
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      transition={{ duration: 0.5 }}
-      className="min-h-screen bg-white"
-    >
-      {/* Header */}
+    <div className="min-h-screen bg-white">
+      {/* Clean Header */}
       <div className="border-b border-gray-100 pb-6 mb-8">
         <div className="flex items-center space-x-3 mb-2">
           <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-            <Target className="w-4 h-4 text-white" />
+            <BookOpen className="w-4 h-4 text-white" />
           </div>
           <h1 className="text-2xl sm:text-3xl font-light text-black">Journal</h1>
         </div>
-        <p className="text-gray-400 text-sm sm:text-base font-light ml-11">Reflect on your daily progress</p>
+        <p className="text-gray-400 text-sm sm:text-base font-light ml-11">Daily reflection and growth tracking</p>
       </div>
 
       {/* Stats Overview */}
       {stats && (
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4"
-        >
-          <div className="bg-gradient-to-br from-blue-50 to-blue-100 border border-blue-200 rounded-xl p-3 sm:p-4 text-center">
-            <div className="w-8 h-8 bg-blue-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+        <div className="grid grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-4 mb-8">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 text-center">
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center mx-auto mb-3">
               <Calendar className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-blue-900">{stats.totalEntries}</p>
-            <p className="text-xs text-blue-700">Total Entries</p>
+            <p className="text-2xl sm:text-3xl font-light text-black mb-1">{stats.totalEntries}</p>
+            <p className="text-xs sm:text-sm text-gray-500">Total Entries</p>
           </div>
           
-          <div className="bg-gradient-to-br from-green-50 to-green-100 border border-green-200 rounded-xl p-3 sm:p-4 text-center">
-            <div className="w-8 h-8 bg-green-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 text-center">
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center mx-auto mb-3">
               <TrendingUp className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-green-900">{stats.streak}</p>
-            <p className="text-xs text-green-700">Day Streak</p>
+            <p className="text-2xl sm:text-3xl font-light text-black mb-1">{stats.streak}</p>
+            <p className="text-xs sm:text-sm text-gray-500">Day Streak</p>
           </div>
           
-          <div className="bg-gradient-to-br from-yellow-50 to-yellow-100 border border-yellow-200 rounded-xl p-3 sm:p-4 text-center">
-            <div className="w-8 h-8 bg-yellow-600 rounded-lg flex items-center justify-center mx-auto mb-2">
-              <Sparkles className="w-4 h-4 text-white" />
+          <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 text-center">
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center mx-auto mb-3">
+              <Heart className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-yellow-900">{stats.avgMood}</p>
-            <p className="text-xs text-yellow-700">Avg Mood</p>
+            <p className="text-2xl sm:text-3xl font-light text-black mb-1">{stats.avgMood}</p>
+            <p className="text-xs sm:text-sm text-gray-500">Avg Mood</p>
           </div>
           
-          <div className="bg-gradient-to-br from-purple-50 to-purple-100 border border-purple-200 rounded-xl p-3 sm:p-4 text-center">
-            <div className="w-8 h-8 bg-purple-600 rounded-lg flex items-center justify-center mx-auto mb-2">
+          <div className="bg-white border border-gray-200 rounded-xl p-4 sm:p-6 text-center">
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center mx-auto mb-3">
               <Zap className="w-4 h-4 text-white" />
             </div>
-            <p className="text-xl sm:text-2xl font-bold text-purple-900">{stats.avgEnergy}</p>
-            <p className="text-xs text-purple-700">Avg Energy</p>
-          </div>
-        </motion.div>
-      )}
-
-      {/* Journal Section */}
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 0.1 }}
-        className="space-y-8 mt-8"
-      >
-        <div className="flex items-center space-x-4 mb-8">
-          <div className="w-12 h-12 bg-black rounded-xl flex items-center justify-center">
-            <Calendar className="w-6 h-6 text-white" />
-          </div>
-          <div>
-            <h2 className="text-2xl font-bold text-gray-900">Daily Journal</h2>
-            <p className="text-gray-600 text-sm">Reflect, learn, and grow every day</p>
+            <p className="text-2xl sm:text-3xl font-light text-black mb-1">{stats.avgEnergy}</p>
+            <p className="text-xs sm:text-sm text-gray-500">Avg Energy</p>
           </div>
         </div>
+      )}
 
-        {/* New Entry Form */}
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.3 }}
-          className="space-y-6 mb-8 p-6 bg-gradient-to-br from-gray-50 to-gray-100 rounded-xl border-2 border-gray-200"
-        >
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
-              <Plus className="w-4 h-4 text-white" />
-            </div>
-            <h3 className="text-lg font-semibold text-gray-900">Today's Entry</h3>
-            <span className="text-sm text-gray-500">
-              {new Date().toLocaleDateString('en-US', { 
-                weekday: 'long', 
-                year: 'numeric', 
-                month: 'long', 
-                day: 'numeric' 
-              })}
-            </span>
+      {/* Journal Entry Form */}
+      <div className="bg-white border border-gray-200 rounded-xl p-6 sm:p-8 mb-8">
+        {/* Header */}
+        <div className="flex items-center space-x-3 mb-8">
+          <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+            <Plus className="w-4 h-4 text-white" />
           </div>
-          
-          <div className="space-y-4">
-            <div>
-              <label className="flex items-center space-x-2 text-sm font-semibold text-gray-800 mb-3">
-                <Target className="w-4 h-4" />
-                <span>What did I do today?</span>
-              </label>
-              <motion.textarea
-                whileFocus={{ scale: 1.02 }}
-                value={currentEntry.whatDidIDo}
-                onChange={(e) => setCurrentEntry({...currentEntry, whatDidIDo: e.target.value})}
-                className="w-full h-24 p-4 border-2 border-gray-300 focus:border-black outline-none resize-none transition-all rounded-lg bg-white shadow-sm"
-                placeholder="Describe your hustle, wins, and actions today..."
-              />
-            </div>
-
-            <div>
-              <label className="flex items-center space-x-2 text-sm font-semibold text-gray-800 mb-3">
-                <TrendingUp className="w-4 h-4" />
-                <span>Did I move closer to my goal?</span>
-              </label>
-              <motion.textarea
-                whileFocus={{ scale: 1.02 }}
-                value={currentEntry.didIMoveCloser}
-                onChange={(e) => setCurrentEntry({...currentEntry, didIMoveCloser: e.target.value})}
-                className="w-full h-20 p-4 border-2 border-gray-300 focus:border-black outline-none resize-none transition-all rounded-lg bg-white shadow-sm"
-                placeholder="Reflect on your progress toward your North Star..."
-              />
-            </div>
-
-            <div>
-              <label className="flex items-center space-x-2 text-sm font-semibold text-gray-800 mb-3">
-                <Sparkles className="w-4 h-4" />
-                <span>Lessons learned</span>
-              </label>
-              <motion.textarea
-                whileFocus={{ scale: 1.02 }}
-                value={currentEntry.lessonsLearned}
-                onChange={(e) => setCurrentEntry({...currentEntry, lessonsLearned: e.target.value})}
-                className="w-full h-20 p-4 border-2 border-gray-300 focus:border-black outline-none resize-none transition-all rounded-lg bg-white shadow-sm"
-                placeholder="What insights, failures, or breakthroughs did you have?"
-              />
-            </div>
+          <div>
+            <h2 className="text-xl sm:text-2xl font-light text-black">Today's Entry</h2>
+            <p className="text-gray-400 text-sm font-light">{new Date().toLocaleDateString('en-US', { weekday: 'long', month: 'long', day: 'numeric' })}</p>
+          </div>
+        </div>
+            
+        {/* Form Fields */}
+        <div className="space-y-6">
+          {/* What did I do today */}
+          <div>
+            <label className="flex items-center space-x-2 text-sm font-medium text-black mb-3">
+              <Target className="w-4 h-4" />
+              <span>What did I do today?</span>
+            </label>
+            <textarea
+              value={currentEntry.whatDidIDo}
+              onChange={(e) => setCurrentEntry({...currentEntry, whatDidIDo: e.target.value})}
+              className="w-full h-24 p-4 border border-gray-300 focus:border-black outline-none resize-none transition-all rounded-lg bg-white"
+              placeholder="Describe your hustle, wins, and actions today..."
+            />
           </div>
 
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 sm:gap-6">
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="p-3 sm:p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm"
-            >
-              <label className="flex items-center justify-between text-sm font-semibold text-gray-800 mb-3">
+          {/* Goal progress */}
+          <div>
+            <label className="flex items-center space-x-2 text-sm font-medium text-black mb-3">
+              <TrendingUp className="w-4 h-4" />
+              <span>Did I move closer to my goal?</span>
+            </label>
+            <textarea
+              value={currentEntry.didIMoveCloser}
+              onChange={(e) => setCurrentEntry({...currentEntry, didIMoveCloser: e.target.value})}
+              className="w-full h-20 p-4 border border-gray-300 focus:border-black outline-none resize-none transition-all rounded-lg bg-white"
+              placeholder="Reflect on your progress toward your North Star..."
+            />
+          </div>
+
+          {/* Lessons learned */}
+          <div>
+            <label className="flex items-center space-x-2 text-sm font-medium text-black mb-3">
+              <Sparkles className="w-4 h-4" />
+              <span>Lessons learned</span>
+            </label>
+            <textarea
+              value={currentEntry.lessonsLearned}
+              onChange={(e) => setCurrentEntry({...currentEntry, lessonsLearned: e.target.value})}
+              className="w-full h-20 p-4 border border-gray-300 focus:border-black outline-none resize-none transition-all rounded-lg bg-white"
+              placeholder="What insights, failures, or breakthroughs did you have?"
+            />
+          </div>
+
+          {/* Mood & Energy */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <label className="flex items-center justify-between text-sm font-medium text-black mb-3">
                 <span>Mood</span>
-                <span className="text-xl sm:text-2xl">{getMoodIcon(currentEntry.mood)}</span>
+                <span className="text-xl">{getMoodIcon(currentEntry.mood)}</span>
               </label>
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <span className="text-xs text-gray-500 flex-shrink-0">1</span>
+              <div className="flex items-center space-x-3">
+                <span className="text-xs text-gray-500">1</span>
                 <input
                   type="range"
                   min="1"
                   max="10"
                   value={currentEntry.mood}
                   onChange={(e) => setCurrentEntry({...currentEntry, mood: parseInt(e.target.value)})}
-                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer min-w-0"
+                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
-                <span className="text-xs text-gray-500 flex-shrink-0">10</span>
+                <span className="text-xs text-gray-500">10</span>
               </div>
-              <p className="text-center text-base sm:text-lg font-bold text-gray-900 mt-2">{currentEntry.mood}/10</p>
-            </motion.div>
+              <p className="text-center text-lg font-light text-black mt-2">{currentEntry.mood}/10</p>
+            </div>
             
-            <motion.div
-              whileHover={{ scale: 1.02 }}
-              className="p-3 sm:p-4 bg-white rounded-lg border-2 border-gray-200 shadow-sm"
-            >
-              <label className="flex items-center justify-between text-sm font-semibold text-gray-800 mb-3">
+            <div className="bg-white border border-gray-200 rounded-lg p-4">
+              <label className="flex items-center justify-between text-sm font-medium text-black mb-3">
                 <span>Energy</span>
-                <span className="text-xl sm:text-2xl">{getEnergyIcon(currentEntry.energy)}</span>
+                <span className="text-xl">{getEnergyIcon(currentEntry.energy)}</span>
               </label>
-              <div className="flex items-center space-x-2 sm:space-x-3">
-                <span className="text-xs text-gray-500 flex-shrink-0">1</span>
+              <div className="flex items-center space-x-3">
+                <span className="text-xs text-gray-500">1</span>
                 <input
                   type="range"
                   min="1"
                   max="10"
                   value={currentEntry.energy}
                   onChange={(e) => setCurrentEntry({...currentEntry, energy: parseInt(e.target.value)})}
-                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer min-w-0"
+                  className="flex-1 h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
                 />
-                <span className="text-xs text-gray-500 flex-shrink-0">10</span>
+                <span className="text-xs text-gray-500">10</span>
               </div>
-              <p className="text-center text-base sm:text-lg font-bold text-gray-900 mt-2">{currentEntry.energy}/10</p>
-            </motion.div>
+              <p className="text-center text-lg font-light text-black mt-2">{currentEntry.energy}/10</p>
+            </div>
           </div>
 
-          <motion.button
+          {/* Save Button */}
+          <button
             ref={saveButtonRef}
             onClick={handleAddJournalEntry}
             disabled={!currentEntry.whatDidIDo.trim() || loading}
-            whileHover={{ scale: 1.05 }}
-            whileTap={{ scale: 0.95 }}
             className={`
-              w-full flex items-center justify-center space-x-3 px-8 py-4 rounded-xl font-semibold text-lg shadow-lg transition-all duration-200 border-2
+              w-full flex items-center justify-center space-x-3 px-8 py-4 rounded-lg font-medium text-base transition-all duration-200
               ${loading 
-                ? 'bg-white text-gray-700 border-gray-300 cursor-not-allowed animate-pulse' 
-                : 'bg-black text-white border-black hover:bg-gray-800 disabled:bg-gray-300 disabled:border-gray-300 disabled:cursor-not-allowed'
+                ? 'bg-gray-200 text-gray-500 cursor-not-allowed' 
+                : currentEntry.whatDidIDo.trim()
+                  ? 'bg-black text-white hover:bg-gray-800'
+                  : 'bg-gray-200 text-gray-500 cursor-not-allowed'
               }
             `}
           >
             {loading ? (
-              <motion.div
-                animate={{ rotate: 360 }}
-                transition={{ duration: 0.8, repeat: Infinity, ease: "linear" }}
-                className="w-5 h-5 border-2 border-gray-300 border-t-black rounded-full"
-              />
+              <>
+                <div className="w-5 h-5 border-2 border-gray-400 border-t-black rounded-full animate-spin" />
+                <span>Saving...</span>
+              </>
             ) : (
-              <Plus className="w-5 h-5" />
+              <>
+                <Plus className="w-5 h-5" />
+                <span>Add Today's Entry</span>
+              </>
             )}
-            <span>{loading ? 'Saving...' : 'Add Today\'s Entry'}</span>
-          </motion.button>
-        </motion.div>
+          </button>
+        </div>
+      </div>
 
         {/* AI Insights */}
         {showAIInsights && latestAnalyzedEntry && (
@@ -486,44 +449,45 @@ const VisionPage = () => {
           />
         )}
 
-        {/* Calendar View */}
-        <div className="space-y-6">
-          <div className="flex items-center justify-between">
-            <h3 className="text-xl font-bold text-gray-900">Your Journey</h3>
-            {journalEntries.length > 0 && (
-              <span className="text-sm text-gray-500">{journalEntries.length} entries</span>
-            )}
-          </div>
-
-          {/* Calendar */}
-          <div className="bg-white border-2 border-gray-200 rounded-xl p-6">
-            {/* Calendar Header */}
-            <div className="flex items-center justify-between mb-6">
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => navigateMonth(-1)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ChevronLeft className="w-5 h-5" />
-              </motion.button>
-              
-              <h4 className="text-lg font-semibold text-gray-900">
-                {currentDate.toLocaleDateString('en-US', { 
-                  month: 'long', 
-                  year: 'numeric' 
-                })}
-              </h4>
-              
-              <motion.button
-                whileHover={{ scale: 1.1 }}
-                whileTap={{ scale: 0.9 }}
-                onClick={() => navigateMonth(1)}
-                className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
-              >
-                <ChevronRight className="w-5 h-5" />
-              </motion.button>
+      {/* Calendar View */}
+      <div className="space-y-6">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 bg-black rounded-lg flex items-center justify-center">
+              <Calendar className="w-4 h-4 text-white" />
             </div>
+            <h3 className="text-xl font-light text-black">Your Journey</h3>
+          </div>
+          {journalEntries.length > 0 && (
+            <span className="text-sm text-gray-500">{journalEntries.length} entries</span>
+          )}
+        </div>
+
+        {/* Calendar */}
+        <div className="bg-white border border-gray-200 rounded-xl p-6">
+          {/* Calendar Header */}
+          <div className="flex items-center justify-between mb-6">
+            <button
+              onClick={() => navigateMonth(-1)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ChevronLeft className="w-5 h-5" />
+            </button>
+            
+            <h4 className="text-lg font-medium text-black">
+              {currentDate.toLocaleDateString('en-US', { 
+                month: 'long', 
+                year: 'numeric' 
+              })}
+            </h4>
+            
+            <button
+              onClick={() => navigateMonth(1)}
+              className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+            >
+              <ChevronRight className="w-5 h-5" />
+            </button>
+          </div>
 
             {/* Days of Week */}
             <div className="grid grid-cols-7 gap-1 mb-2">
@@ -581,19 +545,19 @@ const VisionPage = () => {
               })()}
             </div>
 
-            {/* Calendar Legend */}
-            <div className="flex items-center justify-center space-x-6 mt-6 pt-4 border-t border-gray-200">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <div className="w-3 h-3 bg-black rounded"></div>
-                <span>Today</span>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <div className="w-3 h-3 border-2 border-blue-500 rounded"></div>
-                <span>Has Entry</span>
-              </div>
+          {/* Calendar Legend */}
+          <div className="flex items-center justify-center space-x-6 mt-6 pt-4 border-t border-gray-200">
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="w-3 h-3 bg-black rounded"></div>
+              <span>Today</span>
+            </div>
+            <div className="flex items-center space-x-2 text-sm text-gray-600">
+              <div className="w-3 h-3 border-2 border-blue-500 rounded"></div>
+              <span>Has Entry</span>
             </div>
           </div>
         </div>
+      </div>
 
         {/* Entry Modal */}
         <AnimatePresence>
@@ -692,16 +656,15 @@ const VisionPage = () => {
           )}
         </AnimatePresence>
 
-        {/* Confirmation Modal */}
-        <ConfirmModal
-          isOpen={confirmModal.isOpen}
-          onClose={hideConfirmModal}
-          onConfirm={confirmModal.onConfirm}
-          title={confirmModal.title}
-          message={confirmModal.message}
-        />
-      </motion.div>
-    </motion.div>
+      {/* Confirmation Modal */}
+      <ConfirmModal
+        isOpen={confirmModal.isOpen}
+        onClose={hideConfirmModal}
+        onConfirm={confirmModal.onConfirm}
+        title={confirmModal.title}
+        message={confirmModal.message}
+      />
+    </div>
   );
 };
 

@@ -3,7 +3,7 @@ import { motion } from 'framer-motion';
 import { Sparkles, Globe, Mail, Twitter, Github, Clock } from 'lucide-react';
 import { useLocation } from '../contexts/LocationContext';
 
-const Footer = () => {
+const Footer = ({ onNavigate }) => {
   const currentYear = new Date().getFullYear();
   const { getCurrentTime, getTimezoneInfo } = useLocation();
   const [currentTime, setCurrentTime] = useState('');
@@ -59,22 +59,34 @@ const Footer = () => {
             <h4 className="text-sm font-semibold text-gray-900 mb-4">Productivity</h4>
             <ul className="space-y-3">
               <li>
-                <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left">
+                <button 
+                  onClick={() => onNavigate('vision')}
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left"
+                >
                   Journal
                 </button>
               </li>
               <li>
-                <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left">
+                <button 
+                  onClick={() => onNavigate('goals')}
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left"
+                >
                   Goals
                 </button>
               </li>
               <li>
-                <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left">
+                <button 
+                  onClick={() => onNavigate('habits')}
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left"
+                >
                   Habits
                 </button>
               </li>
               <li>
-                <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left">
+                <button 
+                  onClick={() => onNavigate('networth')}
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left"
+                >
                   Net Worth
                 </button>
               </li>
@@ -86,12 +98,18 @@ const Footer = () => {
             <h4 className="text-sm font-semibold text-gray-900 mb-4">Intelligence</h4>
             <ul className="space-y-3">
               <li>
-                <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left">
+                <button 
+                  onClick={() => onNavigate('business')}
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left"
+                >
                   Business Intelligence
                 </button>
               </li>
               <li>
-                <button className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left">
+                <button 
+                  onClick={() => onNavigate('profession')}
+                  className="text-sm text-gray-600 hover:text-gray-900 transition-colors text-left"
+                >
                   Career Intelligence
                 </button>
               </li>
@@ -102,14 +120,30 @@ const Footer = () => {
         {/* Bottom Section */}
         <div className="pt-8 border-t border-gray-200/50">
           <div className="flex flex-col md:flex-row justify-between items-center space-y-4 md:space-y-0">
-            {/* Copyright and Time */}
+            {/* Copyright and Legal Links */}
             <div className="flex flex-col md:flex-row items-center space-y-2 md:space-y-0 md:space-x-4">
-              <div className="flex items-center space-x-2 text-sm text-gray-600">
-                <span>© {currentYear} Billionaire OS</span>
-                <span>•</span>
-                <span>Empowering ambitious minds worldwide</span>
-                <span>•</span>
-                <span>All rights reserved</span>
+              <div className="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-2 text-sm text-gray-600">
+                <div className="flex items-center space-x-2">
+                  <span>© {currentYear} Billionaire OS</span>
+                  <span>•</span>
+                  <span>All rights reserved</span>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <span>•</span>
+                  <button 
+                    onClick={() => onNavigate('privacy')}
+                    className="text-gray-600 hover:text-gray-900 transition-colors underline-offset-2 hover:underline"
+                  >
+                    Privacy Policy
+                  </button>
+                  <span>•</span>
+                  <button 
+                    onClick={() => onNavigate('terms')}
+                    className="text-gray-600 hover:text-gray-900 transition-colors underline-offset-2 hover:underline"
+                  >
+                    Terms & Conditions
+                  </button>
+                </div>
               </div>
               
               {/* Live Time Display */}

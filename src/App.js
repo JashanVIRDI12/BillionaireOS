@@ -11,6 +11,9 @@ import NetWorthPage from './components/NetWorthPage';
 import BusinessOpportunitiesPage from './components/BusinessOpportunitiesPage';
 import ProfessionIntelligencePage from './components/ProfessionIntelligencePage';
 import ResumePage from './components/ResumePage';
+import TestPage from './components/TestPage';
+import PrivacyPolicyPage from './components/PrivacyPolicyPage';
+import TermsConditionsPage from './components/TermsConditionsPage';
 import AuthModal from './components/AuthModal';
 import CookieConsent from './components/CookieConsent';
 import ProfileDropdown from './components/ProfileDropdown';
@@ -25,8 +28,6 @@ const AppContent = () => {
   const [showAuthModal, setShowAuthModal] = useState(false);
   const [showMobileMenu, setShowMobileMenu] = useState(false);
   const [showLocationSelector, setShowLocationSelector] = useState(false);
-  const [showProductivityDropdown, setShowProductivityDropdown] = useState(false);
-  const [showIntelligenceDropdown, setShowIntelligenceDropdown] = useState(false);
   const { user, loading } = useAuth();
   const { isLocationSet, updateLocation } = useLocation();
 
@@ -86,8 +87,214 @@ const AppContent = () => {
     { id: 'resume', label: 'Resume Intel', icon: FileText, component: ResumePage, color: 'gray' },
   ];
 
+  const legalTabs = [
+    { id: 'privacy', label: 'Privacy Policy', icon: FileText, component: PrivacyPolicyPage, color: 'gray' },
+    { id: 'terms', label: 'Terms & Conditions', icon: FileText, component: TermsConditionsPage, color: 'gray' },
+  ];
+
   const homeTab = { id: 'home', label: 'Home', icon: Sparkles, component: HomePage };
-  const allTabs = [homeTab, ...productivityTabs, ...intelligenceTabs];
+  const allTabs = [homeTab, ...productivityTabs, ...intelligenceTabs, ...legalTabs];
+
+  // Shifting Dropdown Navigation Component
+  const ShiftingDropDown = ({ activeTab, handleTabChange, productivityTabs, intelligenceTabs }) => {
+    const [selected, setSelected] = useState(null);
+    const [dir, setDir] = useState(null);
+
+    const handleSetSelected = (val) => {
+      if (typeof selected === "number" && typeof val === "number") {
+        setDir(selected > val ? "r" : "l");
+      } else if (val === null) {
+        setDir(null);
+      }
+      setSelected(val);
+    };
+
+    const TABS = [
+      {
+        title: "Productivity",
+        icon: TrendingUp,
+        Component: () => (
+          <div>
+            <div className="grid grid-cols-2 gap-4">
+              {productivityTabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      handleTabChange(tab.id);
+                      setSelected(null);
+                    }}
+                    className={`flex items-center space-x-3 p-3 rounded-lg text-left transition-all duration-200 ${
+                      isActive 
+                        ? "bg-gray-900 text-white" 
+                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <div>
+                      <div className="font-medium text-sm">{tab.label}</div>
+                      <div className="text-xs opacity-70">
+                        {tab.id === 'vision' && 'AI-powered journaling'}
+                        {tab.id === 'goals' && 'Goal tracking & planning'}
+                        {tab.id === 'habits' && 'Habit building system'}
+                        {tab.id === 'networth' && 'Financial tracking'}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ),
+      },
+      {
+        title: "Intelligence",
+        icon: Brain,
+        Component: () => (
+          <div>
+            <div className="space-y-3">
+              {intelligenceTabs.map((tab) => {
+                const Icon = tab.icon;
+                const isActive = activeTab === tab.id;
+                return (
+                  <button
+                    key={tab.id}
+                    onClick={() => {
+                      handleTabChange(tab.id);
+                      setSelected(null);
+                    }}
+                    className={`w-full flex items-center space-x-3 p-3 rounded-lg text-left transition-all duration-200 ${
+                      isActive 
+                        ? "bg-gray-900 text-white" 
+                        : "text-gray-700 hover:text-gray-900 hover:bg-gray-50"
+                    }`}
+                  >
+                    <Icon className="w-5 h-5" />
+                    <div>
+                      <div className="font-medium text-sm">{tab.label}</div>
+                      <div className="text-xs opacity-70">
+                        {tab.id === 'business' && 'AI business insights'}
+                        {tab.id === 'profession' && 'Career intelligence'}
+                        {tab.id === 'resume' && 'Resume optimization'}
+                      </div>
+                    </div>
+                  </button>
+                );
+              })}
+            </div>
+          </div>
+        ),
+      },
+    ].map((n, idx) => ({ ...n, id: idx + 1 }));
+
+    return (
+      <div className="hidden md:flex">
+        <div
+          onMouseLeave={() => handleSetSelected(null)}
+          className="relative flex h-fit gap-2"
+        >
+          {TABS.map((t) => {
+            const Icon = t.icon;
+            return (
+              <button
+                key={t.id}
+                id={`shift-tab-${t.id}`}
+                onMouseEnter={() => handleSetSelected(t.id)}
+                onClick={() => handleSetSelected(t.id)}
+                className={`flex items-center gap-2 rounded-full px-4 py-2.5 text-sm font-medium transition-all duration-200 ${
+                  selected === t.id
+                    ? "bg-gray-800 text-white shadow-lg"
+                    : "text-gray-600 hover:text-gray-900 hover:bg-gray-100"
+                }`}
+              >
+                <Icon className="w-4 h-4" />
+                <span>{t.title}</span>
+                <ChevronDown
+                  className={`w-3 h-3 transition-transform ${
+                    selected === t.id ? "rotate-180" : ""
+                  }`}
+                />
+              </button>
+            );
+          })}
+
+          <AnimatePresence>
+            {selected && (
+              <motion.div
+                id="overlay-content"
+                initial={{ opacity: 0, y: 8 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: 8 }}
+                className="absolute left-0 top-[calc(100%_+_24px)] w-96 rounded-xl border border-gray-200 bg-white shadow-2xl p-6 z-50"
+              >
+                {/* Bridge */}
+                <div className="absolute -top-[24px] left-0 right-0 h-[24px]" />
+                
+                {/* Nub */}
+                <Nub selected={selected} />
+
+                {TABS.map((t) => {
+                  return (
+                    <div className="overflow-hidden" key={t.id}>
+                      {selected === t.id && (
+                        <motion.div
+                          initial={{
+                            opacity: 0,
+                            x: dir === "l" ? 100 : dir === "r" ? -100 : 0,
+                          }}
+                          animate={{ opacity: 1, x: 0 }}
+                          transition={{ duration: 0.25, ease: "easeInOut" }}
+                        >
+                          <t.Component />
+                        </motion.div>
+                      )}
+                    </div>
+                  );
+                })}
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
+      </div>
+    );
+  };
+
+  // Nub component for the dropdown pointer
+  const Nub = ({ selected }) => {
+    const [left, setLeft] = useState(0);
+
+    useEffect(() => {
+      moveNub();
+    }, [selected]);
+
+    const moveNub = () => {
+      if (selected) {
+        const hoveredTab = document.getElementById(`shift-tab-${selected}`);
+        const overlayContent = document.getElementById("overlay-content");
+
+        if (!hoveredTab || !overlayContent) return;
+
+        const tabRect = hoveredTab.getBoundingClientRect();
+        const { left: contentLeft } = overlayContent.getBoundingClientRect();
+
+        const tabCenter = tabRect.left + tabRect.width / 2 - contentLeft;
+        setLeft(tabCenter);
+      }
+    };
+
+    return (
+      <motion.span
+        style={{
+          clipPath: "polygon(0 0, 100% 0, 50% 50%, 0% 100%)",
+        }}
+        animate={{ left }}
+        transition={{ duration: 0.25, ease: "easeInOut" }}
+        className="absolute left-1/2 top-0 h-4 w-4 -translate-x-1/2 -translate-y-1/2 rotate-45 rounded-tl border border-gray-200 bg-white"
+      />
+    );
+  };
 
   useEffect(() => {
     // Test Firebase connection
@@ -102,17 +309,11 @@ const AppContent = () => {
     }
   }, [user, loading, isLocationSet]);
 
-  // Close dropdowns when clicking outside
+  // Close mobile menu when clicking outside
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (showMobileMenu && !event.target.closest('.mobile-nav-container')) {
         setShowMobileMenu(false);
-      }
-      if (showProductivityDropdown && !event.target.closest('.productivity-dropdown')) {
-        setShowProductivityDropdown(false);
-      }
-      if (showIntelligenceDropdown && !event.target.closest('.intelligence-dropdown')) {
-        setShowIntelligenceDropdown(false);
       }
     };
 
@@ -120,7 +321,7 @@ const AppContent = () => {
     return () => {
       document.removeEventListener('mousedown', handleClickOutside);
     };
-  }, [showMobileMenu, showProductivityDropdown, showIntelligenceDropdown]);
+  }, [showMobileMenu]);
 
   const ActiveComponent = allTabs.find(tab => tab.id === activeTab)?.component;
   
@@ -211,7 +412,7 @@ const AppContent = () => {
     <div className="min-h-screen bg-white font-sans antialiased">
 
       {/* Beautiful Header with Navigation */}
-      <header className="sticky top-0 z-50 bg-white/80 backdrop-blur-xl border-b border-gray-100/50 shadow-sm">
+      <header className="sticky top-0 z-50 bg-white/10 backdrop-blur-xl border-b border-white/20 shadow-2xl hover:shadow-3xl transition-all duration-500">
         <div className="max-w-7xl mx-auto px-4 sm:px-6">
           <div className="flex justify-between items-center h-14 sm:h-16">
             {/* Logo Section */}
@@ -237,122 +438,13 @@ const AppContent = () => {
               </div>
             </motion.button>
 
-            {/* Desktop Navigation */}
-            <div className="hidden md:flex items-center space-x-1">
-              {/* Productivity Dropdown */}
-              <div className="relative productivity-dropdown">
-                <motion.button
-                  onClick={() => {
-                    setShowProductivityDropdown(!showProductivityDropdown);
-                    setShowIntelligenceDropdown(false);
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  <TrendingUp className="w-4 h-4" />
-                  <span>Productivity</span>
-                  <motion.div
-                    animate={{ rotate: showProductivityDropdown ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDown className="w-3 h-3" />
-                  </motion.div>
-                </motion.button>
-
-                <AnimatePresence>
-                  {showProductivityDropdown && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 mt-2 w-48 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
-                    >
-                      {productivityTabs.map((tab, index) => {
-                        const Icon = tab.icon;
-                        const isActive = activeTab === tab.id;
-                        return (
-                          <motion.button
-                            key={tab.id}
-                            onClick={() => {
-                              handleTabChange(tab.id);
-                              setShowProductivityDropdown(false);
-                            }}
-                            whileHover={{ backgroundColor: "#f9fafb" }}
-                            className={cn(
-                              "w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-200",
-                              isActive ? "bg-gray-900 text-white" : "text-gray-700 hover:text-gray-900",
-                              index !== productivityTabs.length - 1 && "border-b border-gray-100"
-                            )}
-                          >
-                            <Icon className="w-4 h-4" />
-                            <span className="font-medium">{tab.label}</span>
-                          </motion.button>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-
-              {/* Intelligence Dropdown */}
-              <div className="relative intelligence-dropdown">
-                <motion.button
-                  onClick={() => {
-                    setShowIntelligenceDropdown(!showIntelligenceDropdown);
-                    setShowProductivityDropdown(false);
-                  }}
-                  whileHover={{ scale: 1.02 }}
-                  whileTap={{ scale: 0.98 }}
-                  className="flex items-center space-x-2 px-4 py-2.5 rounded-xl font-medium text-sm transition-all duration-200 text-gray-700 hover:text-gray-900 hover:bg-gray-50"
-                >
-                  <Brain className="w-4 h-4" />
-                  <span>Intelligence</span>
-                  <motion.div
-                    animate={{ rotate: showIntelligenceDropdown ? 180 : 0 }}
-                    transition={{ duration: 0.2 }}
-                  >
-                    <ChevronDown className="w-3 h-3" />
-                  </motion.div>
-                </motion.button>
-
-                <AnimatePresence>
-                  {showIntelligenceDropdown && (
-                    <motion.div
-                      initial={{ opacity: 0, y: -8, scale: 0.96 }}
-                      animate={{ opacity: 1, y: 0, scale: 1 }}
-                      exit={{ opacity: 0, y: -8, scale: 0.96 }}
-                      transition={{ duration: 0.2 }}
-                      className="absolute top-full left-0 mt-2 w-56 bg-white rounded-xl shadow-xl border border-gray-100 overflow-hidden z-50"
-                    >
-                      {intelligenceTabs.map((tab, index) => {
-                        const Icon = tab.icon;
-                        const isActive = activeTab === tab.id;
-                        return (
-                          <motion.button
-                            key={tab.id}
-                            onClick={() => {
-                              handleTabChange(tab.id);
-                              setShowIntelligenceDropdown(false);
-                            }}
-                            whileHover={{ backgroundColor: "#f9fafb" }}
-                            className={cn(
-                              "w-full flex items-center space-x-3 px-4 py-3 text-left transition-all duration-200",
-                              isActive ? "bg-gray-900 text-white" : "text-gray-700 hover:text-gray-900",
-                              index !== intelligenceTabs.length - 1 && "border-b border-gray-100"
-                            )}
-                          >
-                            <Icon className="w-4 h-4" />
-                            <span className="font-medium">{tab.label}</span>
-                          </motion.button>
-                        );
-                      })}
-                    </motion.div>
-                  )}
-                </AnimatePresence>
-              </div>
-            </div>
+            {/* Desktop Navigation - Shifting Dropdown */}
+            <ShiftingDropDown 
+              activeTab={activeTab}
+              handleTabChange={handleTabChange}
+              productivityTabs={productivityTabs}
+              intelligenceTabs={intelligenceTabs}
+            />
 
             {/* Mobile Menu Button */}
             <div className="md:hidden mobile-nav-container">
@@ -478,10 +570,21 @@ const AppContent = () => {
         transition={{ delay: 0.1 }}
         className={activeTab === 'home' ? '' : 'max-w-4xl mx-auto px-4 sm:px-6 py-8 relative'}
       >
-        {ActiveComponent && (
+        {ActiveComponent ? (
           activeTab === 'home' ? 
             <ActiveComponent onNavigate={handleNavigate} /> : 
             <ActiveComponent />
+        ) : (
+          <div className="text-center py-12">
+            <h2 className="text-2xl font-light text-gray-900 mb-4">Page Not Found</h2>
+            <p className="text-gray-600 mb-6">The requested page could not be loaded.</p>
+            <button 
+              onClick={() => handleNavigate('home')}
+              className="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-800 transition-colors"
+            >
+              Go Home
+            </button>
+          </div>
         )}
         
         {/* Location Selector Modal - Positioned within main content */}
@@ -517,7 +620,7 @@ const AppContent = () => {
         )}
       </AnimatePresence>
       
-      {activeTab !== 'home' && <Footer />}
+      {activeTab !== 'home' && <Footer onNavigate={handleNavigate} />}
       <CookieConsent />
     </div>
   );

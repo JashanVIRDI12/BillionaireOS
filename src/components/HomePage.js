@@ -1,8 +1,8 @@
 import React, { useState, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionTemplate, useMotionValue, useSpring } from 'framer-motion';
 import { 
   Target, Calendar, CheckSquare, DollarSign, Rocket, Briefcase, 
-  Brain, TrendingUp, ArrowRight, Sparkles, FileText
+  Brain, TrendingUp, ArrowRight, Sparkles, FileText, MousePointer
 } from 'lucide-react';
 import { useAuth } from '../contexts/AuthContext';
 import { useLocation } from '../contexts/LocationContext';
@@ -72,13 +72,120 @@ const HomePage = ({ onNavigate }) => {
           icon: FileText,
           title: "Resume Intelligence",
           description: "AI-powered resume analysis, ATS optimization, and job matching algorithms",
-          action: () => onNavigate('resume')
         }
       ]
     }
   };
 
+  // 3D Tilt Card Components
+  const ROTATION_RANGE = 20;
+  const HALF_ROTATION_RANGE = ROTATION_RANGE / 2;
 
+
+  // 3D Feature Card Component
+  const FeatureTiltCard = ({ feature, index, activeCategory }) => {
+    const ref = useRef(null);
+    const Icon = feature.icon;
+
+    const x = useMotionValue(0);
+    const y = useMotionValue(0);
+
+    const xSpring = useSpring(x);
+    const ySpring = useSpring(y);
+
+    const transform = useMotionTemplate`rotateX(${xSpring}deg) rotateY(${ySpring}deg)`;
+
+    const handleMouseMove = (e) => {
+      if (!ref.current) return [0, 0];
+
+      const rect = ref.current.getBoundingClientRect();
+
+      const width = rect.width;
+      const height = rect.height;
+
+      const mouseX = (e.clientX - rect.left) * ROTATION_RANGE;
+      const mouseY = (e.clientY - rect.top) * ROTATION_RANGE;
+
+      const rX = (mouseY / height - HALF_ROTATION_RANGE) * -1;
+      const rY = mouseX / width - HALF_ROTATION_RANGE;
+
+      x.set(rX);
+      y.set(rY);
+    };
+
+    const handleMouseLeave = () => {
+      x.set(0);
+      y.set(0);
+    };
+
+    return (
+      <motion.div
+        key={`${activeCategory}-${index}`}
+        initial={{ opacity: 0, y: 30 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: index * 0.1 }}
+        ref={ref}
+        onMouseMove={handleMouseMove}
+        onMouseLeave={handleMouseLeave}
+        onClick={feature.action}
+        style={{
+          transformStyle: "preserve-3d",
+          transform,
+        }}
+        className="relative cursor-pointer touch-manipulation group"
+      >
+        <div
+          style={{
+            transform: "translateZ(50px)",
+            transformStyle: "preserve-3d",
+          }}
+          className="bg-gradient-to-br from-gray-100 to-gray-200 rounded-2xl p-1 shadow-2xl hover:shadow-3xl transition-shadow duration-500 h-80 sm:h-96"
+        >
+          <div
+            style={{
+              transform: "translateZ(25px)",
+              transformStyle: "preserve-3d",
+            }}
+            className="bg-white rounded-xl p-6 sm:p-8 border border-gray-200 hover:border-gray-300 transition-all duration-300 h-full flex flex-col"
+          >
+            <div
+              style={{
+                transform: "translateZ(30px)",
+              }}
+              className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 rounded-xl mb-4 sm:mb-6 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300"
+            >
+              <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
+            </div>
+            <h4
+              style={{
+                transform: "translateZ(20px)",
+              }}
+              className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3"
+            >
+              {feature.title}
+            </h4>
+            <p
+              style={{
+                transform: "translateZ(15px)",
+              }}
+              className="text-sm sm:text-base text-gray-600 leading-relaxed mb-3 sm:mb-4 flex-grow"
+            >
+              {feature.description}
+            </p>
+            <div
+              style={{
+                transform: "translateZ(25px)",
+              }}
+              className="flex items-center text-gray-900 font-medium mt-auto"
+            >
+              <span className="text-sm">Explore Feature</span>
+              <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
+            </div>
+          </div>
+        </div>
+      </motion.div>
+    );
+  };
 
   return (
     <div className="min-h-screen bg-gray-200">
@@ -253,37 +360,19 @@ const HomePage = ({ onNavigate }) => {
             </motion.div>
           </AnimatePresence>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 sm:gap-6">
-            {featureCategories[activeCategory].features.map((feature, index) => {
-              const Icon = feature.icon;
-              return (
-                <motion.div
-                  key={`${activeCategory}-${index}`}
-                  initial={{ opacity: 0, y: 30 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ duration: 0.6, delay: index * 0.1 }}
-                  onClick={feature.action}
-                  className="group bg-white rounded-2xl p-6 sm:p-8 border border-gray-200 hover:border-gray-300 hover:shadow-lg transition-all duration-300 cursor-pointer touch-manipulation"
-                >
-                  <div className="inline-flex items-center justify-center w-12 h-12 sm:w-14 sm:h-14 bg-gray-100 rounded-xl mb-4 sm:mb-6 group-hover:bg-gray-900 group-hover:text-white transition-all duration-300">
-                    <Icon className="w-6 h-6 sm:w-7 sm:h-7" />
-                  </div>
-                  <h4 className="text-lg sm:text-xl font-semibold text-gray-900 mb-2 sm:mb-3 group-hover:text-gray-900">
-                    {feature.title}
-                  </h4>
-                  <p className="text-sm sm:text-base text-gray-600 leading-relaxed mb-3 sm:mb-4">
-                    {feature.description}
-                  </p>
-                  <div className="flex items-center text-gray-900 font-medium group-hover:text-gray-900">
-                    <span className="text-sm">Explore Feature</span>
-                    <ArrowRight className="w-4 h-4 ml-2 group-hover:translate-x-1 transition-transform" />
-                  </div>
-                </motion.div>
-              );
-            })}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6 sm:gap-8">
+            {featureCategories[activeCategory].features.map((feature, index) => (
+              <FeatureTiltCard 
+                key={`${activeCategory}-${index}`}
+                feature={feature} 
+                index={index} 
+                activeCategory={activeCategory} 
+              />
+            ))}
           </div>
         </div>
       </section>
+
 
       {/* Call to Action */}
       <section className="py-16 sm:py-20 lg:py-24 bg-gray-900 text-white">
