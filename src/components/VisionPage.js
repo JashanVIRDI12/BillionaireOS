@@ -440,13 +440,15 @@ const VisionPage = () => {
 
         {/* AI Insights */}
         {showAIInsights && latestAnalyzedEntry && (
-          <AIInsights 
-            latestEntry={latestAnalyzedEntry}
-            recentEntries={journalEntries}
-            onAnalysisComplete={(analysis) => {
-              console.log('AI Analysis completed:', analysis);
-            }}
-          />
+          <div className="mb-8">
+            <AIInsights 
+              latestEntry={latestAnalyzedEntry}
+              recentEntries={journalEntries}
+              onAnalysisComplete={(analysis) => {
+                console.log('AI Analysis completed:', analysis);
+              }}
+            />
+          </div>
         )}
 
       {/* Calendar View */}

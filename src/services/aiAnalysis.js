@@ -3,8 +3,25 @@ const OPENROUTER_API_KEY = process.env.REACT_APP_OPENROUTER_API_KEY || 'sk-or-v1
 const OPENROUTER_API_URL = 'https://openrouter.ai/api/v1/chat/completions';
 const MODEL = 'mistralai/mistral-small-3.2-24b-instruct:free';
 
+// Rate limiting helper
+let lastApiCall = 0;
+const MIN_API_INTERVAL = 2000; // 2 seconds between calls
+
+const waitForRateLimit = async () => {
+  const now = Date.now();
+  const timeSinceLastCall = now - lastApiCall;
+  if (timeSinceLastCall < MIN_API_INTERVAL) {
+    const waitTime = MIN_API_INTERVAL - timeSinceLastCall;
+    await new Promise(resolve => setTimeout(resolve, waitTime));
+  }
+  lastApiCall = Date.now();
+};
+
 export const analyzeJournalEntry = async (entry) => {
   try {
+    // Wait for rate limit
+    await waitForRateLimit();
+
     const prompt = `
 You are an expert life coach and productivity analyst. Analyze this journal entry and provide insights in the following format:
 
@@ -51,7 +68,16 @@ Be specific, actionable, and encouraging. Focus on productivity, goal achievemen
     });
 
     if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status}`);
+      // Handle specific error codes
+      if (response.status === 429) {
+        throw new Error('Rate limit exceeded. Please wait a moment and try again.');
+      } else if (response.status === 401) {
+        throw new Error('API authentication failed. Please check your API key.');
+      } else if (response.status >= 500) {
+        throw new Error('AI service is temporarily unavailable. Please try again later.');
+      } else {
+        throw new Error(`OpenRouter API error: ${response.status}`);
+      }
     }
 
     const data = await response.json();
@@ -107,6 +133,9 @@ export const analyzeDailyTrends = async (recentEntries) => {
   }
 
   try {
+    // Wait for rate limit
+    await waitForRateLimit();
+
     const entriesText = recentEntries.slice(0, 7).map(entry => 
       `Date: ${entry.date}, Mood: ${entry.mood}/10, Energy: ${entry.energy}/10, Activities: ${entry.whatDidIDo}`
     ).join('\n');
@@ -150,7 +179,16 @@ Provide analysis in this JSON format:
     });
 
     if (!response.ok) {
-      throw new Error(`OpenRouter API error: ${response.status}`);
+      // Handle specific error codes
+      if (response.status === 429) {
+        throw new Error('Rate limit exceeded. Please wait a moment and try again.');
+      } else if (response.status === 401) {
+        throw new Error('API authentication failed. Please check your API key.');
+      } else if (response.status >= 500) {
+        throw new Error('AI service is temporarily unavailable. Please try again later.');
+      } else {
+        throw new Error(`OpenRouter API error: ${response.status}`);
+      }
     }
 
     const data = await response.json();

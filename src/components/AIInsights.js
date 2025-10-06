@@ -8,6 +8,7 @@ const AIInsights = ({ latestEntry, recentEntries, onAnalysisComplete }) => {
   const [trendAnalysis, setTrendAnalysis] = useState(null);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
   const [expandedSections, setExpandedSections] = useState({
     daily: true,
     trends: false
@@ -19,11 +20,14 @@ const AIInsights = ({ latestEntry, recentEntries, onAnalysisComplete }) => {
     }
   }, [latestEntry]); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const analyzeEntry = async () => {
+  const analyzeEntry = async (isRetry = false) => {
     if (!latestEntry) return;
 
     setLoading(true);
-    setError(null);
+    if (!isRetry) {
+      setError(null);
+      setRetryCount(0);
+    }
 
     try {
       // Analyze the latest entry
@@ -31,6 +35,8 @@ const AIInsights = ({ latestEntry, recentEntries, onAnalysisComplete }) => {
       
       if (entryResult.success) {
         setAnalysis(entryResult.analysis);
+        setError(null);
+        setRetryCount(0);
         
         // Also analyze trends if we have multiple entries
         if (recentEntries && recentEntries.length > 1) {
@@ -45,13 +51,24 @@ const AIInsights = ({ latestEntry, recentEntries, onAnalysisComplete }) => {
         }
       } else {
         setError(entryResult.error);
+        if (entryResult.error.includes('Rate limit exceeded')) {
+          setRetryCount(prev => prev + 1);
+        }
       }
     } catch (err) {
-      setError('Failed to analyze your entry. Please try again.');
+      const errorMessage = err.message || 'Failed to analyze your entry. Please try again.';
+      setError(errorMessage);
+      if (errorMessage.includes('Rate limit exceeded')) {
+        setRetryCount(prev => prev + 1);
+      }
       console.error('Analysis error:', err);
     } finally {
       setLoading(false);
     }
+  };
+
+  const handleRetry = () => {
+    analyzeEntry(true);
   };
 
   const toggleSection = (section) => {
@@ -114,12 +131,23 @@ const AIInsights = ({ latestEntry, recentEntries, onAnalysisComplete }) => {
           className="bg-red-50 border border-red-200 rounded-xl p-4"
         >
           <p className="text-red-700 text-sm">{error}</p>
+          {error.includes('Rate limit exceeded') && (
+            <p className="text-red-600 text-xs mt-1">
+              Please wait a moment before retrying. The AI service has usage limits.
+            </p>
+          )}
           <button
-            onClick={analyzeEntry}
-            className="mt-2 text-red-600 hover:text-red-800 text-sm font-medium underline"
+            onClick={handleRetry}
+            disabled={loading}
+            className="mt-2 text-red-600 hover:text-red-800 text-sm font-medium underline disabled:opacity-50 disabled:cursor-not-allowed"
           >
-            Try again
+            {loading ? 'Retrying...' : 'Try again'}
           </button>
+          {retryCount > 0 && (
+            <span className="ml-2 text-xs text-red-500">
+              (Attempt {retryCount + 1})
+            </span>
+          )}
         </motion.div>
       )}
 

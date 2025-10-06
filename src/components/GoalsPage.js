@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Plus, Trash2, Target, Calendar, Clock, Zap, TrendingUp, Edit3 } from 'lucide-react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useAnimate, usePresence } from 'framer-motion';
 import { useAuth } from '../contexts/AuthContext';
 import { saveNorthStarGoal, getNorthStarGoal, addGoal as addGoalToDb, getGoals, updateGoal as updateGoalInDb, deleteGoal as deleteGoalFromDb } from '../firebase/ultraSimple';
 import SoothingLoader from './SoothingLoader';
@@ -193,6 +193,217 @@ const GoalsPage = () => {
     { key: 'monthly', title: 'Monthly Goals', icon: Calendar },
     { key: 'yearly', title: 'Yearly Goals', icon: TrendingUp }
   ];
+
+  // Vanishing List Components
+  const VanishingGoal = ({ goal, type, removeElement, handleCheck }) => {
+    const [isPresent, safeToRemove] = usePresence();
+    const [scope, animate] = useAnimate();
+
+    useEffect(() => {
+      if (!isPresent && goal) {
+        const exitAnimation = async () => {
+          animate(
+            "p",
+            {
+              color: goal.completed ? "#10b981" : "#ef4444",
+            },
+            {
+              ease: "easeIn",
+              duration: 0.125,
+            }
+          );
+          await animate(
+            scope.current,
+            {
+              scale: 1.025,
+            },
+            {
+              ease: "easeIn",
+              duration: 0.125,
+            }
+          );
+
+          await animate(
+            scope.current,
+            {
+              opacity: 0,
+              x: goal.completed ? 24 : -24,
+            },
+            {
+              delay: 0.75,
+            }
+          );
+          safeToRemove();
+        };
+
+        exitAnimation();
+      }
+    }, [isPresent, goal?.completed, animate, scope, safeToRemove, goal]);
+
+    const getTimeEstimate = (type) => {
+      switch(type) {
+        case 'daily': return '1 day';
+        case 'weekly': return '1 week';
+        case 'monthly': return '1 month';
+        case 'yearly': return '1 year';
+        default: return '1 day';
+      }
+    };
+
+    // Safety check - return null if goal is undefined (after all hooks)
+    if (!goal || !goal.id) {
+      console.warn('VanishingGoal: goal is undefined or missing id', goal);
+      return null;
+    }
+
+    return (
+      <motion.div
+        ref={scope}
+        layout
+        className="relative flex w-full items-center gap-3 rounded-lg border border-gray-200 bg-white p-4 shadow-sm hover:shadow-md transition-shadow"
+      >
+        <input
+          type="checkbox"
+          checked={goal.completed}
+          onChange={() => handleCheck(goal.id)}
+          className="size-4 accent-gray-900 rounded"
+        />
+
+        <p
+          className={`text-gray-900 transition-colors font-light ${goal.completed && "text-gray-400 line-through"}`}
+        >
+          {goal.title}
+        </p>
+        
+        <div className="ml-auto flex gap-2">
+          <div className="flex items-center gap-1.5 whitespace-nowrap rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-600">
+            <Clock className="w-3 h-3" />
+            <span>{getTimeEstimate(type)}</span>
+          </div>
+          <button
+            onClick={() => removeElement(goal.id)}
+            className="rounded-full bg-red-50 p-2 text-xs text-red-500 transition-colors hover:bg-red-100 hover:text-red-600"
+          >
+            <Trash2 className="w-3 h-3" />
+          </button>
+        </div>
+      </motion.div>
+    );
+  };
+
+  const VanishingGoalsList = ({ goals, type, handleCheck, removeElement }) => {
+    // Filter out any undefined or invalid goals
+    const validGoals = goals.filter(goal => goal && goal.id);
+    
+    return (
+      <div className="w-full space-y-3">
+        <AnimatePresence>
+          {validGoals.map((goal) => (
+            <VanishingGoal
+              key={goal.id}
+              goal={goal}
+              type={type}
+              handleCheck={handleCheck}
+              removeElement={removeElement}
+            />
+          ))}
+        </AnimatePresence>
+      </div>
+    );
+  };
+
+  const GoalForm = ({ type, setGoals, activeSection, setActiveSection }) => {
+    const [visible, setVisible] = useState(false);
+    const [text, setText] = useState("");
+
+    const handleSubmit = async () => {
+      if (!text.length || !user) {
+        return;
+      }
+
+      setOperationLoading(true);
+      const result = await addGoalToDb(user.uid, {
+        title: text,
+        type: type,
+        completed: false,
+        progress: 0
+      });
+
+      if (result.success) {
+        // Create the goal object with proper structure
+        const newGoalWithId = {
+          id: result.id || result.goal?.id || Date.now().toString(),
+          title: text,
+          type: type,
+          completed: false,
+          progress: type === 'daily' ? null : 0,
+          ...result.goal
+        };
+        
+        setGoals(prev => ({
+          ...prev,
+          [type]: [newGoalWithId, ...prev[type]]
+        }));
+        setText("");
+        setVisible(false);
+      } else {
+        console.error('Failed to add goal:', result.error);
+      }
+      setOperationLoading(false);
+    };
+
+    return (
+      <div className="relative">
+        <AnimatePresence>
+          {visible && (
+            <motion.form
+              initial={{ opacity: 0, y: 25 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: 25 }}
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSubmit();
+              }}
+              className="mb-4 w-full rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+            >
+              <textarea
+                value={text}
+                onChange={(e) => setText(e.target.value)}
+                placeholder={`What's your ${type} goal?`}
+                className="h-20 w-full resize-none rounded-lg bg-gray-50 p-3 text-sm text-gray-900 placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-gray-900 focus:ring-offset-2"
+              />
+              <div className="flex items-center justify-end gap-2 mt-3">
+                <button
+                  type="button"
+                  onClick={() => setVisible(false)}
+                  className="rounded-lg px-4 py-2 text-sm text-gray-600 hover:text-gray-900 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  disabled={operationLoading}
+                  className="rounded-lg bg-gray-900 px-4 py-2 text-sm text-white transition-colors hover:bg-gray-800 disabled:opacity-50"
+                >
+                  {operationLoading ? "Adding..." : "Add Goal"}
+                </button>
+              </div>
+            </motion.form>
+          )}
+        </AnimatePresence>
+        
+        <button
+          onClick={() => setVisible((pv) => !pv)}
+          className="w-full rounded-lg border border-gray-200 bg-white py-3 text-gray-600 transition-colors hover:bg-gray-50 hover:text-gray-900 flex items-center justify-center gap-2"
+        >
+          <Plus
+            className={`w-4 h-4 transition-transform ${visible ? "rotate-45" : "rotate-0"}`}
+          />
+          <span className="text-sm font-medium">Add {type} goal</span>
+        </button>
+      </div>
+    );
+  };
 
   const renderGoal = (goal, type, section) => {
     if (type === 'daily') {
@@ -415,64 +626,9 @@ const GoalsPage = () => {
                   <p className="text-xs text-gray-400 font-light">{goals[section.key].length} {goals[section.key].length === 1 ? 'item' : 'items'}</p>
                 </div>
               </div>
-              <button
-                onClick={() => setActiveSection(activeSection === section.key ? '' : section.key)}
-                className="p-2 hover:bg-gray-50 rounded-lg transition-colors group"
-              >
-                <Plus className="w-4 h-4 text-gray-400 group-hover:text-black transition-colors" />
-              </button>
             </div>
 
-            <AnimatePresence>
-              {activeSection === section.key && (
-                <motion.div 
-                  initial={{ opacity: 0, height: 0 }}
-                  animate={{ opacity: 1, height: 'auto' }}
-                  exit={{ opacity: 0, height: 0 }}
-                  className="mb-6 overflow-hidden"
-                >
-                  <div className="p-4 bg-gray-50 rounded-lg border border-gray-100">
-                    <input
-                      type="text"
-                      placeholder={`Enter your ${section.key} goal...`}
-                      value={newGoal}
-                      onChange={(e) => setNewGoal(e.target.value)}
-                      className="w-full p-3 border border-gray-200 rounded-lg mb-3 focus:outline-none focus:ring-1 focus:ring-black focus:border-black text-sm font-light"
-                      onKeyPress={(e) => e.key === 'Enter' && addGoal(section.key)}
-                      autoFocus
-                    />
-                    <div className="flex space-x-2">
-                      <button
-                        onClick={() => addGoal(activeSection)}
-                        disabled={operationLoading}
-                        className="w-full p-3 bg-black text-white rounded-lg hover:bg-gray-800 transition-colors font-light disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
-                      >
-                        {operationLoading ? (
-                          <>
-                            <motion.div
-                              animate={{ rotate: 360 }}
-                              transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
-                              className="w-4 h-4 border-2 border-white border-t-transparent rounded-full"
-                            />
-                            Adding...
-                          </>
-                        ) : (
-                          'Add Goal'
-                        )}
-                      </button>
-                      <button
-                        onClick={() => setActiveSection('')}
-                        className="px-4 py-2 border border-gray-200 text-gray-600 text-sm font-light rounded-lg hover:bg-gray-50 transition-colors"
-                      >
-                        Cancel
-                      </button>
-                    </div>
-                  </div>
-                </motion.div>
-              )}
-            </AnimatePresence>
-
-            <div className="space-y-3">
+            <div className="space-y-4">
               {goals[section.key].length === 0 ? (
                 <div className="text-center py-8">
                   <Icon className="w-8 h-8 text-gray-200 mx-auto mb-3" />
@@ -481,19 +637,20 @@ const GoalsPage = () => {
                   </p>
                 </div>
               ) : (
-                <div className="space-y-2">
-                  {goals[section.key].map((goal, goalIndex) => (
-                    <motion.div
-                      key={goal.id}
-                      initial={{ opacity: 0, x: -20 }}
-                      animate={{ opacity: 1, x: 0 }}
-                      transition={{ duration: 0.2, delay: goalIndex * 0.05 }}
-                    >
-                      {renderGoal(goal, section.key, section)}
-                    </motion.div>
-                  ))}
-                </div>
+                <VanishingGoalsList
+                  goals={goals[section.key]}
+                  type={section.key}
+                  handleCheck={(id) => toggleGoal(section.key, id)}
+                  removeElement={(id) => deleteGoal(section.key, id)}
+                />
               )}
+              
+              <GoalForm
+                type={section.key}
+                setGoals={setGoals}
+                activeSection={activeSection}
+                setActiveSection={setActiveSection}
+              />
             </div>
           </motion.div>
         );
