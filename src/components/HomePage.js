@@ -233,7 +233,7 @@ const HomePage = ({ onNavigate }) => {
                   }}
                 >
                   <VariableProximity
-                    label="The AI Operating System"
+                    label="Build. Grow. Dominate."
                     fromFontVariationSettings="'wght' 600"
                     toFontVariationSettings="'wght' 900"
                     containerRef={heroContainerRef}
@@ -254,7 +254,7 @@ const HomePage = ({ onNavigate }) => {
                   }}
                 >
                   <VariableProximity
-                    label="for Wealth, Career & Growth"
+                    label="The Billionaire Way"
                     fromFontVariationSettings="'wght' 700"
                     toFontVariationSettings="'wght' 900"
                     containerRef={heroContainerRef}
